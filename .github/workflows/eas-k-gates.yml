@@ -1,0 +1,63 @@
+name: EAS-K deterministic gates
+
+on:
+  push:
+    branches:
+      - agent/eas-k-tech-lead-core
+  pull_request:
+    paths:
+      - ".github/workflows/eas-k-gates.yml"
+      - "contracts/control-plane/**"
+      - "src/enterprise_agent_system/**"
+      - "tests/test_orchestration.py"
+      - "tests/test_parent_binding.py"
+      - "plans/examples/eas-k-prompt-packet.example.json"
+      - "prompts/00-tech-lead-controller.system.md"
+      - "prompts/01-worker-envelope.system.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact workflow subject
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Bind exact subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'commit=%s\n' "$(git rev-parse HEAD)"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+
+      - name: Validate inherited EAS-C records
+        run: >-
+          python3 contracts/control-plane/verify.py
+          contracts/control-plane/examples/source-subject.example.json
+          contracts/control-plane/examples/cross-repo-binding.example.json
+          contracts/control-plane/examples/closure-record.example.json
+          contracts/control-plane/examples/orchestration-run.example.json
+
+      - name: Replay inherited EAS-C refusals
+        run: python3 contracts/control-plane/verify.py --selftest contracts/control-plane/examples
+
+      - name: Execute EAS-K DAG lease packet and reducer tests
+        run: python3 tests/test_orchestration.py
+
+      - name: Verify current EAS-C parent binding
+        run: python3 tests/test_parent_binding.py
+
+      - name: Compile deterministic gates
+        run: >-
+          python3 -m py_compile
+          contracts/control-plane/verify.py
+          src/enterprise_agent_system/orchestration.py
+          tests/test_orchestration.py
+          tests/test_parent_binding.py
