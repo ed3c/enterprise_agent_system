@@ -1,0 +1,20 @@
+{
+  "schema_version": "enterprise-agent-system/source-subject/v1",
+  "subject_id": "SRC-PDF-INCEPTION-001",
+  "source_kind": "SOURCE_PROPOSAL",
+  "locator": {
+    "provider": "FILE",
+    "url": "urn:sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da",
+    "navigation_ref": "User-supplied 26-page PDF; bytes are not redistributed by this public repository."
+  },
+  "identity": {"identity_kind": "CONTENT_ONLY"},
+  "data_class": "PUBLIC",
+  "egress_allowed": true,
+  "captured_at": "2026-08-18T11:00:00Z",
+  "content_digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da",
+  "claims_not_proven": [
+    "The PDF is not implementation or runtime evidence.",
+    "Provider names, fixed thresholds, license conclusions, performance claims, and safety claims require exact-subject verification.",
+    "The source bytes are not published in this repository."
+  ]
+}
