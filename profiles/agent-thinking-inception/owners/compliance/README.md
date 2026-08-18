@@ -72,6 +72,7 @@ profiles/agent-thinking-inception/owners/compliance/**
 profiles/agent-thinking-inception/policies/provenance/**
 profiles/agent-thinking-inception/evidence/compliance/**
 profiles/agent-thinking-inception/prompts/07-provenance-owner.system.md
+.github/workflows/inception-a4-provenance.yml
 ```
 
 Profile source, requirements, contracts, orchestration, tests, generic Shadow,
