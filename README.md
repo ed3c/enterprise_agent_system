@@ -2,7 +2,7 @@
 
 Cross-repository **management, routing, traceability, and closure control plane** for enterprise Agent programs. It binds source proposals to immutable subjects, compiles Tech Lead task DAGs and zero-context prompt packets, reconciles independent Shadow findings, derives a Molecular Stack, and emits typed Local Handoff work without becoming a second runtime, workflow engine, VFS, effect ledger, verifier, or release authority.
 
-> **Current verdict:** `DRAFT_CONTROL_PLANE_WITH_OPEN_EVIDENCE_LANES`. Draft PR #20 provides the generic control-plane contract candidate. Draft PR #21 provides the `Agent Thinking Inception` source/profile candidate. No owner implementation, local/provider/physical canary, external effect, user outcome, Human admission, release, or rollback is closed.
+> **Current verdict:** `DRAFT_CONTROL_PLANE_WITH_OPEN_EVIDENCE_LANES`. Draft PR #20 provides the generic control-plane contract candidate, PR #24 the Tech Lead DAG/reducer candidate, PR #25 the read-only Shadow candidate, and PR #21 the `Agent Thinking Inception` source/profile candidate. PR #26 is a documentation blueprint with a stale parent pin. No owner implementation, local/provider/physical canary, external effect, user outcome, Human admission, release, or rollback is closed.
 
 ## Why this repository exists
 
@@ -251,10 +251,11 @@ A URL is navigation, not identity. Capture Google revision/version and content d
 The Stack is derived from observed paths, dependencies and exact subjects—not branch naming or chronological order.
 
 ```text
-EAS-C  root contract atom                  PR #20 (draft)
-├─ EAS-K true child                        branch observed; PR/evidence pending
+EAS-C  root contract atom                  PR #20 (draft; Shadow-blocked)
+├─ EAS-K true child                        PR #24 (draft; exact-head receipt absent)
 ├─ EAS-A path-disjoint sibling after C     issue #10; branch not observed
-└─ INCEPTION-C0/C1 true child               PR #21 (draft)
+├─ EAS-E true child/read-only evaluator    PR #25 (draft; BLOCKED_FOR_CLOSURE)
+└─ INCEPTION-C0/C1 true child              PR #21 (draft; exact-head receipt absent)
      └─ INCEPTION-K process/byte child       issue #4; blocked on exact generic K subject
           ├─ A1 #5   planned owner-routing sibling
           ├─ A2 #7   planned owner-routing sibling
@@ -264,11 +265,10 @@ EAS-C  root contract atom                  PR #20 (draft)
           └─ A6 #18  planned owner-routing sibling
           └─ INCEPTION-E #19 planned independent profile controls
 
-EAS-E     issue #11; consumes K candidate records
 INCEPTION-X #22 explicit profile convergence
 EAS-X     issue #12 explicit aggregate convergence
 INCEPTION-D #23 profile documentation packet
-EAS-D     issue #13 final root documentation convergence
+EAS-D     issue #13; PR #26 is a stale-parent blueprint, not final convergence
 P7        issue #14 single Local Handoff queue
 ```
 
@@ -299,11 +299,11 @@ P7 may automate exact local commands and receipt capture only after capability, 
 - Agent Thinking Inception profile: #1
 - EAS-C: #8 / draft PR #20
 - Profile C0/C1: #2/#3 / draft PR #21
-- EAS-K: #9; profile K: #4
+- EAS-K: #9 / draft PR #24; profile K: #4
 - EAS-A: #10
-- EAS-E: #11; profile E: #19
+- EAS-E: #11 / draft PR #25; profile E: #19
 - EAS-X: #12; profile X: #22
-- EAS-D: #13; profile D: #23
+- EAS-D: #13 / draft PR #26 (`STALE_PARENT_PIN`); profile D: #23
 - Local Handoff: #14
 - Owner lanes: #5, #7, #15, #16, #17, #18
 
@@ -311,15 +311,16 @@ P7 may automate exact local commands and receipt capture only after capability, 
 
 ```text
 detailed profile contract family              NOT_IMPLEMENTED
-generic EAS-K exact reviewed head/receipt      NOT_ADMITTED
+generic EAS-K candidate PR #24                 DRAFT / NOT_ADMITTED
 A1–A6 owner issue/implementation bindings      NOT_BOUND
 durable VFS/compaction/recovery canary          NOT_EXERCISED
 provider capability and sandbox canary          NOT_EXERCISED
 exact code/citation independent receipt         NOT_EXERCISED
 four-tier Human legal/security admission        NOT_PERFORMED
 durable webhook/effect/readback canary           NOT_EXERCISED
+generic/profile Shadow exact-head evidence     NOT_EXERCISED
 profile and aggregate convergence               NOT_EXECUTED
-root docs consistency Gate                      DRAFT_ONLY
+root docs parent synchronization / consistency  STALE_PARENT_PIN / NOT_EXERCISED
 canonical Local Handoff queue file              NOT_COMPILED
 Human merge/release/rollback                     NOT_PERFORMED
 ```
