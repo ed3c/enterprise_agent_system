@@ -24,14 +24,13 @@ UNBOUND
 | `cross-repo-binding.v1.schema.json` | one owner per interface and consumer routing | compatibility or execution |
 | `closure-record.v1.schema.json` | lane-by-lane evidence state, blockers and next transition | live closure |
 | `orchestration-run.v1.schema.json` | tasks, dual edges, leases, reducer/Shadow authority | Worker execution |
-| `verify.py` | cross-record semantic refusal laws | JSON Schema completeness |
-| `test_verify.py` | positive and planted negative controls | production readiness |
+| `verify.py` | cross-record semantic refusal laws and planted mutations | JSON Schema completeness or production readiness |
 
 ## Deterministic gate
 
 ```bash
 python3 contracts/control-plane/verify.py contracts/control-plane/examples/*.json
-python3 contracts/control-plane/test_verify.py
+python3 contracts/control-plane/verify.py --selftest contracts/control-plane/examples
 ```
 
 Exit `0` means only that the named records passed this deterministic semantic gate. Exit `2` is a named refusal. No result authorizes merge, issue closure, permission changes, provider enrollment, data egress, irreversible effects, release or rollback.
