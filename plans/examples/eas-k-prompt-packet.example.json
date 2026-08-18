@@ -33,7 +33,13 @@
   "leases": {
     "writer_id": "worker-k",
     "write_paths": [
-      "src/enterprise_agent_system/**"
+      ".github/workflows/eas-k-gates.yml",
+      "plans/examples/eas-k-prompt-packet.example.json",
+      "prompts/00-tech-lead-controller.system.md",
+      "prompts/01-worker-envelope.system.md",
+      "src/enterprise_agent_system/**",
+      "tests/test_orchestration.py",
+      "tests/test_parent_binding.py"
     ],
     "read_only_paths": [
       "contracts/control-plane/**",
@@ -130,5 +136,5 @@
     "on_semantic_conflict": "HUMAN_ADMIT_REQUIRED",
     "next_authority": "INDEPENDENT_SHADOW"
   },
-  "packet_digest": "sha256:b0a56311f0642a010adc0a88c2c84cf69d3f643431315fcd8f55f80a93d8aaa8"
+  "packet_digest": "sha256:31942dec6400f8903a50bb726795cda5567db6ce50bb50b83552911d2d77b334"
 }
