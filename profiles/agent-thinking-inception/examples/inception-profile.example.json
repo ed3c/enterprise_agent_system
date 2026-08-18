@@ -1,0 +1,20 @@
+{
+  "schema_version": "enterprise-agent-system/inception-profile/v1",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "source_subject_id": "SRC-PDF-INCEPTION-001",
+  "source_digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da",
+  "requirement_document": "profiles/agent-thinking-inception/requirements/requirements.json",
+  "contradiction_document": "profiles/agent-thinking-inception/requirements/contradictions.json",
+  "owner_repositories": [
+    "ed3c/enterprise_agent_system",
+    "ed3c/skills-shared",
+    "ed3c/runtime-env",
+    "ed3c/bettor-arena",
+    "ed3c/agent-shield-monorepo",
+    "ed3c/truth-verify-loop",
+    "ed3c/openwiki-source-anchoring"
+  ],
+  "state": "PROFILE_CONTRACT_READY",
+  "evidence_ceiling": "SOURCE_AND_CONTRACT_CANDIDATE_ONLY",
+  "next_issues": ["#4", "#5", "#7", "#15", "#16", "#17", "#18", "#19"]
+}
