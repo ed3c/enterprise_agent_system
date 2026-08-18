@@ -2,7 +2,7 @@
 
 Cross-repository **management, routing, traceability, and closure control plane** for enterprise Agent programs. It binds source proposals to immutable subjects, compiles Tech Lead task DAGs and zero-context prompt packets, reconciles independent Shadow findings, derives a Molecular Stack, and emits typed Local Handoff work without becoming a second runtime, workflow engine, VFS, effect ledger, verifier, or release authority.
 
-> **Current verdict:** `DRAFT_CONTROL_PLANE_WITH_OPEN_EVIDENCE_LANES`. Draft PR #20 provides the generic control-plane contract candidate, PR #24 the Tech Lead DAG/reducer candidate, PR #25 the read-only Shadow candidate, and PR #21 the `Agent Thinking Inception` source/profile candidate. PR #26 is a documentation blueprint with a stale parent pin. No owner implementation, local/provider/physical canary, external effect, user outcome, Human admission, release, or rollback is closed.
+> **Current verdict:** `DRAFT_CONTROL_PLANE_WITH_OPEN_EVIDENCE_LANES`. Draft PR #20 provides the generic control-plane contract candidate, PR #24 the Tech Lead DAG/reducer candidate, PR #25 the read-only Shadow candidate, and PR #21 the `Agent Thinking Inception` source/profile candidate. PR #26 is synchronized with the current profile parent and now carries documentation plus machine-readable DAG, Stack, directory/State-Machine, data-flow and closure candidates; exact-head documentation Gates and final X inputs remain open. No owner implementation, local/provider/physical canary, external effect, user outcome, Human admission, release, or rollback is closed.
 
 ## Why this repository exists
 
@@ -105,9 +105,11 @@ enterprise_agent_system/
 │       ├── prompts/                    # zero-context phase/session packets
 │       └── tests/                      # source/profile semantic controls
 ├── plans/
-│   ├── task-dag.json                  # aggregate EAS-X plan (planned)
-│   ├── architecture-closure.yaml      # cross-repo closure graph (planned)
-│   └── molecular-stack-index.json     # observed C/K/A/E/X/D topology
+│   ├── task-dag.json                  # machine-readable program DAG candidate
+│   ├── molecular-stack-index.json     # observed/planned C/K/A/E/X/D topology
+│   ├── directory-state-machine-index.json
+│   ├── data-flow.json
+│   └── architecture-closure.json      # lane-literal closure candidate
 ├── prompts/
 │   ├── 00-source-authority-auditor.system.md
 │   ├── 01-contract-lock-worker.system.md
@@ -136,6 +138,7 @@ enterprise_agent_system/
 │       └── MOLECULAR_STACK_INDEX.md
 ├── scripts/
 └── tests/
+    └── verify_docs.py                 # DAG/Stack/data-flow/docs consistency Gate
 ```
 
 ## Directory → State Machine → DAG ownership
@@ -158,6 +161,8 @@ enterprise_agent_system/
 | `plans|evidence/ledgers|docs/integration/` | closure ladder | EAS-X/#12 + profile X/#22 | C/K/A/E exact subjects | closure candidate → D/Human | routing/reconciliation only |
 | root docs / `docs/**` | `INPUTS_PINNED → ROUTES_RENDERED → CONSISTENCY_CHECKED` | EAS-D/#13 + profile D/#23 | admitted X and Stack facts | Agent-readable route → P7 | documentation only |
 | `handoff/` | `QUEUE_SUBJECT_BOUND → … → NEXT_EPOCH|HUMAN|COMPLETE|BLOCKED` | #14 | unresolved physical actions | exact local/live receipts → reducer | queue shape is not execution |
+
+Machine-readable details live in `plans/directory-state-machine-index.json` and are checked by `tests/verify_docs.py`.
 
 ## Process and evidence DAG
 
@@ -195,6 +200,8 @@ flowchart TD
     X --> HU
 ```
 
+The exact task dependency graph is versioned in `plans/task-dag.json`.
+
 ## Runtime data flow that owner repositories must implement
 
 ```mermaid
@@ -215,6 +222,8 @@ flowchart LR
     DS --> TEL[Sanitize-before-export telemetry]
     TEL --> CL[Lane-literal closure receipts]
 ```
+
+The authority, payload, guard and forbidden-flow records are versioned in `plans/data-flow.json`.
 
 ## Fresh-session prompt packet contract
 
@@ -268,11 +277,11 @@ EAS-C  root contract atom                  PR #20 (draft; Shadow-blocked)
 INCEPTION-X #22 explicit profile convergence
 EAS-X     issue #12 explicit aggregate convergence
 INCEPTION-D #23 profile documentation packet
-EAS-D     issue #13; PR #26 is a stale-parent blueprint, not final convergence
+EAS-D     issue #13; PR #26 is a synchronized documentation/machine-index candidate, not final convergence
 P7        issue #14 single Local Handoff queue
 ```
 
-True Git child edges exist only when the child consumes named unmerged parent bytes. Process dependencies, independent evidence lanes and Human decisions are not automatically Git parents. A moved/rebased parent invalidates stale child evidence and requires exact-head re-verification.
+The machine Stack is versioned in `plans/molecular-stack-index.json`. True Git child edges exist only when the child consumes named unmerged parent bytes. Process dependencies, independent evidence lanes and Human decisions are not automatically Git parents. A moved/rebased parent invalidates affected evidence and requires exact-head re-verification.
 
 ## Automation boundary
 
@@ -303,24 +312,26 @@ P7 may automate exact local commands and receipt capture only after capability, 
 - EAS-A: #10
 - EAS-E: #11 / draft PR #25; profile E: #19
 - EAS-X: #12; profile X: #22
-- EAS-D: #13 / draft PR #26 (`STALE_PARENT_PIN`); profile D: #23
+- EAS-D: #13 / draft PR #26; profile D: #23
 - Local Handoff: #14
 - Owner lanes: #5, #7, #15, #16, #17, #18
 
 ## What is not closed
 
 ```text
-detailed profile contract family              NOT_IMPLEMENTED
-generic EAS-K candidate PR #24                 DRAFT / NOT_ADMITTED
-A1–A6 owner issue/implementation bindings      NOT_BOUND
-durable VFS/compaction/recovery canary          NOT_EXERCISED
-provider capability and sandbox canary          NOT_EXERCISED
-exact code/citation independent receipt         NOT_EXERCISED
-four-tier Human legal/security admission        NOT_PERFORMED
-durable webhook/effect/readback canary           NOT_EXERCISED
-generic/profile Shadow exact-head evidence     NOT_EXERCISED
-profile and aggregate convergence               NOT_EXECUTED
-root docs parent synchronization / consistency  STALE_PARENT_PIN / NOT_EXERCISED
-canonical Local Handoff queue file              NOT_COMPILED
-Human merge/release/rollback                     NOT_PERFORMED
+detailed profile contract family               NOT_IMPLEMENTED
+generic EAS-C consumer admission                BLOCKED_BY_SHADOW_CONTROLS
+generic EAS-K candidate PR #24                  DRAFT / NOT_ADMITTED
+EAS-A GitHub/Google projection adapters         NOT_IMPLEMENTED
+A1–A6 owner issue/implementation bindings       NOT_BOUND
+durable VFS/compaction/recovery canary           NOT_EXERCISED
+provider capability and sandbox canary           NOT_EXERCISED
+exact code/citation independent receipt          NOT_EXERCISED
+four-tier Human legal/security admission         NOT_PERFORMED
+durable webhook/effect/readback canary            NOT_EXERCISED
+generic/profile Shadow exact-head evidence      NOT_EXERCISED
+profile and aggregate convergence                NOT_EXECUTED
+root docs machine-index consistency Gate         NOT_EXERCISED
+canonical Local Handoff queue file               NOT_COMPILED
+Human merge/release/rollback                      NOT_PERFORMED
 ```
