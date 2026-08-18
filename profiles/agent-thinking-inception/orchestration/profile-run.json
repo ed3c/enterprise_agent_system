@@ -1,0 +1,375 @@
+{
+  "schema_version": "enterprise-agent-system/orchestration-run/v1",
+  "run_id": "RUN-INCEPTION-K-2026-08-18",
+  "request_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "1474882226fff6078afe467731db5adec9a09a50",
+    "tree": "3aadb4377d9596823b070f996a5f94ccb8f05220"
+  },
+  "tasks": [
+    {
+      "id": "TASK-INCEPTION-K",
+      "start_dependencies": [],
+      "completion_dependencies": [],
+      "owns_paths": [
+        ".github/workflows/inception-k-profile-gates.yml",
+        "profiles/agent-thinking-inception/orchestration/**",
+        "profiles/agent-thinking-inception/prompts/02-tech-lead-profile-controller.system.md",
+        "profiles/agent-thinking-inception/prompts/03-profile-worker-envelope.system.md",
+        "profiles/agent-thinking-inception/tests/dag/**"
+      ],
+      "required_lane": "CLOUD",
+      "output_contract": "content-addressed profile task DAG and zero-context owner packets",
+      "state": "CANDIDATE"
+    },
+    {
+      "id": "TASK-INCEPTION-A1",
+      "start_dependencies": ["TASK-INCEPTION-K"],
+      "completion_dependencies": ["TASK-INCEPTION-K"],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/owners/compaction/**",
+        "profiles/agent-thinking-inception/policies/context/**",
+        "profiles/agent-thinking-inception/evidence/compaction/**",
+        "profiles/agent-thinking-inception/prompts/04-compaction-owner.system.md"
+      ],
+      "required_lane": "LOCAL",
+      "output_contract": "durable Domain State compaction and recovery owner packet plus exact owner receipt",
+      "state": "PLANNED"
+    },
+    {
+      "id": "TASK-INCEPTION-A2",
+      "start_dependencies": ["TASK-INCEPTION-K"],
+      "completion_dependencies": ["TASK-INCEPTION-K"],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/owners/runtime/**",
+        "profiles/agent-thinking-inception/policies/runtime/**",
+        "profiles/agent-thinking-inception/evidence/runtime/**",
+        "profiles/agent-thinking-inception/prompts/05-runtime-owner.system.md"
+      ],
+      "required_lane": "LOCAL",
+      "output_contract": "runtime sandbox capability and steering owner packet plus exact owner receipt",
+      "state": "PLANNED"
+    },
+    {
+      "id": "TASK-INCEPTION-A3",
+      "start_dependencies": ["TASK-INCEPTION-K"],
+      "completion_dependencies": ["TASK-INCEPTION-K"],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/owners/evidence/**",
+        "profiles/agent-thinking-inception/policies/evidence/**",
+        "profiles/agent-thinking-inception/evidence/verification/**",
+        "profiles/agent-thinking-inception/prompts/06-evidence-owner.system.md"
+      ],
+      "required_lane": "PRIVATE",
+      "output_contract": "exact code source citation evidence owner packet plus independent receipt",
+      "state": "PLANNED"
+    },
+    {
+      "id": "TASK-INCEPTION-A4",
+      "start_dependencies": ["TASK-INCEPTION-K"],
+      "completion_dependencies": ["TASK-INCEPTION-K"],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/owners/compliance/**",
+        "profiles/agent-thinking-inception/policies/provenance/**",
+        "profiles/agent-thinking-inception/evidence/compliance/**",
+        "profiles/agent-thinking-inception/prompts/07-provenance-owner.system.md"
+      ],
+      "required_lane": "HUMAN",
+      "output_contract": "Code Model Data Trace provenance and telemetry policy packet",
+      "state": "PLANNED"
+    },
+    {
+      "id": "TASK-INCEPTION-A5",
+      "start_dependencies": ["TASK-INCEPTION-K"],
+      "completion_dependencies": ["TASK-INCEPTION-K"],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/owners/discovery/**",
+        "profiles/agent-thinking-inception/policies/admission/**",
+        "profiles/agent-thinking-inception/evidence/discovery/**",
+        "profiles/agent-thinking-inception/prompts/08-discovery-convergence-owner.system.md"
+      ],
+      "required_lane": "HUMAN",
+      "output_contract": "bounded discovery adaptation benchmark and admission owner packet",
+      "state": "PLANNED"
+    },
+    {
+      "id": "TASK-INCEPTION-A6",
+      "start_dependencies": ["TASK-INCEPTION-K"],
+      "completion_dependencies": ["TASK-INCEPTION-K"],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/owners/ingress/**",
+        "profiles/agent-thinking-inception/policies/effects/**",
+        "profiles/agent-thinking-inception/evidence/writeback/**",
+        "profiles/agent-thinking-inception/prompts/09-ingress-effect-owner.system.md"
+      ],
+      "required_lane": "LOCAL",
+      "output_contract": "durable ingress effect ledger and idempotent writeback owner packet",
+      "state": "PLANNED"
+    },
+    {
+      "id": "TASK-INCEPTION-E",
+      "start_dependencies": [
+        "TASK-INCEPTION-A1",
+        "TASK-INCEPTION-A2",
+        "TASK-INCEPTION-A3",
+        "TASK-INCEPTION-A4",
+        "TASK-INCEPTION-A5",
+        "TASK-INCEPTION-A6"
+      ],
+      "completion_dependencies": [
+        "TASK-INCEPTION-A1",
+        "TASK-INCEPTION-A2",
+        "TASK-INCEPTION-A3",
+        "TASK-INCEPTION-A4",
+        "TASK-INCEPTION-A5",
+        "TASK-INCEPTION-A6"
+      ],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/shadow/**",
+        "profiles/agent-thinking-inception/tests/shadow/**",
+        "profiles/agent-thinking-inception/prompts/10-shadow-architect-profile.system.md"
+      ],
+      "required_lane": "CLOUD",
+      "output_contract": "read-only profile Shadow mutation and evidence-ceiling receipt",
+      "state": "BLOCKED"
+    },
+    {
+      "id": "TASK-INCEPTION-X",
+      "start_dependencies": [
+        "TASK-INCEPTION-A1",
+        "TASK-INCEPTION-A2",
+        "TASK-INCEPTION-A3",
+        "TASK-INCEPTION-A4",
+        "TASK-INCEPTION-A5",
+        "TASK-INCEPTION-A6",
+        "TASK-INCEPTION-E"
+      ],
+      "completion_dependencies": [
+        "TASK-INCEPTION-A1",
+        "TASK-INCEPTION-A2",
+        "TASK-INCEPTION-A3",
+        "TASK-INCEPTION-A4",
+        "TASK-INCEPTION-A5",
+        "TASK-INCEPTION-A6",
+        "TASK-INCEPTION-E"
+      ],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/evidence/convergence/**",
+        "profiles/agent-thinking-inception/plans/vertical-canary.json",
+        "profiles/agent-thinking-inception/plans/closure-record.json",
+        "profiles/agent-thinking-inception/prompts/11-profile-convergence.system.md"
+      ],
+      "required_lane": "CLOUD",
+      "output_contract": "exact-subject profile closure candidate and reversible vertical canary plan",
+      "state": "BLOCKED"
+    },
+    {
+      "id": "TASK-INCEPTION-D",
+      "start_dependencies": ["TASK-INCEPTION-X"],
+      "completion_dependencies": ["TASK-INCEPTION-X"],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/docs/**",
+        "profiles/agent-thinking-inception/plans/molecular-stack-index.json",
+        "profiles/agent-thinking-inception/plans/directory-state-machine-index.json",
+        "profiles/agent-thinking-inception/plans/data-flow.json",
+        "profiles/agent-thinking-inception/tests/docs/**",
+        "profiles/agent-thinking-inception/prompts/12-profile-docs-convergence.system.md",
+        "profiles/agent-thinking-inception/prompts/README.md"
+      ],
+      "required_lane": "CLOUD",
+      "output_contract": "profile documentation State Machine data-flow and Molecular Stack packet",
+      "state": "BLOCKED"
+    },
+    {
+      "id": "TASK-INCEPTION-H",
+      "start_dependencies": ["TASK-INCEPTION-D"],
+      "completion_dependencies": ["TASK-INCEPTION-D"],
+      "owns_paths": [
+        "profiles/agent-thinking-inception/plans/local-handoff-request.json",
+        "profiles/agent-thinking-inception/prompts/13-profile-local-handoff.system.md"
+      ],
+      "required_lane": "LOCAL",
+      "output_contract": "profile-local handoff request for the single canonical EAS queue",
+      "state": "BLOCKED"
+    }
+  ],
+  "leases": [
+    {
+      "task_id": "TASK-INCEPTION-K",
+      "writer_id": "profile-tech-lead",
+      "paths": [
+        ".github/workflows/inception-k-profile-gates.yml",
+        "profiles/agent-thinking-inception/orchestration/**",
+        "profiles/agent-thinking-inception/prompts/02-tech-lead-profile-controller.system.md",
+        "profiles/agent-thinking-inception/prompts/03-profile-worker-envelope.system.md",
+        "profiles/agent-thinking-inception/tests/dag/**"
+      ],
+      "resources": ["profile-plan-registry:agent-thinking-inception"]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A1",
+      "writer_id": "owner-router-a1-compaction",
+      "paths": [
+        "profiles/agent-thinking-inception/owners/compaction/**",
+        "profiles/agent-thinking-inception/policies/context/**",
+        "profiles/agent-thinking-inception/evidence/compaction/**",
+        "profiles/agent-thinking-inception/prompts/04-compaction-owner.system.md"
+      ],
+      "resources": [
+        "local-storage-namespace:inception-compaction",
+        "worktree:owner-bettor-compaction"
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A2",
+      "writer_id": "owner-router-a2-runtime",
+      "paths": [
+        "profiles/agent-thinking-inception/owners/runtime/**",
+        "profiles/agent-thinking-inception/policies/runtime/**",
+        "profiles/agent-thinking-inception/evidence/runtime/**",
+        "profiles/agent-thinking-inception/prompts/05-runtime-owner.system.md"
+      ],
+      "resources": [
+        "provider-session:unbound",
+        "sandbox-runtime:unbound",
+        "worktree:owner-runtime"
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A3",
+      "writer_id": "owner-router-a3-evidence",
+      "paths": [
+        "profiles/agent-thinking-inception/owners/evidence/**",
+        "profiles/agent-thinking-inception/policies/evidence/**",
+        "profiles/agent-thinking-inception/evidence/verification/**",
+        "profiles/agent-thinking-inception/prompts/06-evidence-owner.system.md"
+      ],
+      "resources": [
+        "verification-index:code-source",
+        "worktree:owner-evidence"
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A4",
+      "writer_id": "owner-router-a4-provenance",
+      "paths": [
+        "profiles/agent-thinking-inception/owners/compliance/**",
+        "profiles/agent-thinking-inception/policies/provenance/**",
+        "profiles/agent-thinking-inception/evidence/compliance/**",
+        "profiles/agent-thinking-inception/prompts/07-provenance-owner.system.md"
+      ],
+      "resources": [
+        "human-review:legal-security",
+        "provenance-registry:inception"
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A5",
+      "writer_id": "owner-router-a5-discovery",
+      "paths": [
+        "profiles/agent-thinking-inception/owners/discovery/**",
+        "profiles/agent-thinking-inception/policies/admission/**",
+        "profiles/agent-thinking-inception/evidence/discovery/**",
+        "profiles/agent-thinking-inception/prompts/08-discovery-convergence-owner.system.md"
+      ],
+      "resources": [
+        "candidate-registry:inception",
+        "human-review:admission"
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A6",
+      "writer_id": "owner-router-a6-ingress",
+      "paths": [
+        "profiles/agent-thinking-inception/owners/ingress/**",
+        "profiles/agent-thinking-inception/policies/effects/**",
+        "profiles/agent-thinking-inception/evidence/writeback/**",
+        "profiles/agent-thinking-inception/prompts/09-ingress-effect-owner.system.md"
+      ],
+      "resources": [
+        "effect-ledger:inception-test-double",
+        "provider-event-fixture:inception"
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-E",
+      "writer_id": "profile-shadow-router",
+      "paths": [
+        "profiles/agent-thinking-inception/shadow/**",
+        "profiles/agent-thinking-inception/tests/shadow/**",
+        "profiles/agent-thinking-inception/prompts/10-shadow-architect-profile.system.md"
+      ],
+      "resources": ["shadow-evaluator:profile-inception"]
+    },
+    {
+      "task_id": "TASK-INCEPTION-X",
+      "writer_id": "profile-convergence-owner",
+      "paths": [
+        "profiles/agent-thinking-inception/evidence/convergence/**",
+        "profiles/agent-thinking-inception/plans/vertical-canary.json",
+        "profiles/agent-thinking-inception/plans/closure-record.json",
+        "profiles/agent-thinking-inception/prompts/11-profile-convergence.system.md"
+      ],
+      "resources": ["convergence-index:profile-inception"]
+    },
+    {
+      "task_id": "TASK-INCEPTION-D",
+      "writer_id": "profile-docs-owner",
+      "paths": [
+        "profiles/agent-thinking-inception/docs/**",
+        "profiles/agent-thinking-inception/plans/molecular-stack-index.json",
+        "profiles/agent-thinking-inception/plans/directory-state-machine-index.json",
+        "profiles/agent-thinking-inception/plans/data-flow.json",
+        "profiles/agent-thinking-inception/tests/docs/**",
+        "profiles/agent-thinking-inception/prompts/12-profile-docs-convergence.system.md",
+        "profiles/agent-thinking-inception/prompts/README.md"
+      ],
+      "resources": ["profile-doc-index:inception"]
+    },
+    {
+      "task_id": "TASK-INCEPTION-H",
+      "writer_id": "profile-handoff-compiler",
+      "paths": [
+        "profiles/agent-thinking-inception/plans/local-handoff-request.json",
+        "profiles/agent-thinking-inception/prompts/13-profile-local-handoff.system.md"
+      ],
+      "resources": ["local-handoff-epoch:inception"]
+    }
+  ],
+  "canonical_reducer": {
+    "owner": "enterprise-agent-system/profile-tech-lead-reducer",
+    "may_commit": ["TASK_STATE"]
+  },
+  "shadow": {
+    "read_only": true,
+    "separate_evaluation_path": true,
+    "may_commit": []
+  },
+  "authority": {
+    "automation_forbidden": [
+      "data_egress",
+      "irreversible_effect",
+      "issue_close",
+      "merge",
+      "permission_change",
+      "promotion",
+      "release",
+      "rollback",
+      "semantic_conflict_resolution",
+      "visibility_change"
+    ],
+    "human_owned": [
+      "data_egress",
+      "irreversible_effect",
+      "issue_close",
+      "merge",
+      "permission_change",
+      "promotion",
+      "release",
+      "rollback",
+      "semantic_conflict_resolution",
+      "visibility_change"
+    ]
+  },
+  "state": "PROMPT_PACKETS_EMITTED"
+}
