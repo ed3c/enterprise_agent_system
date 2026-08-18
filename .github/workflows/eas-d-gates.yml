@@ -1,0 +1,59 @@
+name: EAS-D architecture gates
+
+on:
+  push:
+    branches:
+      - agent/eas-d-docs-blueprint
+  pull_request:
+    paths:
+      - ".github/workflows/eas-d-gates.yml"
+      - "README.md"
+      - "AGENTS.md"
+      - "ARCHITECTURE.md"
+      - "CONTEXT.md"
+      - "docs/**"
+      - "plans/**"
+      - "prompts/**"
+      - "handoff/**"
+      - "tests/verify_docs.py"
+      - "profiles/agent-thinking-inception/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact workflow subject
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Bind exact subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'commit=%s\n' "$(git rev-parse HEAD)"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+
+      - name: Verify Agent Thinking Inception source and requirement profile
+        run: python3 profiles/agent-thinking-inception/tests/verify_profile.py
+
+      - name: Replay Agent Thinking Inception planted refusals
+        run: python3 profiles/agent-thinking-inception/tests/verify_profile.py --selftest
+
+      - name: Verify architecture DAG Stack data flow and docs
+        run: python3 tests/verify_docs.py
+
+      - name: Replay architecture planted refusals
+        run: python3 tests/verify_docs.py --selftest
+
+      - name: Compile deterministic gates
+        run: >-
+          python3 -m py_compile
+          profiles/agent-thinking-inception/tests/verify_profile.py
+          tests/verify_docs.py
