@@ -69,7 +69,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          unexpected="$(git diff --name-only 1474882226fff6078afe467731db5adec9a09a50..HEAD | grep -Ev '^profiles/agent-thinking-inception/orchestration/|^profiles/agent-thinking-inception/tests/dag/|^profiles/agent-thinking-inception/prompts/02-tech-lead-profile-controller\.system\.md$|^profiles/agent-thinking-inception/prompts/03-profile-worker-envelope\.system\.md$|^\.github/workflows/inception-k-profile-gates\.yml$' || true)"
+          unexpected="$(git diff --name-only 1474882226fff6078afe467731db5adec9a09a50..HEAD | grep -Ev '^profiles/agent-thinking-inception/orchestration/|^profiles/agent-thinking-inception/tests/dag/|^profiles/agent-thinking-inception/prompts/02-tech-lead-profile-controller\.system\.md$|^profiles/agent-thinking-inception/prompts/03-profile-worker-envelope\.system\.md$|^\.github/workflows/inception-k-profile-gates\.yml$|^\.github/workflows/inception-c1-contract-gates\.yml$' || true)"
           test -z "$unexpected" || { printf 'unexpected paths:\n%s\n' "$unexpected"; exit 2; }
 
       - name: Validate inherited EAS-C records
