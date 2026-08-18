@@ -20,7 +20,7 @@ Derived from observed issues, branches, PR heads, owned paths and dependency con
 | `INCEPTION-X` | convergence | issue #22 | profile K/A1–A6/E exact subjects | profile convergence plans/evidence | mixed exact lanes | issue routed; not executed |
 | `EAS-X` | convergence | issue #12 | EAS C/K/A/E + profile X/owner receipts | aggregate plans/closure ledger/integration docs | mixed exact lanes | not executed |
 | `INCEPTION-D` | docs convergence | issue #23 | profile X plus admitted profile atoms | profile docs/prompt/Stack packet | CLOUD docs | issue routed; not executed |
-| `EAS-D-BLUEPRINT` | stale docs candidate | PR #26, head `fab288deab4147b9be7bdbfece617413b2b90a60` plus later docs-only commits | merge-base profile `c4af8f...`; current profile head `60f994...` | root/docs/index/handoff narrative | CLOUD docs | `STALE_PARENT_PIN`; synchronize and re-run docs/Stack controls; final EAS-D #13 remains blocked on X |
+| `EAS-D-BLUEPRINT` | synchronized docs candidate | PR #26; profile synchronization merge `869665f5c5fafd556fcc1289668d94ec3f804ce9`; subsequent docs commits on same branch | exact current profile parent `60f994f5f9da55168911d19fb32489775a5f4599`; process-blocked on X | root/docs/index/handoff narrative | CLOUD docs | Git ancestry synchronized (`behind=0`); exact-head docs/link/Stack Gates and machine-readable indexes remain unexercised/not implemented |
 | `P7` | Local Handoff | issue #14 | unresolved physical actions after contract/plan convergence | canonical queue only | local/provider/Human | candidate ACTIVE item updated to PR #21 head `60f994...`; queue file absent |
 
 ## Stack laws
