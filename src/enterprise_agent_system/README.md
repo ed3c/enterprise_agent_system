@@ -30,3 +30,7 @@ REQUEST_BOUND
 | `reduce_candidate` | one candidate admitted for convergence or a blocked verdict | stale subject, wrong task/lane, missing Gates, multiple winners, critical Shadow finding, Human/release promotion |
 
 A candidate admitted for convergence is not `COMPLETE`, `HUMAN_ADMITTED`, `MERGED` or `RELEASED`.
+
+## Independent Shadow plane
+
+`shadow.py` evaluates the same immutable public subject through a separate, read-only path. It detects source-to-fact promotion, stale subjects, evidence-lane substitution, false closure credit, missing receipt subjects, shared-projection authority, denominator loss, terminal-state promotion and open critical findings without owner issues. Its strongest automated terminal state is `ADMIT_FOR_REVIEW`; open critical findings force `BLOCKED_FOR_CLOSURE`.

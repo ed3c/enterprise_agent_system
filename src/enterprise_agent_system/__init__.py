@@ -1,5 +1,12 @@
 """Enterprise Agent System control-plane primitives."""
 
+from .shadow import (
+    ShadowContractError,
+    ShadowFinding,
+    ShadowVerdict,
+    evaluate_shadow_snapshot,
+    validate_shadow_snapshot,
+)
 from .orchestration import (
     CandidateVerdict,
     ContractError,
@@ -13,6 +20,11 @@ from .orchestration import (
 )
 
 __all__ = [
+    "ShadowContractError",
+    "ShadowFinding",
+    "ShadowVerdict",
+    "evaluate_shadow_snapshot",
+    "validate_shadow_snapshot",
     "CandidateVerdict",
     "ContractError",
     "assert_disjoint_leases",

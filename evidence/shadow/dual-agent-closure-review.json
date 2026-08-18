@@ -1,0 +1,252 @@
+{
+  "schema_version": "enterprise-agent-system/shadow-snapshot/v1",
+  "snapshot_id": "SHADOW-DUAL-AGENT-2026-08-18",
+  "subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "3a0e182f49da1fad624a14b624224dcbe866f402",
+    "tree": "2b9c374f9cbe58717c0bab313764f488634ca601"
+  },
+  "source_kind": "SOURCE_PROPOSAL",
+  "source_claims_current_fact": false,
+  "frozen_objective": [
+    "always-on cloud Agent for long-running public/test-safe work",
+    "local sovereign Agent for private code, files, devices and sessions",
+    "typed durable offload with restart and reconnect reconciliation",
+    "API-first integrations with bounded browser fallback",
+    "shared organizational knowledge without shared-memory workflow, effect or release authority",
+    "independent exact-subject verification, cleanup, rollback and Human admission"
+  ],
+  "candidate_state": "DETERMINISTIC_CANDIDATE",
+  "human_decision": null,
+  "shadow": {
+    "read_only": true,
+    "separate_evaluation_path": true,
+    "may_commit": []
+  },
+  "projections": [
+    {
+      "provider": "GITHUB",
+      "authority": "ADVISORY_ONLY",
+      "commits": []
+    },
+    {
+      "provider": "GOOGLE_DOC",
+      "authority": "ADVISORY_ONLY",
+      "commits": []
+    },
+    {
+      "provider": "GOOGLE_SHEET",
+      "authority": "ADVISORY_ONLY",
+      "commits": []
+    }
+  ],
+  "evidence": [
+    {
+      "lane": "CONTROL_PLANE",
+      "required_lane": "CONTROL_PLANE",
+      "state": "PARTIAL",
+      "closure_credit": 0,
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "3a0e182f49da1fad624a14b624224dcbe866f402",
+        "tree": "2b9c374f9cbe58717c0bab313764f488634ca601"
+      },
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/9"
+    },
+    {
+      "lane": "RUNTIME_CONTRACT",
+      "required_lane": "RUNTIME_CONTRACT",
+      "state": "NOT_IMPLEMENTED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/runtime-env/issues/61"
+    },
+    {
+      "lane": "TRANSPORT",
+      "required_lane": "TRANSPORT",
+      "state": "NOT_EXERCISED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/runtime-env/issues/58"
+    },
+    {
+      "lane": "IDENTITY",
+      "required_lane": "IDENTITY",
+      "state": "NOT_EXERCISED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/runtime-env/issues/59"
+    },
+    {
+      "lane": "WORKFLOW",
+      "required_lane": "WORKFLOW",
+      "state": "NOT_EXERCISED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/184"
+    },
+    {
+      "lane": "EFFECT",
+      "required_lane": "EFFECT",
+      "state": "NOT_EXERCISED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/185"
+    },
+    {
+      "lane": "ARTIFACT",
+      "required_lane": "ARTIFACT",
+      "state": "NOT_EXERCISED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/truth-verify-loop/issues/22"
+    },
+    {
+      "lane": "USER_OUTCOME",
+      "required_lane": "USER_OUTCOME",
+      "state": "NOT_EXERCISED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/186"
+    },
+    {
+      "lane": "HUMAN_ADMIT",
+      "required_lane": "HUMAN_ADMIT",
+      "state": "HUMAN_ADMIT_REQUIRED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14"
+    },
+    {
+      "lane": "RELEASE",
+      "required_lane": "RELEASE",
+      "state": "NOT_EXERCISED",
+      "closure_credit": 0,
+      "subject": null,
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/68"
+    }
+  ],
+  "declared_findings": [
+    {
+      "id": "SHADOW-001-RUNTIME-CONTRACT",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/runtime-env/issues/61"
+    },
+    {
+      "id": "SHADOW-002-RECONNECT",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/runtime-env/issues/58"
+    },
+    {
+      "id": "SHADOW-003-IDENTITY-POLICY",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/runtime-env/issues/59"
+    },
+    {
+      "id": "SHADOW-004-DURABLE-WORKFLOW",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/184"
+    },
+    {
+      "id": "SHADOW-005-EFFECT-LEDGER",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/185"
+    },
+    {
+      "id": "SHADOW-006-PHYSICAL-CANARY",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/186"
+    },
+    {
+      "id": "SHADOW-007-API-BROWSER",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/agent-shield-monorepo/issues/144"
+    },
+    {
+      "id": "SHADOW-008-GVISOR-ISOLATION",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/agent-shield-monorepo/issues/147"
+    },
+    {
+      "id": "SHADOW-009-INDEPENDENT-VERIFY",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/truth-verify-loop/issues/22"
+    },
+    {
+      "id": "SHADOW-010-GOOGLE-PROJECTIONS",
+      "severity": "HIGH",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/10"
+    },
+    {
+      "id": "SHADOW-011-EXACT-HEAD-CI",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/13"
+    },
+    {
+      "id": "SHADOW-012-ISSUE-BYTES-RECONCILIATION",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14"
+    },
+    {
+      "id": "SHADOW-013-HUMAN-RELEASE",
+      "severity": "CRITICAL",
+      "state": "OPEN",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "EAS-C-local-contract-gate",
+      "state": "PASS"
+    },
+    {
+      "id": "EAS-K-local-unit-gate",
+      "state": "PASS"
+    },
+    {
+      "id": "EAS-C-exact-head-actions",
+      "state": "NOT_EXERCISED"
+    },
+    {
+      "id": "EAS-K-exact-head-actions",
+      "state": "NOT_EXERCISED"
+    },
+    {
+      "id": "local-cloud-local-physical-canary",
+      "state": "NOT_EXERCISED"
+    }
+  ],
+  "attempt_denominator": 5,
+  "cleanup": {
+    "state": "NOT_EXERCISED",
+    "residue": "no local/cloud/provider physical runtime was started by this review"
+  },
+  "claims_not_proven": [
+    "GitHub-hosted exact-head CI",
+    "real multi-model or multi-runtime Shadow independence",
+    "runtime wire compatibility",
+    "durable transport under disconnect, restart and reconnect",
+    "workload identity and secret-handle enforcement",
+    "durable workflow replay, cancellation and compensation",
+    "exactly-once observable effects",
+    "API/browser route correctness",
+    "gVisor provider isolation",
+    "physical local-cloud-local user result",
+    "production availability",
+    "Human admission",
+    "merge, release and rollback"
+  ],
+  "snapshot_digest": "sha256:8ee2cebd940350226ee3f0a15fa22f489d91ada4cb9d9b53113e7efb646c5955"
+}
