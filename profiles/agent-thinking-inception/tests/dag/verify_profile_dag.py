@@ -877,7 +877,7 @@ def selftest(data: dict[str, dict[str, Any]]) -> None:
         ("CYCLIC_DAG:start_dependencies", lambda value: next(task for task in value["run"]["tasks"] if task["id"] == TASK_K).update(start_dependencies=["TASK-INCEPTION-H"])),
         ("PATH_LEASE_COLLISION", mutate_path_lease_collision),
         ("RESOURCE_LEASE_COLLISION", lambda value: next(lease for lease in value["run"]["leases"] if lease["task_id"] == "TASK-INCEPTION-A2")["resources"].append("local-storage-namespace:inception-compaction")),
-        ("RUN_SHADOW_AUTHORITY", lambda value: value["run"]["shadow"].update(may_commit=["TASK_STATE"])),
+        ("SHADOW_SECOND_STATE_WRITER", lambda value: value["run"]["shadow"].update(may_commit=["TASK_STATE"])),
         ("HUMAN_AUTHORITY_MISSING", lambda value: value["run"]["authority"]["human_owned"].remove("merge")),
         ("CAPABILITY_CYCLE", lambda value: next(item for item in value["capability"]["transitions"] if item["transition_id"] == "CAP-INPUT-READBACK")["predecessors"].append("CAP-PROFILE-HANDOFF")),
         ("CAPABILITY_FALSE_EXECUTION", lambda value: next(item for item in value["capability"]["transitions"] if item["transition_id"] == "CAP-A1-COMPACTION-OWNER").update(current_state="CANDIDATE")),
