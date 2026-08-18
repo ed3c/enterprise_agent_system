@@ -155,23 +155,7 @@ def exact_subject(value: Any, name: str) -> dict[str, Any]:
 
 
 def source(value: dict[str, Any]) -> None:
-    shape(
-        value,
-        {
-            "schema_version",
-            "subject_id",
-            "source_kind",
-            "locator",
-            "identity",
-            "data_class",
-            "egress_allowed",
-            "captured_at",
-            "content_digest",
-            "claims_not_proven",
-        },
-        set(),
-        "SOURCE",
-    )
+    shape(value, {"schema_version", "subject_id", "source_kind", "locator", "identity", "data_class", "egress_allowed", "captured_at", "content_digest", "claims_not_proven"}, set(), "SOURCE")
     req(re.fullmatch(r"SRC-[A-Z0-9][A-Z0-9._-]*", str(value["subject_id"])) is not None, "SOURCE_ID")
     req(value["source_kind"] in SOURCE_KINDS, "SOURCE_KIND")
     locator = shape(value["locator"], {"provider", "url"}, {"navigation_ref"}, "SOURCE_LOCATOR")
@@ -179,13 +163,7 @@ def source(value: dict[str, Any]) -> None:
     req(isinstance(locator["url"], str) and bool(locator["url"]), "SOURCE_URL")
     if "navigation_ref" in locator:
         req(isinstance(locator["navigation_ref"], str), "SOURCE_NAVIGATION_REF")
-
-    identity = shape(
-        value["identity"],
-        {"identity_kind"},
-        {"repository", "commit", "tree", "revision"},
-        "SOURCE_IDENTITY",
-    )
+    identity = shape(value["identity"], {"identity_kind"}, {"repository", "commit", "tree", "revision"}, "SOURCE_IDENTITY")
     kind = identity["identity_kind"]
     req(kind in {"GIT", "REVISION", "CONTENT_ONLY"}, "IDENTITY_KIND")
     if kind == "GIT":
@@ -200,7 +178,6 @@ def source(value: dict[str, Any]) -> None:
             req(REPO.fullmatch(str(identity["repository"])) is not None, "REVISION_REPOSITORY")
     else:
         req(set(identity) == {"identity_kind"}, "CONTENT_ONLY_IDENTITY_FIELDS")
-
     req(value["data_class"] in DATA_CLASSES, "DATA_CLASS")
     req(isinstance(value["egress_allowed"], bool), "EGRESS_ALLOWED_TYPE")
     if value["data_class"] == "LOCAL_ONLY":
@@ -211,12 +188,7 @@ def source(value: dict[str, Any]) -> None:
 
 
 def binding(value: dict[str, Any]) -> None:
-    shape(
-        value,
-        {"schema_version", "binding_id", "source_subject_id", "owner", "interfaces", "consumers", "state", "claims_not_proven"},
-        set(),
-        "BINDING",
-    )
+    shape(value, {"schema_version", "binding_id", "source_subject_id", "owner", "interfaces", "consumers", "state", "claims_not_proven"}, set(), "BINDING")
     req(re.fullmatch(r"BIND-[A-Z0-9][A-Z0-9._-]*", str(value["binding_id"])) is not None, "BINDING_ID")
     req(str(value["source_subject_id"]).startswith("SRC-"), "BINDING_SOURCE_ID")
     owner = shape(value["owner"], {"plane", "repository"}, {"directory"}, "BINDING_OWNER")
@@ -224,7 +196,6 @@ def binding(value: dict[str, Any]) -> None:
     req(REPO.fullmatch(str(owner["repository"])) is not None, "OWNER_REPOSITORY")
     if "directory" in owner:
         req(isinstance(owner["directory"], str) and bool(owner["directory"]), "OWNER_DIRECTORY")
-
     interfaces = value["interfaces"]
     req(isinstance(interfaces, list) and bool(interfaces), "INTERFACES_EMPTY")
     seen: set[str] = set()
@@ -245,7 +216,6 @@ def binding(value: dict[str, Any]) -> None:
             req(digest is None or (isinstance(digest, str) and SHA256.fullmatch(digest) is not None), f"INTERFACE_DIGEST:{interface_id}")
         if interface_id.startswith("runtime-env/dual-agent/"):
             req(repository == "ed3c/runtime-env", f"DUPLICATE_RUNTIME_SCHEMA_AUTHORITY:{interface_id}")
-
     consumers = nonempty_unique_strings(value["consumers"], "CONSUMERS")
     req(all(REPO.fullmatch(item) is not None for item in consumers), "CONSUMER_REPOSITORY")
     req(value["state"] in BINDING_STATES, "BINDING_STATE")
@@ -253,23 +223,7 @@ def binding(value: dict[str, Any]) -> None:
 
 
 def closure(value: dict[str, Any]) -> None:
-    shape(
-        value,
-        {
-            "schema_version",
-            "problem_id",
-            "source_subject_id",
-            "owner",
-            "state_machine",
-            "evidence",
-            "blockers",
-            "next_transition",
-            "human_owned",
-            "claims_not_proven",
-        },
-        set(),
-        "CLOSURE",
-    )
+    shape(value, {"schema_version", "problem_id", "source_subject_id", "owner", "state_machine", "evidence", "blockers", "next_transition", "human_owned", "claims_not_proven"}, set(), "CLOSURE")
     req(re.fullmatch(r"PROB-[A-Z0-9][A-Z0-9._-]*", str(value["problem_id"])) is not None, "PROBLEM_ID")
     req(str(value["source_subject_id"]).startswith("SRC-"), "CLOSURE_SOURCE_ID")
     owner = shape(value["owner"], {"repository", "directory", "issue"}, set(), "CLOSURE_OWNER")
@@ -278,7 +232,6 @@ def closure(value: dict[str, Any]) -> None:
     req(ISSUE.fullmatch(str(owner["issue"])) is not None, "OWNER_ISSUE")
     state_machine = shape(value["state_machine"], {"current", "next"}, set(), "STATE_MACHINE")
     req(all(isinstance(state_machine[key], str) and bool(state_machine[key]) for key in ("current", "next")), "STATE_MACHINE_VALUE")
-
     evidence = value["evidence"]
     req(isinstance(evidence, list) and bool(evidence), "EVIDENCE_EMPTY")
     lane_records: dict[str, dict[str, Any]] = {}
@@ -298,13 +251,11 @@ def closure(value: dict[str, Any]) -> None:
             exact_subject(subject, f"EVIDENCE_SUBJECT:{lane}")
         nonempty_unique_strings(item["claims_not_proven"], f"EVIDENCE_CLAIMS:{lane}")
         lane_records[lane] = item
-
     release = lane_records.get("RELEASE")
     if release and release["state"] in {"PASS", "RELEASED"}:
         human = lane_records.get("HUMAN_ADMIT")
         req(human is not None and human["state"] in {"PASS", "RELEASED"}, "RELEASE_WITHOUT_HUMAN_ADMIT")
         exact_subject(human["subject"], "HUMAN_ADMIT_SUBJECT")
-
     blockers = value["blockers"]
     req(isinstance(blockers, list), "BLOCKERS_NOT_ARRAY")
     blocker_ids: set[str] = set()
@@ -344,18 +295,12 @@ def assert_acyclic(ids: set[str], graph: dict[str, set[str]], label: str) -> Non
 
 
 def orchestration(value: dict[str, Any]) -> None:
-    shape(
-        value,
-        {"schema_version", "run_id", "request_subject", "tasks", "leases", "canonical_reducer", "shadow", "authority", "state"},
-        set(),
-        "ORCHESTRATION",
-    )
+    shape(value, {"schema_version", "run_id", "request_subject", "tasks", "leases", "canonical_reducer", "shadow", "authority", "state"}, set(), "ORCHESTRATION")
     req(re.fullmatch(r"RUN-[A-Z0-9][A-Z0-9._-]*", str(value["run_id"])) is not None, "RUN_ID")
     request_subject = shape(value["request_subject"], {"repository", "commit", "tree"}, set(), "REQUEST_SUBJECT")
     req(REPO.fullmatch(str(request_subject["repository"])) is not None, "REQUEST_REPOSITORY")
     req(SHA40.fullmatch(str(request_subject["commit"])) is not None, "MUTABLE_SUBJECT")
     req(SHA40.fullmatch(str(request_subject["tree"])) is not None, "MUTABLE_SUBJECT")
-
     tasks = value["tasks"]
     req(isinstance(tasks, list) and bool(tasks), "TASKS_EMPTY")
     ids = [str(item.get("id", "")) if isinstance(item, dict) else "" for item in tasks]
@@ -365,12 +310,7 @@ def orchestration(value: dict[str, Any]) -> None:
     completion_graph: dict[str, set[str]] = {}
     task_records: dict[str, dict[str, Any]] = {}
     for index, raw in enumerate(tasks):
-        task = shape(
-            raw,
-            {"id", "start_dependencies", "completion_dependencies", "owns_paths", "required_lane", "output_contract", "state"},
-            set(),
-            f"TASK_{index}",
-        )
+        task = shape(raw, {"id", "start_dependencies", "completion_dependencies", "owns_paths", "required_lane", "output_contract", "state"}, set(), f"TASK_{index}")
         task_id = str(task["id"])
         req(re.fullmatch(r"TASK-[A-Z0-9][A-Z0-9._-]*", task_id) is not None, f"TASK_ID:{task_id}")
         start = set(optional_unique_strings(task["start_dependencies"], f"START_DEPENDENCIES:{task_id}"))
@@ -387,7 +327,6 @@ def orchestration(value: dict[str, Any]) -> None:
         task_records[task_id] = task
     assert_acyclic(idset, start_graph, "START_DAG")
     assert_acyclic(idset, completion_graph, "COMPLETION_DAG")
-
     raw_leases = value["leases"]
     req(isinstance(raw_leases, list) and bool(raw_leases), "LEASES_EMPTY")
     leases: dict[str, dict[str, Any]] = {}
@@ -401,18 +340,13 @@ def orchestration(value: dict[str, Any]) -> None:
         req(set(paths) == set(task_records[task_id]["owns_paths"]), f"TASK_LEASE_PATH_MISMATCH:{task_id}")
         leases[task_id] = lease
     req(set(leases) == idset, "TASK_LEASE_MISMATCH")
-
     active = [task for task in tasks if task["state"] in {"READY", "ACTIVE", "CANDIDATE"}]
     for index, left in enumerate(active):
         for right in active[index + 1 :]:
             for left_path in leases[left["id"]]["paths"]:
                 for right_path in leases[right["id"]]["paths"]:
                     req(not overlap(left_path, right_path), f"OVERLAPPING_PATH_LEASE:{left['id']}:{right['id']}")
-            req(
-                set(leases[left["id"]]["resources"]).isdisjoint(leases[right["id"]]["resources"]),
-                f"OVERLAPPING_RESOURCE_LEASE:{left['id']}:{right['id']}",
-            )
-
+            req(set(leases[left["id"]]["resources"]).isdisjoint(leases[right["id"]]["resources"]), f"OVERLAPPING_RESOURCE_LEASE:{left['id']}:{right['id']}")
     reducer = shape(value["canonical_reducer"], {"owner", "may_commit"}, set(), "CANONICAL_REDUCER")
     req(isinstance(reducer["owner"], str) and bool(reducer["owner"]), "REDUCER_OWNER")
     req(reducer["may_commit"] == ["TASK_STATE"], "REDUCER_AUTHORITY_WIDENED")
@@ -449,16 +383,10 @@ def load(path: Path) -> dict[str, Any]:
 
 
 def selftest(directory: Path) -> None:
-    names = [
-        "source-subject.example.json",
-        "cross-repo-binding.example.json",
-        "closure-record.example.json",
-        "orchestration-run.example.json",
-    ]
+    names = ["source-subject.example.json", "cross-repo-binding.example.json", "closure-record.example.json", "orchestration-run.example.json"]
     values = {name: load(directory / name) for name in names}
     for value in values.values():
         validate(value)
-
     mutations: list[tuple[str, str, Callable[[dict[str, Any]], Any]]] = [
         ("LOCAL_ONLY_REMOTE_EGRESS", "source-subject.example.json", lambda value: value.update(data_class="LOCAL_ONLY", egress_allowed=True)),
         ("SOURCE_LOCATOR_FIELDS", "source-subject.example.json", lambda value: value["locator"].update(session_id="private")),
@@ -479,7 +407,7 @@ def selftest(directory: Path) -> None:
         ("TASK_0_FIELDS", "orchestration-run.example.json", lambda value: value["tasks"][0].update(extra="no")),
         ("LEASE_0_FIELDS", "orchestration-run.example.json", lambda value: value["leases"][0].update(extra="no")),
         ("TASK_LEASE_PATH_MISMATCH", "orchestration-run.example.json", lambda value: value["leases"][0].update(paths=["wrong/**"])),
-        ("OVERLAPPING_PATH_LEASE", "orchestration-run.example.json", lambda value: (value["tasks"][1].update(state="ACTIVE"), value["leases"][1].update(paths=value["tasks"][1]["owns_paths"] := ["contracts/control-plane/new/**"]))),
+        ("OVERLAPPING_PATH_LEASE", "orchestration-run.example.json", lambda value: (value["tasks"][1].update(state="ACTIVE", owns_paths=["contracts/control-plane/new/**"]), value["leases"][1].update(paths=["contracts/control-plane/new/**"]))),
         ("CANONICAL_REDUCER_FIELDS", "orchestration-run.example.json", lambda value: value["canonical_reducer"].update(extra="no")),
         ("SHADOW_SECOND_STATE_WRITER", "orchestration-run.example.json", lambda value: value["shadow"].update(may_commit=["TASK_STATE"])),
         ("AUTHORITY_FIELDS", "orchestration-run.example.json", lambda value: value["authority"].update(extra="no")),
