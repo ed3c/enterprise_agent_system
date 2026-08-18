@@ -81,7 +81,8 @@
     "profiles/agent-thinking-inception/owners/compliance/**",
     "profiles/agent-thinking-inception/policies/provenance/**",
     "profiles/agent-thinking-inception/evidence/compliance/**",
-    "profiles/agent-thinking-inception/prompts/07-provenance-owner.system.md"
+    "profiles/agent-thinking-inception/prompts/07-provenance-owner.system.md",
+    ".github/workflows/inception-a4-provenance.yml"
   ],
   "read_only_paths": [
     "profiles/agent-thinking-inception/source/**",
@@ -129,7 +130,14 @@
   ],
   "cleanup_contract": {
     "required": true,
-    "inventory": ["policy_fixture", "trace_payload", "collector", "exporter", "storage", "artifact"],
+    "inventory": [
+      "policy_fixture",
+      "trace_payload",
+      "collector",
+      "exporter",
+      "storage",
+      "artifact"
+    ],
     "rollback_subject": "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e"
   },
   "forbidden_actions": [
