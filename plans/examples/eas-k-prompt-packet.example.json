@@ -1,0 +1,140 @@
+{
+  "schema_version": "enterprise-agent-system/prompt-packet/v2",
+  "run_id": "RUN-EAS-K-TEST",
+  "task_id": "TASK-K",
+  "subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
+    "tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598"
+  },
+  "objective": "Implement the deterministic Tech Lead core without widening authority.",
+  "non_goals": [
+    "widen authority",
+    "invent live evidence",
+    "edit documentation convergence paths"
+  ],
+  "invariants": [
+    "contracts precede fan-out",
+    "one writer owns each mutation subject",
+    "Worker output is candidate evidence"
+  ],
+  "unknowns": [
+    "local worktree and provider behavior remain unverified",
+    "Human admission and release remain unperformed"
+  ],
+  "dependencies": {
+    "start": [
+      "TASK-C"
+    ],
+    "completion": [
+      "TASK-C"
+    ]
+  },
+  "leases": {
+    "writer_id": "worker-k",
+    "write_paths": [
+      ".github/workflows/eas-k-gates.yml",
+      "plans/examples/eas-k-prompt-packet.example.json",
+      "prompts/00-tech-lead-controller.system.md",
+      "prompts/01-worker-envelope.system.md",
+      "src/enterprise_agent_system/**",
+      "tests/test_orchestration.py",
+      "tests/test_parent_binding.py"
+    ],
+    "read_only_paths": [
+      "contracts/control-plane/**",
+      "docs/decisions/0001-repository-roles.md"
+    ],
+    "resources": []
+  },
+  "input_contract": {
+    "parent_contract": "enterprise-agent-system/orchestration-run/v1",
+    "parent_commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
+    "parent_tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598"
+  },
+  "output_contract": "Tech Lead core receipt",
+  "acceptance_criteria": [
+    "all deterministic gates pass on the exact subject",
+    "the persisted packet digest validates after readback"
+  ],
+  "controls": {
+    "required_gates": [
+      "python-compile",
+      "unit-tests",
+      "mutation-controls",
+      "parent-binding"
+    ],
+    "positive": [
+      "valid DAG compiles into deterministic waves",
+      "one exact-lane candidate can be admitted for convergence"
+    ],
+    "negative": [
+      "start-only cycle is refused",
+      "overlapping path or resource lease is refused",
+      "stale subject and Human promotion are refused"
+    ]
+  },
+  "runtime": {
+    "required_lane": "CLOUD",
+    "requirements": [
+      "execute only in the CLOUD deterministic lane",
+      "persist no credential or session value"
+    ],
+    "capabilities": [
+      "exact subject readback",
+      "Python deterministic gate execution"
+    ]
+  },
+  "budgets": {
+    "retry_budget": 1,
+    "timeout_seconds": 600
+  },
+  "cleanup": {
+    "requirements": [
+      "report dirty state",
+      "report residue inventory"
+    ],
+    "residue_inventory_required": true
+  },
+  "rollback_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
+    "tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598"
+  },
+  "required_receipt": {
+    "fields": [
+      "packet_digest",
+      "subject_before",
+      "subject_after",
+      "changed_paths",
+      "commands",
+      "gates",
+      "attempts",
+      "cleanup",
+      "rollback_subject",
+      "claims_not_proven",
+      "next_authority"
+    ],
+    "exact_subject_required": true,
+    "lane_literal_required": true
+  },
+  "evidence_ceiling": "deterministic candidate; local worktree, provider, Git Town, Human and release remain NOT_EXERCISED",
+  "forbidden_actions": [
+    "data_egress",
+    "irreversible_effect",
+    "issue_close",
+    "merge",
+    "permission_change",
+    "promotion",
+    "release",
+    "rollback",
+    "semantic_conflict_resolution",
+    "visibility_change"
+  ],
+  "handoff": {
+    "on_unavailable_capability": "LOCAL_HANDOFF_REQUIRED",
+    "on_semantic_conflict": "HUMAN_ADMIT_REQUIRED",
+    "next_authority": "INDEPENDENT_SHADOW"
+  },
+  "packet_digest": "sha256:31942dec6400f8903a50bb726795cda5567db6ce50bb50b83552911d2d77b334"
+}
