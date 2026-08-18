@@ -16,8 +16,11 @@ PACKET = ROOT / "plans" / "examples" / "eas-k-prompt-packet.example.json"
 
 
 class ParentBindingTests(unittest.TestCase):
+    def load_packet(self) -> dict:
+        return json.loads(PACKET.read_text(encoding="utf-8"))
+
     def test_persisted_packet_binds_admitted_eas_c_subject(self) -> None:
-        packet = json.loads(PACKET.read_text(encoding="utf-8"))
+        packet = self.load_packet()
         self.assertEqual(
             packet["subject"],
             {
@@ -26,10 +29,40 @@ class ParentBindingTests(unittest.TestCase):
                 "tree": EAS_C_TREE,
             },
         )
+        self.assertEqual(packet["rollback_subject"], packet["subject"])
         validate_prompt_packet(packet)
 
+    def test_packet_is_complete_for_a_fresh_session(self) -> None:
+        packet = self.load_packet()
+        self.assertEqual(
+            packet["schema_version"],
+            "enterprise-agent-system/prompt-packet/v2",
+        )
+        for field in (
+            "objective",
+            "non_goals",
+            "invariants",
+            "unknowns",
+            "input_contract",
+            "output_contract",
+            "acceptance_criteria",
+            "controls",
+            "runtime",
+            "budgets",
+            "cleanup",
+            "required_receipt",
+            "evidence_ceiling",
+            "handoff",
+        ):
+            self.assertTrue(packet[field], field)
+        self.assertTrue(packet["controls"]["positive"])
+        self.assertTrue(packet["controls"]["negative"])
+        self.assertTrue(packet["cleanup"]["residue_inventory_required"])
+        self.assertTrue(packet["required_receipt"]["exact_subject_required"])
+        self.assertTrue(packet["required_receipt"]["lane_literal_required"])
+
     def test_packet_preserves_handoff_and_human_boundaries(self) -> None:
-        packet = json.loads(PACKET.read_text(encoding="utf-8"))
+        packet = self.load_packet()
         self.assertEqual(
             packet["handoff"]["on_unavailable_capability"],
             "LOCAL_HANDOFF_REQUIRED",
@@ -38,9 +71,14 @@ class ParentBindingTests(unittest.TestCase):
             packet["handoff"]["on_semantic_conflict"],
             "HUMAN_ADMIT_REQUIRED",
         )
+        self.assertEqual(
+            packet["handoff"]["next_authority"],
+            "INDEPENDENT_SHADOW",
+        )
         for operation in (
             "data_egress",
             "irreversible_effect",
+            "issue_close",
             "merge",
             "permission_change",
             "promotion",
