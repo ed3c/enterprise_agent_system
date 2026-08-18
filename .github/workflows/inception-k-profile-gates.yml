@@ -25,53 +25,7 @@ permissions:
   contents: read
 
 jobs:
-  repair-shadow-authority-refusal:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/agent/inception-k-profile-dag'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      changed: ${{ steps.repair.outputs.changed }}
-    steps:
-      - name: Checkout branch subject with push credential
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          fetch-depth: 0
-
-      - name: Bind local wrapper to canonical Shadow refusal
-        id: repair
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo 'changed=false' >> "$GITHUB_OUTPUT"
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path('profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py')
-          text = path.read_text(encoding='utf-8')
-          old = '        ("RUN_SHADOW_AUTHORITY", lambda value: value["run"]["shadow"].update(may_commit=["TASK_STATE"])),\n'
-          new = '        ("SHADOW_SECOND_STATE_WRITER", lambda value: value["run"]["shadow"].update(may_commit=["TASK_STATE"])),\n'
-          if old not in text:
-              if new in text:
-                  raise SystemExit(0)
-              raise SystemExit('expected Shadow mutation anchor absent')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
-          PY
-          if git diff --quiet -- profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py; then
-            exit 0
-          fi
-          python3 -m py_compile profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py
-          git config user.name ed3c
-          git config user.email mcnum01@gmail.com
-          git add profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py
-          git commit -m 'test(inception-k): expect canonical Shadow authority refusal'
-          git push origin HEAD:agent/inception-k-profile-dag
-          echo 'changed=true' >> "$GITHUB_OUTPUT"
-
   deterministic-profile-gates:
-    needs: repair-shadow-authority-refusal
-    if: always() && (needs.repair-shadow-authority-refusal.result == 'skipped' || needs.repair-shadow-authority-refusal.outputs.changed != 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
