@@ -1,0 +1,21 @@
+{
+  "schema_version": "enterprise-agent-system/closure-record/v1",
+  "problem_id": "PROB-DURABLE-OFFLOAD",
+  "source_subject_id": "SRC-DUAL-AGENT-PDF-001",
+  "owner": {"repository": "ed3c/runtime-env", "directory": "contracts/dual-agent", "issue": "https://github.com/ed3c/runtime-env/issues/57"},
+  "state_machine": {"current": "PORTABLE_METHOD_BOUND", "next": "RUNTIME_SCHEMA_IDS_RESERVED"},
+  "evidence": [
+    {"lane": "SOURCE", "required_lane": "SOURCE", "state": "PASS", "subject": null, "claims_not_proven": ["source proposal correctness"]},
+    {"lane": "METHOD", "required_lane": "METHOD", "state": "PARTIAL", "subject": {"repository": "ed3c/skills-shared", "commit": "b5d98eec0c486b94c81412dc07c109a3c379ea4f", "tree": "fa804c843df0eead9f00df3d752522d6f95e8968"}, "claims_not_proven": ["exact method content digest", "exact-head CI", "runtime wire schemas", "transport"]},
+    {"lane": "RUNTIME_CONTRACT", "required_lane": "RUNTIME_CONTRACT", "state": "NOT_IMPLEMENTED", "subject": null, "claims_not_proven": ["wire compatibility"]},
+    {"lane": "TRANSPORT", "required_lane": "TRANSPORT", "state": "NOT_EXERCISED", "subject": null, "claims_not_proven": ["disconnect/reconnect"]},
+    {"lane": "USER_OUTCOME", "required_lane": "USER_OUTCOME", "state": "NOT_EXERCISED", "subject": null, "claims_not_proven": ["useful local result"]}
+  ],
+  "blockers": [
+    {"id": "runtime-contract-atom", "owner_issue": "https://github.com/ed3c/runtime-env/issues/61", "state": "OPEN"},
+    {"id": "physical-canary", "owner_issue": "https://github.com/ed3c/bettor-arena/issues/186", "state": "BLOCKED_BY_PREDECESSOR"}
+  ],
+  "next_transition": "bind exact method digest and implement runtime contract atom",
+  "human_owned": ["provider enrollment", "data egress", "merge", "release", "rollback"],
+  "claims_not_proven": ["production reliability", "commercial readiness"]
+}
