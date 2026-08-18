@@ -1,0 +1,198 @@
+{
+  "schema_version": "enterprise-agent-system/local-handoff-queue/v1",
+  "queue_id": "LH-EAS-INCEPTION-2026-08-18",
+  "state": "QUEUE_CANDIDATE",
+  "active_item_id": "LH-INCEPTION-SOURCE-01",
+  "environment_name_allowlist": [
+    "EAS_CHECKOUT",
+    "EAS_WORKTREES",
+    "EAS_RECEIPT_DIR",
+    "INCEPTION_SOURCE_PDF"
+  ],
+  "secret_values_allowed": false,
+  "items": [
+    {
+      "item_id": "LH-INCEPTION-SOURCE-01",
+      "state": "ACTIVE",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14",
+      "blocked_issues": [
+        "https://github.com/ed3c/enterprise_agent_system/issues/2",
+        "https://github.com/ed3c/enterprise_agent_system/issues/3"
+      ],
+      "objective": "Recompute the local-only PDF digest and execute the exact Agent Thinking Inception C0/C1 profile controls without publishing source bytes.",
+      "required_runtime_any_of": [
+        "CODEX_CLI_LOCAL",
+        "CLAUDE_CODE_LOCAL"
+      ],
+      "required_capabilities": [
+        "git",
+        "python3",
+        "local-filesystem-read",
+        "detached-git-worktree"
+      ],
+      "subjects": [
+        {
+          "subject_id": "INCEPTION-C0-C1",
+          "repository": "ed3c/enterprise_agent_system",
+          "pull_request": 21,
+          "commit": "60f994f5f9da55168911d19fb32489775a5f4599"
+        },
+        {
+          "subject_id": "SRC-PDF-INCEPTION-001",
+          "data_class": "LOCAL_ONLY",
+          "egress_allowed": false,
+          "expected_digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da",
+          "path_env": "INCEPTION_SOURCE_PDF"
+        }
+      ],
+      "commands": [
+        {
+          "command_id": "FETCH_PROFILE_PR",
+          "cwd": {"env": "EAS_CHECKOUT", "relative": "."},
+          "argv": [
+            {"literal": "git"},
+            {"literal": "fetch"},
+            {"literal": "origin"},
+            {"literal": "pull/21/head:refs/remotes/origin/pr-21"}
+          ],
+          "timeout_seconds": 120
+        },
+        {
+          "command_id": "CREATE_DETACHED_WORKTREE",
+          "cwd": {"env": "EAS_CHECKOUT", "relative": "."},
+          "argv": [
+            {"literal": "git"},
+            {"literal": "worktree"},
+            {"literal": "add"},
+            {"literal": "--detach"},
+            {"env_path": {"env": "EAS_WORKTREES", "relative": "inception-c0-c1"}},
+            {"literal": "60f994f5f9da55168911d19fb32489775a5f4599"}
+          ],
+          "timeout_seconds": 60
+        },
+        {
+          "command_id": "VERIFY_SOURCE_DIGEST",
+          "cwd": {"env": "EAS_CHECKOUT", "relative": "."},
+          "argv": [
+            {"literal": "python3"},
+            {"literal": "-c"},
+            {"literal": "import hashlib,os,pathlib,sys; p=pathlib.Path(os.environ['INCEPTION_SOURCE_PDF']); d='sha256:'+hashlib.sha256(p.read_bytes()).hexdigest(); print(d); sys.exit(0 if d=='sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da' else 2)"}
+          ],
+          "timeout_seconds": 120
+        },
+        {
+          "command_id": "VERIFY_PROFILE",
+          "cwd": {"env": "EAS_WORKTREES", "relative": "inception-c0-c1"},
+          "argv": [
+            {"literal": "python3"},
+            {"literal": "profiles/agent-thinking-inception/tests/verify_profile.py"}
+          ],
+          "timeout_seconds": 120
+        },
+        {
+          "command_id": "REPLAY_PROFILE_MUTATIONS",
+          "cwd": {"env": "EAS_WORKTREES", "relative": "inception-c0-c1"},
+          "argv": [
+            {"literal": "python3"},
+            {"literal": "profiles/agent-thinking-inception/tests/verify_profile.py"},
+            {"literal": "--selftest"}
+          ],
+          "timeout_seconds": 120
+        },
+        {
+          "command_id": "COMPILE_PROFILE_GATE",
+          "cwd": {"env": "EAS_WORKTREES", "relative": "inception-c0-c1"},
+          "argv": [
+            {"literal": "python3"},
+            {"literal": "-m"},
+            {"literal": "py_compile"},
+            {"literal": "profiles/agent-thinking-inception/tests/verify_profile.py"}
+          ],
+          "timeout_seconds": 120
+        }
+      ],
+      "required_receipt": {
+        "path": {"env": "EAS_RECEIPT_DIR", "relative": "LH-INCEPTION-SOURCE-01.json"},
+        "required_fields": [
+          "queue_id",
+          "item_id",
+          "started_at",
+          "finished_at",
+          "commands",
+          "exit_codes",
+          "stdout_digests",
+          "stderr_digests",
+          "observed_commit",
+          "observed_tree",
+          "source_digest",
+          "dirty_state_before",
+          "dirty_state_after",
+          "residue_inventory",
+          "cleanup_result",
+          "failures",
+          "retries",
+          "claims_not_proven"
+        ]
+      },
+      "cleanup": [
+        {
+          "command_id": "REMOVE_PROFILE_WORKTREE",
+          "cwd": {"env": "EAS_CHECKOUT", "relative": "."},
+          "argv": [
+            {"literal": "git"},
+            {"literal": "worktree"},
+            {"literal": "remove"},
+            {"literal": "--force"},
+            {"env_path": {"env": "EAS_WORKTREES", "relative": "inception-c0-c1"}}
+          ],
+          "timeout_seconds": 60
+        },
+        {
+          "command_id": "PRUNE_WORKTREES",
+          "cwd": {"env": "EAS_CHECKOUT", "relative": "."},
+          "argv": [
+            {"literal": "git"},
+            {"literal": "worktree"},
+            {"literal": "prune"}
+          ],
+          "timeout_seconds": 60
+        }
+      ],
+      "success_transition": "CANDIDATE_RECEIPT_READY_FOR_CANONICAL_REDUCER",
+      "failure_transition": "BLOCKED_WITH_EXACT_LOCAL_RECEIPT",
+      "claims_not_proven": [
+        "This queue item does not implement detailed profile contracts.",
+        "It does not prove owner runtime, provider, external-effect, user, Human, release, or rollback lanes.",
+        "The source bytes remain local-only and must not be copied into GitHub, logs, artifacts, or telemetry."
+      ]
+    },
+    {
+      "item_id": "LH-EAS-C-02",
+      "state": "BLOCKED",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/8",
+      "blocked_by": ["current EAS-C semantic-gate hardening and exact successful subject"],
+      "objective": "Execute the admitted EAS-C exact subject and all planted controls after the draft PR is green.",
+      "next_transition": "PIN_CURRENT_EAS_C_COMMIT_TREE_AND_MATERIALIZE_COMMANDS"
+    },
+    {
+      "item_id": "LH-INCEPTION-K-03",
+      "state": "BLOCKED",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/4",
+      "blocked_by": ["LH-EAS-C-02", "admitted EAS-K subject", "detailed profile C1 contracts"],
+      "objective": "Compile profile K and fan out A1-A6 zero-context packets.",
+      "next_transition": "COMPILE_PROFILE_K"
+    }
+  ],
+  "advance_rule": "Only the canonical reducer may move the ACTIVE item after exact receipt readback and clean residue verification.",
+  "human_owned": [
+    "credential enrollment",
+    "private-source egress approval",
+    "semantic conflict resolution",
+    "legal/security admission",
+    "irreversible external effects",
+    "merge",
+    "release",
+    "rollback"
+  ],
+  "evidence_ceiling": "LOCAL_HANDOFF_QUEUE_CANDIDATE_ONLY"
+}
