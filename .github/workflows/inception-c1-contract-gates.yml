@@ -9,10 +9,11 @@ on:
       - ".github/workflows/inception-c1-contract-gates.yml"
       - "contracts/control-plane/**"
       - "profiles/agent-thinking-inception/contracts/**"
-      - "profiles/agent-thinking-inception/examples/**"
+      - "profiles/agent-thinking-inception/examples/inception-contract-bundle.example.json"
       - "profiles/agent-thinking-inception/source/**"
       - "profiles/agent-thinking-inception/requirements/**"
-      - "profiles/agent-thinking-inception/tests/**"
+      - "profiles/agent-thinking-inception/tests/verify_profile.py"
+      - "profiles/agent-thinking-inception/tests/contracts/**"
       - "profiles/agent-thinking-inception/prompts/01-profile-contract-worker.system.md"
   workflow_dispatch:
 
