@@ -9,6 +9,7 @@ import json
 import pathlib
 import re
 import sys
+from collections.abc import Callable
 from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -46,6 +47,8 @@ def validate_bundle(source: dict[str, Any], source_map: dict[str, Any], requirem
         errors.append("PDF source must remain SOURCE_PROPOSAL")
     if source.get("subject_id") != "SRC-PDF-INCEPTION-001":
         errors.append("source subject identity drift")
+    if source.get("data_class") != "LOCAL_ONLY" or source.get("egress_allowed") is not False:
+        errors.append("user-supplied source bytes must remain LOCAL_ONLY with egress disabled")
     if source_map.get("page_count") != 26 or not source_map.get("sections"):
         errors.append("page map is incomplete")
 
@@ -108,12 +111,13 @@ def validate_bundle(source: dict[str, Any], source_map: dict[str, Any], requirem
 
 
 def selftest(bundle: tuple[dict[str, Any], ...]) -> None:
-    mutations: list[tuple[str, callable]] = [
+    mutations: list[tuple[str, Callable[[list[dict[str, Any]]], None]]] = [
         ("duplicate requirement", lambda b: b[2]["requirements"].append(copy.deepcopy(b[2]["requirements"][0]))),
         ("missing page", lambda b: b[2]["requirements"][0].update(source_pages=[])),
         ("missing owner", lambda b: b[2]["requirements"][0]["owner"].update(repository="")),
         ("private locator", lambda b: b[0]["locator"].update(url="https://gemini.google.com/app/private")),
         ("source promoted", lambda b: b[0].update(source_kind="CURRENT_FACT")),
+        ("source egress widened", lambda b: b[0].update(data_class="PUBLIC", egress_allowed=True)),
         ("false evidence state", lambda b: b[2]["requirements"][0].update(current_state="PASS")),
         ("missing mutation control", lambda b: b[2]["requirements"][0].update(mutation_controls=[])),
         ("missing blocker", lambda b: b[2]["requirements"][0].update(blockers=[])),
