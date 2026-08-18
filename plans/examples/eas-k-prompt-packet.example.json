@@ -4,8 +4,8 @@
   "task_id": "TASK-EAS-K",
   "subject": {
     "repository": "ed3c/enterprise_agent_system",
-    "commit": "c4b20fd8594c071cab0324f0988ce954e7cdccc2",
-    "tree": "4b7100176becdc0e06b2dbaa3b06d684518100a8"
+    "commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
+    "tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598"
   },
   "objective": "Implement the deterministic Tech Lead DAG, prompt and reducer core.",
   "non_goals": [
@@ -67,5 +67,5 @@
     "on_semantic_conflict": "HUMAN_ADMIT_REQUIRED",
     "receipt_required": true
   },
-  "packet_digest": "sha256:86fb9c2bb6e91646d2fa10d35b9ee77258a11a0f47588b1bbff8b38331618074"
+  "packet_digest": "sha256:e40d690c3b6b91fd7775339c2f46375880dc632097907147648411f92677369c"
 }
