@@ -9,6 +9,7 @@ import json
 import pathlib
 import re
 import sys
+from collections import Counter
 from collections.abc import Callable
 from typing import Any
 
@@ -30,6 +31,35 @@ MANIFEST_KEYS = {"schema_version", "profile_id", "source_subject_id", "shards", 
 PROFILE_KEYS = {"schema_version", "profile_id", "source_subject_id", "source_digest", "requirement_document", "contradiction_document", "owner_repositories", "state", "evidence_ceiling", "next_issues"}
 REQUIREMENT_KEYS = {"requirement_id", "title", "source_pages", "source_claim", "real_problem", "owner", "state_machine", "inputs", "outputs", "positive_controls", "mutation_controls", "required_evidence_lane", "current_state", "blockers", "next_transition", "claims_not_proven"}
 CONTRADICTION_KEYS = {"id", "source_pages", "proposal", "risk", "owner_issue", "required_control"}
+
+EXPECTED_REQUIREMENT_IDS = {
+    "REQ-PDF-INCEPTION-STATE-001",
+    "REQ-PDF-INCEPTION-DAG-001",
+    "REQ-PDF-INCEPTION-CONTEXT-001",
+    "REQ-PDF-INCEPTION-CONTEXT-002",
+    "REQ-PDF-INCEPTION-CONTEXT-003",
+    "REQ-PDF-INCEPTION-STEERING-001",
+    "REQ-PDF-INCEPTION-SANDBOX-001",
+    "REQ-PDF-INCEPTION-EVIDENCE-001",
+    "REQ-PDF-INCEPTION-EVIDENCE-002",
+    "REQ-PDF-INCEPTION-COMPLIANCE-001",
+    "REQ-PDF-INCEPTION-TELEMETRY-001",
+    "REQ-PDF-INCEPTION-CONVERGE-001",
+    "REQ-PDF-INCEPTION-INGRESS-001",
+    "REQ-PDF-INCEPTION-INGRESS-002",
+    "REQ-PDF-INCEPTION-HITL-001",
+}
+EXPECTED_CONTRADICTION_IDS = {f"UNK-INCEPTION-{index:03d}" for index in range(1, 15)}
+EXPECTED_OWNER_REPOSITORIES = {
+    "ed3c/enterprise_agent_system",
+    "ed3c/skills-shared",
+    "ed3c/runtime-env",
+    "ed3c/bettor-arena",
+    "ed3c/agent-shield-monorepo",
+    "ed3c/truth-verify-loop",
+    "ed3c/openwiki-source-anchoring",
+}
+EXPECTED_NEXT_ISSUES = {"#4", "#5", "#7", "#15", "#16", "#17", "#18", "#19"}
 
 
 class Refusal(ValueError):
@@ -105,6 +135,9 @@ def validate_bundle(source: dict[str, Any], source_map: dict[str, Any], requirem
     ids = [item.get("requirement_id") for item in items]
     if len(ids) != len(set(ids)):
         errors.append("duplicate requirement ID")
+    if set(ids) != EXPECTED_REQUIREMENT_IDS:
+        errors.append("requirement denominator IDs drifted")
+    actual_state_counts: Counter[str] = Counter()
     for item in items:
         rid = item.get("requirement_id", "<missing>")
         reject_unknown(item, REQUIREMENT_KEYS, rid, errors)
@@ -126,8 +159,11 @@ def validate_bundle(source: dict[str, Any], source_map: dict[str, Any], requirem
             value = item.get(field)
             if not isinstance(value, list) or not value:
                 errors.append(f"{rid}: {field} must be non-empty")
-        if item.get("current_state") not in ALLOWED_STATES:
+        current_state = item.get("current_state")
+        if current_state not in ALLOWED_STATES:
             errors.append(f"{rid}: invalid or falsely promoted current_state")
+        else:
+            actual_state_counts[current_state] += 1
         if not item.get("required_evidence_lane") or not item.get("next_transition"):
             errors.append(f"{rid}: evidence lane or next transition is absent")
         combined = " ".join([str(item.get("source_claim", "")), str(item.get("real_problem", ""))]).lower()
@@ -136,10 +172,10 @@ def validate_bundle(source: dict[str, Any], source_map: dict[str, Any], requirem
 
     denominator = requirements.get("denominator", {})
     declared_total = denominator.get("total")
-    if declared_total != len(items):
+    if declared_total != len(items) or declared_total != len(EXPECTED_REQUIREMENT_IDS):
         errors.append("requirement denominator count mismatch")
     state_counts = denominator.get("states", {})
-    if not isinstance(state_counts, dict) or sum(state_counts.values()) != len(items):
+    if state_counts != dict(actual_state_counts):
         errors.append("requirement state denominator mismatch")
     if denominator.get("closure_credit") != 0:
         errors.append("source/profile candidate must have zero closure credit")
@@ -149,11 +185,11 @@ def validate_bundle(source: dict[str, Any], source_map: dict[str, Any], requirem
     if contradictions.get("profile_id") != requirements.get("profile_id"):
         errors.append("contradiction profile mismatch")
     citems = contradictions.get("items", [])
-    if len(citems) < 12:
-        errors.append("contradiction denominator is incomplete")
     cids = [item.get("id") for item in citems]
     if len(cids) != len(set(cids)):
         errors.append("duplicate contradiction ID")
+    if set(cids) != EXPECTED_CONTRADICTION_IDS:
+        errors.append("contradiction denominator IDs drifted")
     for item in citems:
         cid = item.get("id", "<missing>")
         reject_unknown(item, CONTRADICTION_KEYS, cid, errors)
@@ -182,11 +218,11 @@ def validate_bundle(source: dict[str, Any], source_map: dict[str, Any], requirem
     if profile.get("evidence_ceiling") != "SOURCE_AND_CONTRACT_CANDIDATE_ONLY":
         errors.append("profile evidence ceiling widened")
     owners = profile.get("owner_repositories", [])
-    if len(set(owners)) != len(owners) or len(owners) < 6:
-        errors.append("owner repository set is duplicate or incomplete")
+    if set(owners) != EXPECTED_OWNER_REPOSITORIES or len(owners) != len(EXPECTED_OWNER_REPOSITORIES):
+        errors.append("owner repository set drifted")
     next_issues = profile.get("next_issues", [])
-    if not next_issues or any(not re.fullmatch(r"#[0-9]+", issue) for issue in next_issues):
-        errors.append("profile next issue routes are invalid")
+    if set(next_issues) != EXPECTED_NEXT_ISSUES or len(next_issues) != len(EXPECTED_NEXT_ISSUES):
+        errors.append("profile next issue routes drifted")
 
     if errors:
         raise Refusal("; ".join(errors))
@@ -195,6 +231,7 @@ def validate_bundle(source: dict[str, Any], source_map: dict[str, Any], requirem
 def selftest(bundle: tuple[dict[str, Any], ...]) -> None:
     mutations: list[tuple[str, Callable[[list[dict[str, Any]]], None]]] = [
         ("duplicate requirement", lambda b: b[2]["requirements"].append(copy.deepcopy(b[2]["requirements"][0]))),
+        ("missing denominator item", lambda b: b[2]["requirements"].pop()),
         ("missing page", lambda b: b[2]["requirements"][0].update(source_pages=[])),
         ("missing owner", lambda b: b[2]["requirements"][0]["owner"].update(repository="")),
         ("private locator", lambda b: b[0]["locator"].update(url="https://gemini.google.com/app/private")),
@@ -202,6 +239,7 @@ def selftest(bundle: tuple[dict[str, Any], ...]) -> None:
         ("source egress widened", lambda b: b[0].update(data_class="PUBLIC", egress_allowed=True)),
         ("source map gap", lambda b: b[1]["sections"][0].update(pages=[1, 2])),
         ("unknown profile field", lambda b: b[4].update(authority="WIDENED")),
+        ("owner repository substitution", lambda b: b[4]["owner_repositories"].__setitem__(0, "ed3c/unbound-owner")),
         ("false evidence state", lambda b: b[2]["requirements"][0].update(current_state="PASS")),
         ("missing mutation control", lambda b: b[2]["requirements"][0].update(mutation_controls=[])),
         ("missing blocker", lambda b: b[2]["requirements"][0].update(blockers=[])),
