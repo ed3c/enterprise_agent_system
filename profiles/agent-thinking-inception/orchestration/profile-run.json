@@ -230,7 +230,7 @@
         "profiles/agent-thinking-inception/prompts/05-runtime-owner.system.md"
       ],
       "resources": [
-        "provider-session:unbound",
+        "provider-capability:unbound",
         "sandbox-runtime:unbound",
         "worktree:owner-runtime"
       ]
