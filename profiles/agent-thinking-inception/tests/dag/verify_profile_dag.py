@@ -849,6 +849,24 @@ def load_all() -> dict[str, dict[str, Any]]:
     }
 
 
+def mutate_path_lease_collision(value: dict[str, dict[str, Any]]) -> None:
+    """Plant a real concurrent-path collision without violating task/lease parity first."""
+
+    collision = "profiles/agent-thinking-inception/owners/compaction/**"
+    task = next(
+        item
+        for item in value["run"]["tasks"]
+        if item["id"] == "TASK-INCEPTION-A2"
+    )
+    lease = next(
+        item
+        for item in value["run"]["leases"]
+        if item["task_id"] == "TASK-INCEPTION-A2"
+    )
+    task["owns_paths"][0] = collision
+    lease["paths"][0] = collision
+
+
 def selftest(data: dict[str, dict[str, Any]]) -> None:
     mutations: list[tuple[str, Callable[[dict[str, dict[str, Any]]], None]]] = [
         ("INPUT_SUBJECT_DRIFT", lambda value: value["inputs"]["inputs"]["eas_k"].update(commit="0" * 40)),
@@ -857,7 +875,7 @@ def selftest(data: dict[str, dict[str, Any]]) -> None:
         ("DUPLICATE_TASK", lambda value: value["run"]["tasks"].append(copy.deepcopy(value["run"]["tasks"][0]))),
         ("COMPLETION_WITHOUT_START", lambda value: next(task for task in value["run"]["tasks"] if task["id"] == "TASK-INCEPTION-A1").update(start_dependencies=[])),
         ("CYCLIC_DAG:start_dependencies", lambda value: next(task for task in value["run"]["tasks"] if task["id"] == TASK_K).update(start_dependencies=["TASK-INCEPTION-H"])),
-        ("PATH_LEASE_COLLISION", lambda value: next(lease for lease in value["run"]["leases"] if lease["task_id"] == "TASK-INCEPTION-A2")["paths"].__setitem__(0, "profiles/agent-thinking-inception/owners/compaction/**")),
+        ("PATH_LEASE_COLLISION", mutate_path_lease_collision),
         ("RESOURCE_LEASE_COLLISION", lambda value: next(lease for lease in value["run"]["leases"] if lease["task_id"] == "TASK-INCEPTION-A2")["resources"].append("local-storage-namespace:inception-compaction")),
         ("RUN_SHADOW_AUTHORITY", lambda value: value["run"]["shadow"].update(may_commit=["TASK_STATE"])),
         ("HUMAN_AUTHORITY_MISSING", lambda value: value["run"]["authority"]["human_owned"].remove("merge")),
