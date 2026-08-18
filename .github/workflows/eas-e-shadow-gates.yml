@@ -1,0 +1,74 @@
+name: EAS-E Shadow Architect gates
+
+on:
+  push:
+    branches:
+      - agent/eas-e-shadow-controls
+  pull_request:
+    paths:
+      - ".github/workflows/eas-e-shadow-gates.yml"
+      - "contracts/control-plane/**"
+      - "src/enterprise_agent_system/**"
+      - "evidence/shadow/**"
+      - "tests/test_orchestration.py"
+      - "tests/test_parent_binding.py"
+      - "tests/test_shadow.py"
+      - "tests/test_shadow_snapshots.py"
+      - "prompts/03-shadow-architect.system.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-shadow-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact workflow subject
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Bind exact subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'commit=%s\n' "$(git rev-parse HEAD)"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+
+      - name: Validate inherited EAS-C records
+        run: >-
+          python3 contracts/control-plane/verify.py
+          contracts/control-plane/examples/source-subject.example.json
+          contracts/control-plane/examples/cross-repo-binding.example.json
+          contracts/control-plane/examples/closure-record.example.json
+          contracts/control-plane/examples/orchestration-run.example.json
+
+      - name: Replay inherited EAS-C refusals
+        run: >-
+          python3 contracts/control-plane/verify.py
+          --selftest contracts/control-plane/examples
+
+      - name: Execute EAS-K deterministic controls
+        run: |
+          python3 tests/test_orchestration.py
+          python3 tests/test_parent_binding.py
+
+      - name: Execute Shadow architecture controls
+        run: python3 tests/test_shadow.py
+
+      - name: Reconcile persisted Shadow snapshots
+        run: python3 tests/test_shadow_snapshots.py
+
+      - name: Compile deterministic gates
+        run: >-
+          python3 -m py_compile
+          contracts/control-plane/verify.py
+          src/enterprise_agent_system/orchestration.py
+          src/enterprise_agent_system/shadow.py
+          tests/test_orchestration.py
+          tests/test_parent_binding.py
+          tests/test_shadow.py
+          tests/test_shadow_snapshots.py
