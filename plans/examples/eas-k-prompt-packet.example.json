@@ -1,13 +1,13 @@
 {
-  "schema_version": "enterprise-agent-system/prompt-packet/v1",
-  "run_id": "RUN-EAS-K-001",
-  "task_id": "TASK-EAS-K",
+  "schema_version": "enterprise-agent-system/prompt-packet/v2",
+  "run_id": "RUN-EAS-K-TEST",
+  "task_id": "TASK-K",
   "subject": {
     "repository": "ed3c/enterprise_agent_system",
     "commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
     "tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598"
   },
-  "objective": "Implement the deterministic Tech Lead DAG, prompt and reducer core.",
+  "objective": "Implement the deterministic Tech Lead core without widening authority.",
   "non_goals": [
     "widen authority",
     "invent live evidence",
@@ -15,25 +15,25 @@
   ],
   "invariants": [
     "contracts precede fan-out",
-    "one writer per mutation subject",
+    "one writer owns each mutation subject",
     "Worker output is candidate evidence"
+  ],
+  "unknowns": [
+    "local worktree and provider behavior remain unverified",
+    "Human admission and release remain unperformed"
   ],
   "dependencies": {
     "start": [
-      "TASK-EAS-C"
+      "TASK-C"
     ],
     "completion": [
-      "TASK-EAS-C"
+      "TASK-C"
     ]
   },
   "leases": {
-    "writer_id": "worker-eas-k",
+    "writer_id": "worker-k",
     "write_paths": [
-      "src/enterprise_agent_system/**",
-      "tests/test_orchestration.py",
-      "prompts/00-tech-lead-controller.system.md",
-      "prompts/01-worker-envelope.system.md",
-      "plans/examples/**"
+      "src/enterprise_agent_system/**"
     ],
     "read_only_paths": [
       "contracts/control-plane/**",
@@ -41,15 +41,78 @@
     ],
     "resources": []
   },
-  "output_contract": "EAS-K deterministic candidate receipt",
-  "required_lane": "CLOUD",
-  "required_gates": [
-    "python-compile",
-    "unit-tests",
-    "mutation-controls"
+  "input_contract": {
+    "parent_contract": "enterprise-agent-system/orchestration-run/v1",
+    "parent_commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
+    "parent_tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598"
+  },
+  "output_contract": "Tech Lead core receipt",
+  "acceptance_criteria": [
+    "all deterministic gates pass on the exact subject",
+    "the persisted packet digest validates after readback"
   ],
+  "controls": {
+    "required_gates": [
+      "python-compile",
+      "unit-tests",
+      "mutation-controls",
+      "parent-binding"
+    ],
+    "positive": [
+      "valid DAG compiles into deterministic waves",
+      "one exact-lane candidate can be admitted for convergence"
+    ],
+    "negative": [
+      "start-only cycle is refused",
+      "overlapping path or resource lease is refused",
+      "stale subject and Human promotion are refused"
+    ]
+  },
+  "runtime": {
+    "required_lane": "CLOUD",
+    "requirements": [
+      "execute only in the CLOUD deterministic lane",
+      "persist no credential or session value"
+    ],
+    "capabilities": [
+      "exact subject readback",
+      "Python deterministic gate execution"
+    ]
+  },
+  "budgets": {
+    "retry_budget": 1,
+    "timeout_seconds": 600
+  },
+  "cleanup": {
+    "requirements": [
+      "report dirty state",
+      "report residue inventory"
+    ],
+    "residue_inventory_required": true
+  },
+  "rollback_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
+    "tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598"
+  },
+  "required_receipt": {
+    "fields": [
+      "packet_digest",
+      "subject_before",
+      "subject_after",
+      "changed_paths",
+      "commands",
+      "gates",
+      "attempts",
+      "cleanup",
+      "rollback_subject",
+      "claims_not_proven",
+      "next_authority"
+    ],
+    "exact_subject_required": true,
+    "lane_literal_required": true
+  },
   "evidence_ceiling": "deterministic candidate; local worktree, provider, Git Town, Human and release remain NOT_EXERCISED",
-  "retry_budget": 1,
   "forbidden_actions": [
     "data_egress",
     "irreversible_effect",
@@ -65,7 +128,7 @@
   "handoff": {
     "on_unavailable_capability": "LOCAL_HANDOFF_REQUIRED",
     "on_semantic_conflict": "HUMAN_ADMIT_REQUIRED",
-    "receipt_required": true
+    "next_authority": "INDEPENDENT_SHADOW"
   },
-  "packet_digest": "sha256:e40d690c3b6b91fd7775339c2f46375880dc632097907147648411f92677369c"
+  "packet_digest": "sha256:b0a56311f0642a010adc0a88c2c84cf69d3f643431315fcd8f55f80a93d8aaa8"
 }
