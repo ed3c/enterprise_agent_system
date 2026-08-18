@@ -1,0 +1,43 @@
+name: EAS-H Local Handoff gates
+
+on:
+  push:
+    branches:
+      - agent/eas-h-local-handoff-queue
+  pull_request:
+    paths:
+      - ".github/workflows/eas-h-gates.yml"
+      - "handoff/local-handoff-queue.json"
+      - "tests/verify_handoff.py"
+      - "handoff/README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  queue-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact workflow subject
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Bind exact subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'commit=%s\n' "$(git rev-parse HEAD)"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+
+      - name: Validate one-active Local Handoff queue
+        run: python3 tests/verify_handoff.py
+
+      - name: Replay planted queue refusals
+        run: python3 tests/verify_handoff.py --selftest
+
+      - name: Compile Local Handoff gate
+        run: python3 -m py_compile tests/verify_handoff.py
