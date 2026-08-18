@@ -1,0 +1,131 @@
+name: Agent Thinking Inception K profile gates
+
+on:
+  push:
+    branches:
+      - agent/inception-k-profile-dag
+  pull_request:
+    paths:
+      - ".github/workflows/inception-k-profile-gates.yml"
+      - "contracts/control-plane/**"
+      - "src/enterprise_agent_system/**"
+      - "tests/test_orchestration.py"
+      - "tests/test_parent_binding.py"
+      - "profiles/agent-thinking-inception/source/**"
+      - "profiles/agent-thinking-inception/requirements/**"
+      - "profiles/agent-thinking-inception/contracts/**"
+      - "profiles/agent-thinking-inception/examples/**"
+      - "profiles/agent-thinking-inception/orchestration/**"
+      - "profiles/agent-thinking-inception/tests/**"
+      - "profiles/agent-thinking-inception/prompts/02-tech-lead-profile-controller.system.md"
+      - "profiles/agent-thinking-inception/prompts/03-profile-worker-envelope.system.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-profile-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact workflow subject
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'commit=%s\n' "$(git rev-parse HEAD)"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+
+      - name: Verify exact multi-parent ancestry and consumed bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 1977c015cd2b85eb350deae6d39018ba5437a482 HEAD
+          git merge-base --is-ancestor b1362f48b6edc0b4cd6d301da2a5d0e94d970f8c HEAD
+          git diff --quiet b1362f48b6edc0b4cd6d301da2a5d0e94d970f8c..HEAD -- \
+            src/enterprise_agent_system \
+            tests/test_orchestration.py \
+            tests/test_parent_binding.py \
+            prompts/00-tech-lead-controller.system.md \
+            prompts/01-worker-envelope.system.md \
+            plans/examples/eas-k-prompt-packet.example.json \
+            .github/workflows/eas-k-gates.yml
+          git diff --quiet 1977c015cd2b85eb350deae6d39018ba5437a482..HEAD -- \
+            profiles/agent-thinking-inception/source \
+            profiles/agent-thinking-inception/requirements \
+            profiles/agent-thinking-inception/contracts \
+            profiles/agent-thinking-inception/examples/inception-contract-bundle.example.json \
+            profiles/agent-thinking-inception/tests/verify_profile.py \
+            profiles/agent-thinking-inception/tests/contracts/verify_contracts.py
+
+      - name: Verify profile K write lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          unexpected="$(git diff --name-only 1474882226fff6078afe467731db5adec9a09a50..HEAD | grep -Ev '^profiles/agent-thinking-inception/orchestration/|^profiles/agent-thinking-inception/tests/dag/|^profiles/agent-thinking-inception/prompts/02-tech-lead-profile-controller\.system\.md$|^profiles/agent-thinking-inception/prompts/03-profile-worker-envelope\.system\.md$|^\.github/workflows/inception-k-profile-gates\.yml$' || true)"
+          test -z "$unexpected" || { printf 'unexpected paths:\n%s\n' "$unexpected"; exit 2; }
+
+      - name: Validate inherited EAS-C records
+        run: >-
+          python3 contracts/control-plane/verify.py
+          contracts/control-plane/examples/source-subject.example.json
+          contracts/control-plane/examples/cross-repo-binding.example.json
+          contracts/control-plane/examples/closure-record.example.json
+          contracts/control-plane/examples/orchestration-run.example.json
+
+      - name: Replay inherited EAS-C refusals
+        run: >-
+          python3 contracts/control-plane/verify.py
+          --selftest contracts/control-plane/examples
+
+      - name: Execute generic EAS-K controls
+        run: |
+          python3 tests/test_orchestration.py
+          python3 tests/test_parent_binding.py
+
+      - name: Validate P0 source and requirement profile
+        run: python3 profiles/agent-thinking-inception/tests/verify_profile.py
+
+      - name: Replay P0 profile refusals
+        run: python3 profiles/agent-thinking-inception/tests/verify_profile.py --selftest
+
+      - name: Validate detailed P1 contracts
+        run: python3 profiles/agent-thinking-inception/tests/contracts/verify_contracts.py
+
+      - name: Replay detailed P1 refusals
+        run: python3 profiles/agent-thinking-inception/tests/contracts/verify_contracts.py --selftest
+
+      - name: Validate profile DAG packets capability plan and Stack
+        run: python3 profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py
+
+      - name: Replay profile DAG planted refusals
+        run: python3 profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py --selftest
+
+      - name: Render zero-context packet files
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$(mktemp -d)"
+          python3 profiles/agent-thinking-inception/orchestration/compile_profile_packets.py --output "$out"
+          test "$(find "$out" -maxdepth 1 -type f | wc -l)" -eq 21
+          test "$(find "$out" -maxdepth 1 -name 'task-*.json' | wc -l)" -eq 10
+          test "$(find "$out" -maxdepth 1 -name 'task-*.system.md' | wc -l)" -eq 10
+          test -f "$out/manifest.json"
+          rm -rf "$out"
+
+      - name: Compile deterministic gates
+        run: >-
+          python3 -m py_compile
+          contracts/control-plane/verify.py
+          src/enterprise_agent_system/orchestration.py
+          profiles/agent-thinking-inception/tests/verify_profile.py
+          profiles/agent-thinking-inception/tests/contracts/verify_contracts.py
+          profiles/agent-thinking-inception/orchestration/compile_profile_packets.py
+          profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py
