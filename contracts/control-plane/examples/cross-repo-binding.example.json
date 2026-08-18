@@ -1,0 +1,15 @@
+{
+  "schema_version": "enterprise-agent-system/cross-repo-binding/v1",
+  "binding_id": "BIND-DUAL-AGENT-001",
+  "source_subject_id": "SRC-DUAL-AGENT-PDF-001",
+  "owner": {"plane": "CONTROL_PLANE", "repository": "ed3c/enterprise_agent_system", "directory": "contracts/control-plane"},
+  "interfaces": [
+    {"interface_id": "enterprise-agent-system/control-plane/closure/v1", "owner_repository": "ed3c/enterprise_agent_system", "implementation_state": "PARTIAL", "digest": null},
+    {"interface_id": "agentic-tech-lead/dual-agent/method-contract/v1", "owner_repository": "ed3c/skills-shared", "implementation_state": "PARTIAL", "digest": null},
+    {"interface_id": "runtime-env/dual-agent/offload-job/v1", "owner_repository": "ed3c/runtime-env", "implementation_state": "NOT_IMPLEMENTED", "digest": null},
+    {"interface_id": "runtime-env/dual-agent/execution-receipt/v1", "owner_repository": "ed3c/runtime-env", "implementation_state": "NOT_IMPLEMENTED", "digest": null}
+  ],
+  "consumers": ["ed3c/bettor-arena", "ed3c/agent-shield-monorepo", "ed3c/truth-verify-loop"],
+  "state": "CONTRACT_IDS_BOUND",
+  "claims_not_proven": ["runtime wire compatibility", "live transport", "physical reconnect", "provider execution"]
+}
