@@ -40,10 +40,10 @@ Agent Thinking Inception C0/C1 draft PR #21
 
 EAS-D blueprint draft PR #26
   branch agent/eas-d-docs-blueprint
-  head   fab288deab4147b9be7bdbfece617413b2b90a60
-  merge-base profile@c4af8fc3859a8f8674b55d3b45dfc4ee00037add
-  current profile head 60f994f5f9da55168911d19fb32489775a5f4599
-  state  STALE_PARENT_PIN / two commits behind profile base
+  synchronization merge 869665f5c5fafd556fcc1289668d94ec3f804ce9
+  current parent profile@60f994f5f9da55168911d19fb32489775a5f4599
+  relation ahead of profile / behind 0 after synchronization
+  state  DRAFT_DOCS_CANDIDATE / process-blocked on X and exact-head docs Gates
 ```
 
 ## Current issues
@@ -63,7 +63,7 @@ Local Handoff #14
 
 ## Current evidence ceiling
 
-Draft bytes and pre-publication assembly reports exist for PR #20/#24/#25 and earlier profile heads. Exact-head GitHub Actions, exact local checkout/worktree receipts, owner implementations, local/provider/physical canaries, external effects, user outcomes, Human admission, release and rollback remain absent or unexercised. Shadow review blocks EAS-C consumer admission until exact-subject and start-DAG/nested-schema controls are fixed.
+Draft bytes and pre-publication assembly reports exist for PR #20/#24/#25 and earlier profile heads. Exact-head GitHub Actions, exact local checkout/worktree receipts, owner implementations, local/provider/physical canaries, external effects, user outcomes, Human admission, release and rollback remain absent or unexercised. Shadow review blocks EAS-C consumer admission until exact-subject and start-DAG/nested-schema controls are fixed. PR #26 now contains the current profile parent bytes, but its link/route/Stack consistency and machine-index Gates are still `NOT_EXERCISED`.
 
 ## Next safe transitions
 
@@ -71,7 +71,7 @@ Draft bytes and pre-publication assembly reports exist for PR #20/#24/#25 and ea
 2. Re-run PR #20 exact-head controls and publish a readback/cleanup receipt.
 3. Rebase/revalidate PR #24 and PR #25 if EAS-C head moves.
 4. Run exact-head PR #21 profile controls from Local Handoff #14 or GitHub Actions.
-5. Synchronize PR #26 against profile head `60f994...`; refresh `CONTEXT.md`, Stack and links.
+5. Run PR #26 exact-head link/route/Stack consistency controls; add machine-readable task-DAG, closure and Stack records.
 6. Compile profile K (#4) only from admitted C/K/profile contract subjects.
 7. Fan out disjoint A1–A6 owner packets and profile Shadow #19.
 8. Converge profile #22 and aggregate #12.
