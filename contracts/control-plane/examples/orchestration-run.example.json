@@ -1,0 +1,28 @@
+{
+  "schema_version": "enterprise-agent-system/orchestration-run/v1",
+  "run_id": "RUN-BOOTSTRAP-001",
+  "request_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "5dda08e6d3376da98ed93fd3ef1c4211d89d6890", "tree": "02303973487134744abbb17762878a64ef12ac05"},
+  "tasks": [
+    {"id": "TASK-EAS-C", "start_dependencies": [], "completion_dependencies": [], "owns_paths": ["contracts/control-plane/**"], "required_lane": "CLOUD", "output_contract": "control-plane contracts", "state": "ACTIVE"},
+    {"id": "TASK-EAS-K", "start_dependencies": ["TASK-EAS-C"], "completion_dependencies": ["TASK-EAS-C"], "owns_paths": ["src/enterprise_agent_system/**"], "required_lane": "CLOUD", "output_contract": "Tech Lead core", "state": "PLANNED"},
+    {"id": "TASK-EAS-A", "start_dependencies": ["TASK-EAS-C"], "completion_dependencies": ["TASK-EAS-C"], "owns_paths": ["integrations/**"], "required_lane": "CLOUD", "output_contract": "advisory adapters", "state": "PLANNED"},
+    {"id": "TASK-EAS-E", "start_dependencies": ["TASK-EAS-K"], "completion_dependencies": ["TASK-EAS-K"], "owns_paths": ["evidence/shadow/**"], "required_lane": "CLOUD", "output_contract": "Shadow receipts", "state": "PLANNED"},
+    {"id": "TASK-EAS-X", "start_dependencies": ["TASK-EAS-A", "TASK-EAS-E"], "completion_dependencies": ["TASK-EAS-A", "TASK-EAS-E"], "owns_paths": ["plans/**"], "required_lane": "CLOUD", "output_contract": "cross-repo closure graph", "state": "PLANNED"},
+    {"id": "TASK-EAS-D", "start_dependencies": ["TASK-EAS-X"], "completion_dependencies": ["TASK-EAS-X"], "owns_paths": ["README.md", "AGENTS.md", "docs/**"], "required_lane": "CLOUD", "output_contract": "Agent-readable convergence", "state": "PLANNED"}
+  ],
+  "leases": [
+    {"task_id": "TASK-EAS-C", "writer_id": "worker-eas-c", "paths": ["contracts/control-plane/**"], "resources": []},
+    {"task_id": "TASK-EAS-K", "writer_id": "worker-eas-k", "paths": ["src/enterprise_agent_system/**"], "resources": []},
+    {"task_id": "TASK-EAS-A", "writer_id": "worker-eas-a", "paths": ["integrations/**"], "resources": ["google-drive-read-session"]},
+    {"task_id": "TASK-EAS-E", "writer_id": "shadow-eas-e", "paths": ["evidence/shadow/**"], "resources": []},
+    {"task_id": "TASK-EAS-X", "writer_id": "worker-eas-x", "paths": ["plans/**"], "resources": []},
+    {"task_id": "TASK-EAS-D", "writer_id": "worker-eas-d", "paths": ["README.md", "AGENTS.md", "docs/**"], "resources": []}
+  ],
+  "canonical_reducer": {"owner": "enterprise-agent-system/control-plane/reducer", "may_commit": ["TASK_STATE"]},
+  "shadow": {"read_only": true, "separate_evaluation_path": true, "may_commit": []},
+  "authority": {
+    "automation_forbidden": ["merge", "issue_close", "permission_change", "semantic_conflict_resolution", "release", "rollback"],
+    "human_owned": ["merge", "promotion", "release", "rollback", "data_egress"]
+  },
+  "state": "TASK_DAG_COMPILED"
+}
