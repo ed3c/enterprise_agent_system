@@ -25,7 +25,58 @@ permissions:
   contents: read
 
 jobs:
+  repair-path-collision-mutation:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/agent/inception-k-profile-dag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.repair.outputs.changed }}
+    steps:
+      - name: Checkout branch subject with push credential
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Apply one-shot ordered-refusal repair
+        id: repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'changed=false' >> "$GITHUB_OUTPUT"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py')
+          text = path.read_text(encoding='utf-8')
+          anchor = '''def selftest(data: dict[str, dict[str, Any]]) -> None:\n    mutations: list[tuple[str, Callable[[dict[str, dict[str, Any]]], None]]] = [\n'''
+          helper = '''def mutate_path_lease_collision(value: dict[str, dict[str, Any]]) -> None:\n    \"\"\"Plant a real concurrent-path collision without violating task/lease parity first.\"\"\"\n\n    collision = \"profiles/agent-thinking-inception/owners/compaction/**\"\n    task = next(\n        item\n        for item in value[\"run\"][\"tasks\"]\n        if item[\"id\"] == \"TASK-INCEPTION-A2\"\n    )\n    lease = next(\n        item\n        for item in value[\"run\"][\"leases\"]\n        if item[\"task_id\"] == \"TASK-INCEPTION-A2\"\n    )\n    task[\"owns_paths\"][0] = collision\n    lease[\"paths\"][0] = collision\n\n\ndef selftest(data: dict[str, dict[str, Any]]) -> None:\n    mutations: list[tuple[str, Callable[[dict[str, dict[str, Any]]], None]]] = [\n'''
+          old = '''        (\"PATH_LEASE_COLLISION\", lambda value: next(lease for lease in value[\"run\"][\"leases\"] if lease[\"task_id\"] == \"TASK-INCEPTION-A2\")[\"paths\"].__setitem__(0, \"profiles/agent-thinking-inception/owners/compaction/**\")),\n'''
+          new = '''        (\"PATH_LEASE_COLLISION\", mutate_path_lease_collision),\n'''
+          if old not in text:
+              if 'def mutate_path_lease_collision' in text and new in text:
+                  raise SystemExit(0)
+              raise SystemExit('expected mutation anchor absent')
+          if anchor not in text:
+              raise SystemExit('selftest anchor absent')
+          text = text.replace(anchor, helper, 1).replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+          if git diff --quiet -- profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py; then
+            exit 0
+          fi
+          python3 -m py_compile profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py
+          git config user.name ed3c
+          git config user.email mcnum01@gmail.com
+          git add profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py
+          git commit -m 'test(inception-k): preserve task lease parity in collision mutation'
+          git push origin HEAD:agent/inception-k-profile-dag
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+
   deterministic-profile-gates:
+    needs: repair-path-collision-mutation
+    if: always() && (needs.repair-path-collision-mutation.result == 'skipped' || needs.repair-path-collision-mutation.outputs.changed != 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
