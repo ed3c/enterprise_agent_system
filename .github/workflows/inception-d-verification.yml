@@ -1,0 +1,122 @@
+name: Inception D v4 profile documentation verification
+
+on:
+  push:
+    branches: [agent/inception-d-verification-v4]
+  pull_request:
+    paths:
+      - .github/workflows/inception-d-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-profile-docs-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout immutable Profile-D v4 target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 4c8165b0d453db512b0aaabdad52875fb5ba6b42
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact target ancestry and seven-file lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "4c8165b0d453db512b0aaabdad52875fb5ba6b42"
+          test "$(git rev-parse 'HEAD^{tree}')" = "0a2ec556b6a76b8df7f4a46033b9c6d62566ac1d"
+          git merge-base --is-ancestor fe2748e09a5222f439f09c5d0d71e486e1ade3e8 HEAD
+          python3 - <<'PY'
+          import subprocess
+
+          parent = "fe2748e09a5222f439f09c5d0d71e486e1ade3e8"
+          expected = {
+              "profiles/agent-thinking-inception/docs/README.md",
+              "profiles/agent-thinking-inception/plans/data-flow.json",
+              "profiles/agent-thinking-inception/plans/directory-state-machine-index.json",
+              "profiles/agent-thinking-inception/plans/molecular-stack-index.json",
+              "profiles/agent-thinking-inception/prompts/12-profile-docs-convergence.system.md",
+              "profiles/agent-thinking-inception/prompts/README.md",
+              "profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py",
+          }
+          changed = set(
+              subprocess.check_output(
+                  ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
+              ).splitlines()
+          )
+          assert changed == expected, f"PROFILE_D_PATH_LEASE:{sorted(changed ^ expected)}"
+          print(f"PASS exact target and path lease files={len(changed)}")
+          PY
+
+      - name: Verify inherited Profile-X v3 closure controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+
+      - name: Verify Profile-D v4 documentation controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Parse machine indexes and compile verifiers
+        run: |
+          python3 -m json.tool profiles/agent-thinking-inception/plans/molecular-stack-index.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/directory-state-machine-index.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/data-flow.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/closure-record.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/vertical-canary.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/evidence/convergence/receipt-index.json >/dev/null
+          python3 -m py_compile \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py \
+            profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+
+      - name: Check current receipt freshness and portable surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path("profiles/agent-thinking-inception")
+          current_machine = [
+              root / "evidence/convergence/receipt-index.json",
+              root / "plans/closure-record.json",
+              root / "plans/vertical-canary.json",
+              root / "plans/molecular-stack-index.json",
+              root / "plans/directory-state-machine-index.json",
+              root / "plans/data-flow.json",
+          ]
+          combined = "\n".join(path.read_text(encoding="utf-8") for path in current_machine)
+          assert "32259216877" in combined, "CURRENT_A1_RUN_MISSING"
+          assert "32259476821" not in combined, "STALE_A1_RUN_IN_MACHINE_STATE"
+          assert "sha256:7a881bbe4b2b9605d56838f5f1e9a3c76dbf45ebc1b0aa7a973fd1329f88efbb" in combined
+          assert '"execution_receipt": null' in combined
+          assert '"hosted_profile_x_gate": "ABSENT"' in combined
+
+          seven = [
+              root / "docs/README.md",
+              root / "plans/data-flow.json",
+              root / "plans/directory-state-machine-index.json",
+              root / "plans/molecular-stack-index.json",
+              root / "prompts/12-profile-docs-convergence.system.md",
+              root / "prompts/README.md",
+              root / "tests/docs/verify_profile_docs.py",
+          ]
+          portable = "\n".join(path.read_text(encoding="utf-8") for path in seven)
+          forbidden = [
+              "/" + "Users" + "/",
+              "/" + "home" + "/",
+              "/mnt/" + "data/",
+              "BEGIN " + "PRIVATE KEY",
+              "gemini." + "google.com",
+          ]
+          assert not [item for item in forbidden if item in portable], "NON_PORTABLE_OR_PRIVATE_SURFACE"
+          print("PASS current A1 receipt, canary ceiling and portable-surface controls")
+          PY
+
+      - name: Check patch hygiene
+        run: git diff --check fe2748e09a5222f439f09c5d0d71e486e1ade3e8...HEAD
