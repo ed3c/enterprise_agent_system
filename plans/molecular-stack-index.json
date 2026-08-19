@@ -37,12 +37,24 @@
       "name": "EAS-A",
       "class": "sibling",
       "issue": "https://github.com/ed3c/enterprise_agent_system/issues/10",
-      "pull_request": null,
-      "subject": null,
-      "state": "NOT_IMPLEMENTED",
+      "pull_request": 68,
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+        "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891"
+      },
+      "verification_run": 32295871632,
+      "shadow_review": 4976213414,
+      "state": "DETERMINISTIC_VERIFIED",
       "lane": "ADVISORY_PROJECTIONS",
+      "authority": "ADVISORY_ONLY",
+      "evidence_ceiling": "ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY",
+      "git_relation_to_x": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
       "next": "D",
-      "blocker": "GitHub/Google Docs/Sheets adapter implementation subject absent"
+      "claims_not_proven": [
+        "Google connectivity and writes were not performed.",
+        "Advisory projections cannot mutate canonical task/workflow/effect/Human/release state."
+      ]
     },
     {
       "atom": "E",
@@ -71,6 +83,7 @@
       "state": "IN_PROGRESS",
       "lane": "CROSS_REPO_CONVERGENCE",
       "true_git_parent": "EAS-E@177ba870c41cc5605532ea79770d54aea124fa0c",
+      "process_dependencies": ["EAS-K", "EAS-A"],
       "next": "D"
     },
     {
@@ -81,7 +94,7 @@
       "pull_request": null,
       "historical_blueprint_pull_request": 26,
       "subject": null,
-      "state": "BLOCKED_BY_EAS_X",
+      "state": "BLOCKED_BY_EAS_X_REBIND",
       "lane": "DOCUMENTATION_CONVERGENCE",
       "next": "P7_LOCAL_HANDOFF"
     }
@@ -91,6 +104,6 @@
     "planned atoms never receive an invented branch or immutable subject",
     "open mutable branch names are navigation metadata, not immutable evidence",
     "a process dependency is not automatically Git ancestry",
-    "missing A or D remains visible rather than normalized away"
+    "an admitted EAS-A advisory atom remains ADVISORY_ONLY and cannot back-prove runtime/live/Human state"
   ]
 }
