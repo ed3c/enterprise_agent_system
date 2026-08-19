@@ -38,8 +38,11 @@
         "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"
       },
       "evidence_state": "PUBLIC_VERIFIED",
-      "hosted_runs": [32259216877],
-      "shadow_review": 4972750319,
+      "hosted_runs": [32259476821],
+      "shadow_receipts": [
+        {"kind": "PR_REVIEW", "id": 4972750319, "scope": "EXACT_SUBJECT"},
+        {"kind": "ISSUE_COMMENT", "id": 5343381027, "scope": "PROFILE_PUBLIC_DENOMINATOR"}
+      ],
       "lane": "PROCESS_CRASH_SQLITE_READBACK",
       "next_transition": "RUN_PUBLIC_CONTEXT_RECONSTRUCTION_FIXTURE_AND_SHADOW_READBACK"
     },
@@ -49,13 +52,15 @@
       "issue": "https://github.com/ed3c/runtime-env/issues/67",
       "subject": {
         "repository": "ed3c/runtime-env",
-        "commit": "cdfe74ac993cb0b4795fa80df237e8bb542409d2",
-        "tree": "0b2db695cdd812f81924b82689d96e3557b80158"
+        "commit": "2ff4efe7bee3d12fb3063fed93631f8d323cd64a",
+        "tree": "273c6873e7075d90a7f11275c5d39e746dd075dc"
       },
       "evidence_state": "DETERMINISTIC_VERIFIED",
-      "hosted_runs": [32248796959, 32248796967],
-      "shadow_review": 4972041442,
-      "lane": "RUNTIME_CONTRACT",
+      "hosted_runs": [32249588945, 32249588946],
+      "shadow_receipts": [
+        {"kind": "PR_REVIEW", "id": 4972041442, "scope": "EXACT_SUBJECT"}
+      ],
+      "lane": "RUNTIME_CONTRACT_OWNER_HEAD; A2 consumes contract pin cdfe74ac993cb0b4795fa80df237e8bb542409d2/0b2db695cdd812f81924b82689d96e3557b80158",
       "next_transition": "ADD_FIXED_WORKLOAD_PROFILE_POLICY_FIXTURES_AND_CONSUMER_READBACK"
     },
     {
@@ -64,12 +69,14 @@
       "issue": "https://github.com/ed3c/agent-shield-monorepo/issues/153",
       "subject": {
         "repository": "ed3c/agent-shield-monorepo",
-        "commit": "a611d9a4fd0122977539074b2d9009e422379c3f",
-        "tree": "597393c94fdd7733ac3fe0c4311c7f3c7dce18a3"
+        "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2",
+        "tree": "51adf9791485d597849c026a3828ded0088b3805"
       },
       "evidence_state": "PUBLIC_VERIFIED",
-      "hosted_runs": [32260646631, 32260646656, 32260647342],
-      "shadow_review": 4972970293,
+      "hosted_runs": [32262032532, 32262032583, 32262032553],
+      "shadow_receipts": [
+        {"kind": "ISSUE_COMMENT", "id": 5343381027, "scope": "PROFILE_PUBLIC_DENOMINATOR"}
+      ],
       "lane": "REVERSIBLE_LOCAL_PROCESS_CLEANUP",
       "next_transition": "RUN_NETWORK_ISOLATION_AND_PROVIDER_CAPABILITY_CANARIES"
     },
@@ -84,7 +91,10 @@
       },
       "evidence_state": "PUBLIC_VERIFIED",
       "hosted_runs": [32260293092, 32260291970],
-      "shadow_review": 4972977716,
+      "shadow_receipts": [
+        {"kind": "PR_REVIEW", "id": 4972977716, "scope": "EXACT_SUBJECT"},
+        {"kind": "ISSUE_COMMENT", "id": 5343381027, "scope": "PROFILE_PUBLIC_DENOMINATOR"}
+      ],
       "lane": "PUBLIC_GIT_OBJECT_READBACK",
       "next_transition": "RUN_PUBLIC_SOURCE_CAPTURE_WITH_EXTERNAL_INDEPENDENT_SEMANTIC_REVIEW"
     },
@@ -94,12 +104,14 @@
       "issue": "https://github.com/ed3c/enterprise_agent_system/issues/16",
       "subject": {
         "repository": "ed3c/enterprise_agent_system",
-        "commit": "ee4602423424b716f12fea7797372a7dc4f3e288",
-        "tree": "f81c41b1e725517f610b671fb00d28af3af4dfbb"
+        "commit": "bf976c7c33e315d1743733a79c15521e645ff6dc",
+        "tree": "c09bef2457ad507433f253c8a5fd211147fae247"
       },
       "evidence_state": "PUBLIC_VERIFIED",
-      "hosted_runs": [32260074361],
-      "shadow_review": 4972960995,
+      "hosted_runs": [32261864341],
+      "shadow_receipts": [
+        {"kind": "ISSUE_COMMENT", "id": 5343381027, "scope": "PROFILE_PUBLIC_DENOMINATOR"}
+      ],
       "lane": "SYNTHETIC_TELEMETRY_LEAK_CANARY",
       "next_transition": "BIND_EXACT_EXTERNAL_TERMS_AND_RUN_SCOPED_LIVE_TELEMETRY_CANARY"
     },
@@ -114,7 +126,10 @@
       },
       "evidence_state": "PUBLIC_VERIFIED",
       "hosted_runs": [32260835956],
-      "shadow_review": 4972939122,
+      "shadow_receipts": [
+        {"kind": "PR_REVIEW", "id": 4972939122, "scope": "EXACT_SUBJECT"},
+        {"kind": "ISSUE_COMMENT", "id": 5343381027, "scope": "PROFILE_PUBLIC_DENOMINATOR"}
+      ],
       "lane": "MATCHED_SEALED_FIXTURE_BENCHMARK",
       "next_transition": "BIND_EXTERNAL_PUBLIC_CANDIDATE_TERMS_AND_RUN_MATCHED_BENCHMARK"
     },
@@ -124,12 +139,14 @@
       "issue": "https://github.com/ed3c/bettor-arena/issues/193",
       "subject": {
         "repository": "ed3c/bettor-arena",
-        "commit": "8cd4aea59ff203a6620cb834e6a0df82b5e8ecaa",
-        "tree": "b95b5abe6bcc28df38f9758da790356ade990a59"
+        "commit": "c2613432736c65756ed13d871feb2df486c69118",
+        "tree": "53680d47048f88b9402c6320355121b7ec2f7244"
       },
       "evidence_state": "PUBLIC_VERIFIED",
-      "hosted_runs": [32261120485],
-      "shadow_review": 4972945200,
+      "hosted_runs": [32262080676],
+      "shadow_receipts": [
+        {"kind": "ISSUE_COMMENT", "id": 5343381027, "scope": "PROFILE_PUBLIC_DENOMINATOR"}
+      ],
       "lane": "UNKNOWN_EFFECT_RESTART_RECONCILIATION",
       "next_transition": "RUN_REVERSIBLE_COMPENSATION_FIXTURE_THEN_PROVIDER_ADAPTER_CANARY"
     }
