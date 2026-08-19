@@ -1,8 +1,8 @@
 {
   "schema_version": "inception-owner-preflight/v1",
   "atom_id": "INCEPTION-A4",
-  "stage": "OWNER_IMPLEMENTATION_PREPARATION",
-  "state": "READY_FOR_FIRST_IMPLEMENTATION_COMMIT",
+  "stage": "OWNER_IMPLEMENTATION",
+  "state": "FIRST_IMPLEMENTATION_CANDIDATE",
   "repository": "ed3c/enterprise_agent_system",
   "branch": "agent/inception-a4-provenance-policy",
   "base_subject": {
@@ -37,46 +37,18 @@
     "ADMITTED_OR_BLOCKED_OR_UNKNOWN_OR_EXPIRED"
   ],
   "dimensions": {
-    "code": [
-      "repository",
-      "commit",
-      "tree",
-      "content_digest",
-      "terms_digest",
-      "dependency_lineage",
-      "sbom",
-      "notice_obligations"
-    ],
-    "model": [
-      "provider",
-      "model_id",
-      "version",
-      "weight_or_api_terms_digest",
-      "data_use_terms",
-      "distillation_terms",
-      "expiry_trigger"
-    ],
-    "data": [
-      "dataset_id",
-      "snapshot_version",
-      "content_digest",
-      "origin",
-      "consent",
-      "attribution",
-      "derivative_terms",
-      "deletion_lineage"
-    ],
-    "trace": [
-      "schema_version",
-      "collector_exporter_storage_subject",
-      "content_and_terms_digest",
-      "classification",
-      "sanitization_policy",
-      "retention",
-      "rbac",
-      "training_use_policy"
-    ]
+    "code": ["repository", "commit", "tree", "content_digest", "terms_digest", "dependency_lineage", "sbom", "notice_obligations"],
+    "model": ["provider", "model_id", "version", "weight_or_api_terms_digest", "data_use_terms", "distillation_terms", "expiry_trigger"],
+    "data": ["dataset_id", "snapshot_version", "content_digest", "origin", "consent", "attribution", "derivative_terms", "deletion_lineage"],
+    "trace": ["schema_version", "collector_exporter_storage_subject", "content_and_terms_digest", "classification", "sanitization_policy", "retention", "rbac", "training_use_policy"]
   },
+  "implementation_subjects": [
+    "profiles/agent-thinking-inception/policies/provenance/four-tier-policy-candidate.schema.json",
+    "profiles/agent-thinking-inception/policies/provenance/telemetry-flow.schema.json",
+    "profiles/agent-thinking-inception/evidence/compliance/four-tier-policy.example.json",
+    "profiles/agent-thinking-inception/evidence/compliance/telemetry-flow.example.json",
+    "profiles/agent-thinking-inception/owners/compliance/verify_policy.py"
+  ],
   "writable_paths": [
     "profiles/agent-thinking-inception/owners/compliance/**",
     "profiles/agent-thinking-inception/policies/provenance/**",
@@ -102,12 +74,7 @@
     "telemetry-flow:inception-local-fixture",
     "human-review-route:inception-legal-security"
   ],
-  "required_evidence_lanes": [
-    "DETERMINISTIC_POLICY",
-    "INDEPENDENT_SECURITY",
-    "HUMAN_LEGAL",
-    "PROVIDER_OR_LOCAL_TELEMETRY_SEPARATE"
-  ],
+  "required_evidence_lanes": ["DETERMINISTIC_POLICY", "INDEPENDENT_SECURITY", "HUMAN_LEGAL", "PROVIDER_OR_LOCAL_TELEMETRY_SEPARATE"],
   "positive_controls": [
     "each provenance dimension binds an exact subject version content digest and terms digest",
     "obligations blockers expiry and policy state remain separate per dimension",
@@ -130,14 +97,7 @@
   ],
   "cleanup_contract": {
     "required": true,
-    "inventory": [
-      "policy_fixture",
-      "trace_payload",
-      "collector",
-      "exporter",
-      "storage",
-      "artifact"
-    ],
+    "inventory": ["policy_fixture", "trace_payload", "collector", "exporter", "storage", "artifact"],
     "rollback_subject": "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e"
   },
   "forbidden_actions": [
@@ -151,10 +111,10 @@
     "rollback"
   ],
   "claims_not_proven": [
-    "No provenance or telemetry policy implementation has been added.",
-    "No exact Code Model Data or Trace terms subjects are bound.",
-    "No telemetry, independent security or Human legal review has executed.",
+    "No exact external Code Model Data or Trace terms subjects are admitted.",
+    "No telemetry exporter, independent security review or Human legal review has executed.",
+    "No live leak canary or provider observation exists for this subject.",
     "No provider activation, merge, release or rollback has occurred."
   ],
-  "next_transition": "ADD_STRICT_FOUR_TIER_POLICY_AND_TELEMETRY_FLOW_SCHEMAS_WITH_FIRST_HOLLOW_CONTROL"
+  "next_transition": "BIND_EXACT_TERMS_SUBJECTS_AND_RUN_TELEMETRY_LEAK_CANARY"
 }
