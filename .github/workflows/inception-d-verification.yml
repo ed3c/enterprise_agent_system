@@ -1,0 +1,88 @@
+name: Inception D exact documentation verification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/inception-d-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-profile-d-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout immutable Profile-D target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 4df72175c028966e939ee38307e9ab23d3a8e33b
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact target ancestry tree and writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="4df72175c028966e939ee38307e9ab23d3a8e33b"
+          tree="281002b526652f033e09dab26e7f7eebfbbbdf7c"
+          parent="a27aa552f1c258e09f515b4a5d117ba37f4d6615"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse HEAD^{tree})" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          unexpected="$(git diff --name-only "$parent"...HEAD | grep -Ev '^profiles/agent-thinking-inception/docs/|^profiles/agent-thinking-inception/prompts/README\.md$|^profiles/agent-thinking-inception/plans/molecular-stack-index\.json$|^profiles/agent-thinking-inception/plans/directory-state-machine-index\.json$|^profiles/agent-thinking-inception/plans/data-flow\.json$|^profiles/agent-thinking-inception/tests/docs/|^profiles/agent-thinking-inception/prompts/12-profile-docs-convergence\.system\.md$' || true)"
+          test -z "$unexpected" || { printf 'PROFILE_D_PATH_LEASE_VIOLATION:\n%s\n' "$unexpected"; exit 2; }
+          test "$(git diff --name-only "$parent"...HEAD | wc -l)" -eq 7
+          git diff --quiet "$parent"..HEAD -- \
+            profiles/agent-thinking-inception/source \
+            profiles/agent-thinking-inception/requirements \
+            profiles/agent-thinking-inception/contracts \
+            profiles/agent-thinking-inception/orchestration \
+            profiles/agent-thinking-inception/evidence/convergence/receipt-index.json \
+            profiles/agent-thinking-inception/plans/closure-record.json \
+            profiles/agent-thinking-inception/plans/vertical-canary.json \
+            profiles/agent-thinking-inception/tests/convergence
+          printf 'PASS target=%s tree=%s changed=7\n' "$target" "$tree"
+
+      - name: Execute inherited Profile-X controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py --selftest
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_ordered_controls.py
+
+      - name: Execute Profile-D documentation controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Compile and parse exact documentation subjects
+        run: |
+          python3 -m py_compile \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_ordered_controls.py \
+            profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 -m json.tool profiles/agent-thinking-inception/plans/molecular-stack-index.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/directory-state-machine-index.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/data-flow.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/closure-record.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/vertical-canary.json >/dev/null
+          git diff --check a27aa552f1c258e09f515b4a5d117ba37f4d6615...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS INCEPTION-DV exact documentation verification
+          target=4df72175c028966e939ee38307e9ab23d3a8e33b
+          tree=281002b526652f033e09dab26e7f7eebfbbbdf7c
+          parent=a27aa552f1c258e09f515b4a5d117ba37f4d6615
+          requirements=15
+          contradictions=14
+          required_lanes_satisfied=1
+          requirement_closure_credit=0
+          vertical_canary=PLAN_ONLY
+          profile_shadow=BLOCKED_FOR_CLOSURE
+          Human_admission=NOT_PERFORMED
+          release_rollback=NOT_PERFORMED
+          EOF
