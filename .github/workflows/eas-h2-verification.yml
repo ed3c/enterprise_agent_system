@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable P7 target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 5ad8f5310f764c46ce02e38c39de9332a3a7cb2b
+          ref: 00b9ae644352485e4779102b1c3c2d18f6a7155c
           persist-credentials: false
           fetch-depth: 0
 
@@ -25,7 +25,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="5ad8f5310f764c46ce02e38c39de9332a3a7cb2b"
+          target="00b9ae644352485e4779102b1c3c2d18f6a7155c"
           tree="4effe7ce338753ee61972890f676700ad33c3e04"
           parent="89e12f5863c9bfd02bddb28de121d9c19cc25d16"
           test "$(git rev-parse HEAD)" = "$target"
@@ -67,7 +67,7 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-H2 exact queue-v2 verification
-          target=5ad8f5310f764c46ce02e38c39de9332a3a7cb2b
+          target=00b9ae644352485e4779102b1c3c2d18f6a7155c
           tree=4effe7ce338753ee61972890f676700ad33c3e04
           parent=89e12f5863c9bfd02bddb28de121d9c19cc25d16
           queue_items=11
