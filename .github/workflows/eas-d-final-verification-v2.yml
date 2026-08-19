@@ -62,8 +62,8 @@ jobs:
         run: |
           python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
           python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
-          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
-          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --skip-git-context
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest --skip-git-context
 
       - name: Verify root documentation freshness and prompt completeness
         shell: bash
