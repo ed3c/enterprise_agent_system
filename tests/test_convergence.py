@@ -109,6 +109,18 @@ class CrossRepoConvergenceTests(unittest.TestCase):
         value["state"] = "COMPLETE"
         must_refuse(self, value, "CONVERGENCE_STATE_PROMOTION")
 
+    def test_current_owner_cannot_lose_all_shadow_receipts(self) -> None:
+        value = snapshot()
+        owner = next(item for item in value["owners"] if item["interface"] == "A2_SANDBOX_STEERING")
+        owner["shadow_receipts"] = []
+        must_refuse(self, value, "OWNER_SHADOW_RECEIPTS:A2_SANDBOX_STEERING")
+
+    def test_model_judge_cannot_impersonate_shadow_receipt(self) -> None:
+        value = snapshot()
+        owner = next(item for item in value["owners"] if item["interface"] == "A4_PROVENANCE_TELEMETRY")
+        owner["shadow_receipts"][0]["kind"] = "MODEL_JUDGE"
+        must_refuse(self, value, "OWNER_SHADOW_RECEIPT_KIND:A4_PROVENANCE_TELEMETRY")
+
     def test_architecture_plan_keeps_vertical_canary_plan_only(self) -> None:
         plan = json.loads(ARCHITECTURE.read_text(encoding="utf-8"))
         self.assertEqual(plan["atom"], "EAS-X")
