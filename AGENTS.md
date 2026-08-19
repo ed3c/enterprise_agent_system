@@ -9,7 +9,7 @@
 5. `docs/traceability/MOLECULAR_STACK_INDEX.md` — exact Stack/PR relationships.
 6. `docs/architecture/STATE_MACHINES.md` and `DATA_FLOW.md` — state/data routes.
 7. owning issue + exact fresh-session prompt under `docs/prompts/`.
-8. nearest profile/repository `AGENTS.md` before mutating any child path.
+8. nearest profile/repository `AGENTS.md` before mutating a child path.
 
 ## Runtime classification
 
@@ -41,7 +41,7 @@ Current important splits:
 - A2R runtime contract owner = `runtime-env`; A2 sandbox/steering owner = `agent-shield-monorepo`.
 - A2R current owner head and A2-consumed contract pin remain distinct identities.
 - `TELEMETRY-001`: Agent Shield remains runtime owner; EAS A4 is policy/synthetic evidence only.
-- `HITL-001`: EAS-H #27 owns queue contract; Human execution is separate.
+- P7 Local Handoff owner = EAS issue #14; PR #27 and PR #50/#51 are historical for current execution until rebound to current Root-D.
 
 ## Writer / branch / path / resource leases
 
@@ -79,20 +79,17 @@ One active Writer owns a path/resource. A process dependency is not a Git parent
 
 ## Fresh-session prompt packet contract
 
-A Worker session must not depend on prior chat memory. The packet binds:
+A Worker session must not depend on prior chat memory. The packet binds exact repo/commit/tree + source/profile digest, objective/non-goals/invariants/unknowns, one role/owner, writable/read-only/forbidden paths/resources, start/completion dependencies, I/O contracts, positive/mutation controls, runtime/capability requirements, evidence lane/ceiling, retry/timeout/cleanup/retention/rollback, required receipt, claims-not-proven, and next authority.
+
+## Current P6/P7 authority law
+
+Current Profile-D is PR #44 at `a7a034ef1db778fcee586fff8d8ff7848bc9a1ab` / tree `62796ebb2e48e60ab30809470d3b6c02f44009fc`, hosted verify `32282726313 PASS`, Shadow `4975046170 = ADMIT_FOR_ROOT_EAS_D`.
+
+Root-D v2 must receive its own external exact-target verification and fresh Shadow before P7 can be rebound. Until then:
 
 ```text
-exact repo/commit/tree + source/profile digest
-objective / non-goals / invariants / unknowns
-one role + one owner issue
-writable / read-only / forbidden paths/resources
-start dependencies + completion dependencies
-input/output contracts
-positive + planted mutation controls
-runtime/capability requirements
-evidence lane + evidence ceiling
-retry / timeout / cleanup / retention / rollback
-required receipt + claims_not_proven + next authority
+P7 queue compilation  BLOCKED_PENDING_CURRENT_ROOT_D_RECEIPT
+P7 execution          NOT_PERFORMED
 ```
 
 ## GitHub / Google projection boundary
@@ -101,39 +98,18 @@ GitHub exact commits/trees and Actions/review receipts are canonical publication
 
 ## Pre-side-effect stop conditions
 
-Stop and mark `BLOCKED` rather than improvise if work would require:
-
-- undeclared credential/provider enrollment;
-- private-data egress not explicitly admitted;
-- widening network/mount/privilege/capability policy;
-- external write without typed `WriteIntent`, idempotency identity, expected remote version and readback/unknown-effect plan;
-- Human-owned legal/security/conflict decision;
-- merge/release/rollback authority;
-- writing outside the active lease;
-- treating missing evidence as PASS.
+Stop and mark `BLOCKED` rather than improvise if work would require undeclared credential/provider enrollment, unapproved private-data egress, widened network/mount/privilege/capability policy, an external write without typed `WriteIntent` and readback/unknown-effect plan, a Human-owned legal/security decision, merge/release/rollback authority, writing outside the active lease, or treating missing evidence as PASS.
 
 ## Verification and cleanup denominator
 
-Every execution receipt retains attempts, failures, retries, skips, timeouts/OOM, unknown effects, dirty-state before/after, process/worktree/port/container/mount/index/artifact residue, cleanup result, compensation/rollback subject, claims-not-proven, and next authority. Failed attempts are not deleted from the denominator.
+Every execution receipt retains attempts, failures, retries, skips, timeouts/OOM, unknown effects, dirty-state before/after, process/worktree/port/container/mount/index/artifact residue, cleanup result, compensation/rollback subject, claims-not-proven, and next authority. Failed attempts are never deleted from the denominator.
 
 ## Local Handoff law
 
-The single queue under `handoff/` is canonical. Exactly one item may be `ACTIVE`. A cloud Agent may compile a candidate queue item but does not advance ACTIVE state without exact local/provider receipt readback and cleanup. Secret values never enter Git/task packets/portable receipts.
+The single queue under `handoff/` is canonical only on an admitted current P7 subject. Exactly one item may be `ACTIVE`. A cloud Agent may compile a candidate queue item but does not advance ACTIVE state without exact local/provider receipt readback and cleanup. Secret values never enter Git/task packets/portable receipts.
 
 ## Completion packet
 
-Return:
-
-```text
-subject_before / subject_after commit+tree
-changed paths and writer lease
-commands/Gates and all attempt outcomes
-exact external receipts
-Shadow findings/verdict
-cleanup/residue/rollback state
-claims_not_proven
-remaining blockers
-next authority
-```
+Return subject-before/after commit+tree, changed paths/lease, commands/Gates and all outcomes, exact external receipts, Shadow verdict, cleanup/residue/rollback state, claims-not-proven, remaining blockers, and next authority.
 
 A phase can be complete at its declared evidence ceiling while the architecture remains `BLOCKED_FOR_CLOSURE`.
