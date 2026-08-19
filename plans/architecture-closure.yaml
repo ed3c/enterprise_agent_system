@@ -19,8 +19,14 @@
     },
     "EAS-A": {
       "issue": "https://github.com/ed3c/enterprise_agent_system/issues/10",
-      "state": "NOT_IMPLEMENTED",
-      "reason": "GitHub/Google advisory projection adapters have no implementation subject yet"
+      "pull_request": 68,
+      "state": "DETERMINISTIC_VERIFIED",
+      "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+      "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891",
+      "verification_run": 32295871632,
+      "shadow_review": 4976213414,
+      "authority": "ADVISORY_ONLY",
+      "evidence_ceiling": "ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY"
     }
   },
   "owner_interfaces": [
@@ -36,6 +42,7 @@
     "P4_SUBJECTS_BOUND",
     "OWNER_UNIQUENESS_VERIFIED",
     "EXACT_SUBJECTS_READ_BACK",
+    "PROCESS_DEPENDENCIES_RECONCILED",
     "EVIDENCE_LANES_RECONCILED",
     "STRONGER_LANES_PRESERVED",
     "PUBLIC_VERTICAL_CANARY_SELECTED",
@@ -43,7 +50,7 @@
     "READY_FOR_PROFILE_X_AND_P6"
   ],
   "data_flow": [
-    "P4 exact owner subjects",
+    "P4 exact owner subjects + admitted advisory process dependencies",
     "cross-repo closure ledger",
     "aggregate fail-closed validator",
     "separate no-credit stronger-lane denominator",
@@ -60,6 +67,8 @@
   },
   "evidence_ceiling": {
     "owner_subject_consistency": "P5_CANDIDATE",
+    "advisory_projection_semantics": "DETERMINISTIC_VERIFIED",
+    "google_connectivity_or_write": "NOT_PERFORMED",
     "public_reversible_evidence_reconciliation": "P5_CANDIDATE",
     "physical_or_multi_host": "NOT_EXERCISED",
     "provider_enrollment": "NOT_EXERCISED",
