@@ -1,0 +1,143 @@
+name: EAS-H3 P7 exact queue verification
+
+on:
+  push:
+    branches: [verify/eas-h3-p7-exact-a6dbbc52]
+  pull_request:
+    paths:
+      - .github/workflows/eas-h2-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-p7-queue-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout immutable P7 queue v3 target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: a6dbbc52fba70c9732a1bf664f52a072cd83d608
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind Root-D parent and exact five-path P7 lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="a6dbbc52fba70c9732a1bf664f52a072cd83d608"
+          tree="7b54d0c56d088bf7edcf7b4c8984366a89ee9e36"
+          parent="68828ec8de5f3ad5aa133a5c772eefb80c775568"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          python3 - <<'PY'
+          import subprocess
+          parent = "68828ec8de5f3ad5aa133a5c772eefb80c775568"
+          expected = {
+              "handoff/README.md",
+              "handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json",
+              "handoff/local-handoff-queue.json",
+              "handoff/local-handoff-receipt.schema.json",
+              "tests/verify_handoff.py",
+          }
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
+          ).splitlines())
+          assert changed == expected, f"P7_PATH_LEASE:{sorted(changed ^ expected)}"
+          print(f"PASS Root-D ancestry and P7 path lease files={len(changed)}")
+          PY
+
+      - name: Replay inherited public profile semantics
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --skip-git-context
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest --skip-git-context
+
+      - name: Verify queue v3 and planted refusals
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+
+      - name: Parse compile and freshness controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool handoff/local-handoff-queue.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-receipt.schema.json >/dev/null
+          python3 -m json.tool handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json >/dev/null
+          python3 -m py_compile tests/verify_handoff.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q = json.loads(Path("handoff/local-handoff-queue.json").read_text(encoding="utf-8"))
+          assert q["compiled_from"]["commit"] == "68828ec8de5f3ad5aa133a5c772eefb80c775568"
+          assert q["compiled_from"]["tree"] == "bf338e0cd959a2b97adee79af7459222bd5211b9"
+          assert q["compiled_from"]["verification_run"] == 32284239386
+          assert q["compiled_from"]["shadow_review"] == 4975173485
+          assert q["queue_execution"] == "NOT_PERFORMED"
+          assert q["closure_projection"]["requirements_total"] == 15
+          assert q["closure_projection"]["contradictions_total"] == 14
+          assert q["closure_projection"]["stronger_no_credit_lanes"] == 13
+          assert q["closure_projection"]["requirements_required_lane_satisfied"] == 1
+          assert q["closure_projection"]["requirements_closure_credit"] == 0
+          assert q["closure_projection"]["profile_x_hosted_gate"] == "ABSENT"
+          assert q["closure_projection"]["full_architecture"] == "BLOCKED_FOR_CLOSURE"
+          assert q["items"][8]["canary"]["current_state"] == "PLAN_ONLY"
+          assert q["items"][8]["canary"]["execution_receipt"] is None
+          assert q["items"][8]["canary"]["contract_digest"] == "sha256:7a881bbe4b2b9605d56838f5f1e9a3c76dbf45ebc1b0aa7a973fd1329f88efbb"
+          assert len([x for x in q["items"] if x["state"] == "ACTIVE"]) == 1
+          assert all(x["authority"] == "NONE" for x in q["superseded_candidates"])
+          stale = {
+              "89e12f5863c9bfd02bddb28de121d9c19cc25d16",
+              "16e51462b2a0a693c1af92ad344fa3db6bbd4879",
+              "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c",
+              "690154a5f7154d551bef6942fe5d1f34091c2197",
+              "2146c02c23bbf87b6797900141c491a53f6936714b0b620a23016a2b20eaab79",
+          }
+          serialized = json.dumps(q, sort_keys=True)
+          assert not [x for x in stale if x in serialized], "STALE_CURRENT_P7_AUTHORITY"
+          print("PASS P7 current-subject freshness and evidence ceiling")
+          PY
+
+      - name: Portable surface and patch hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = [
+              Path("handoff/README.md"), Path("handoff/local-handoff-queue.json"),
+              Path("handoff/local-handoff-receipt.schema.json"),
+              Path("handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json"),
+          ]
+          corpus = "\n".join(p.read_text(encoding="utf-8") for p in paths)
+          forbidden = ["/"+"Users"+"/", "/"+"home"+"/", "/mnt/"+"data/", "BEGIN "+"PRIVATE KEY", "gemini."+"google.com"]
+          assert not [x for x in forbidden if x in corpus], "NON_PORTABLE_OR_PRIVATE_P7_SURFACE"
+          print("PASS portable P7 machine/docs surface")
+          PY
+          git diff --check 68828ec8de5f3ad5aa133a5c772eefb80c775568...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-H3 P7 exact queue verification
+          target=a6dbbc52fba70c9732a1bf664f52a072cd83d608
+          tree=7b54d0c56d088bf7edcf7b4c8984366a89ee9e36
+          parent_root_d=68828ec8de5f3ad5aa133a5c772eefb80c775568
+          queue_items=11
+          active_items=1
+          blocked_successors=9
+          human_terminal=1
+          commands=9
+          cleanup=3
+          planted_refusals=28
+          queue_execution=NOT_PERFORMED
+          vertical_canary=PLAN_ONLY
+          full_architecture=BLOCKED_FOR_CLOSURE
+          Human_admission=NOT_PERFORMED
+          merge_release_rollback=NOT_PERFORMED
+          EOF
