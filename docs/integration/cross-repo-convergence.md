@@ -17,19 +17,25 @@ A2_SANDBOX_STEERING   → agent-shield-monorepo
 
 A consumer sandbox PASS must not back-prove that a provider/runtime capability was observed. The same no-proxy rule applies across all owner lanes.
 
-## Exact P4 inputs
+## Current admitted public denominator
 
-| Interface | Canonical owner | Exact subject | P4 receipt class |
-|---|---|---|---|
-| A1 compaction/recovery | `ed3c/bettor-arena` | `21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328` / `31ea6bec01899a4c9e4f994998ea6041116db49d` | process-crash SQLite readback |
-| A2R runtime contract | `ed3c/runtime-env` | `cdfe74ac993cb0b4795fa80df237e8bb542409d2` / `0b2db695cdd812f81924b82689d96e3557b80158` | deterministic runtime contract |
-| A2 sandbox/steering | `ed3c/agent-shield-monorepo` | `a611d9a4fd0122977539074b2d9009e422379c3f` / `597393c94fdd7733ac3fe0c4311c7f3c7dce18a3` | reversible local process + cleanup |
-| A3 exact evidence | `ed3c/truth-verify-loop` | `5ea4dd42d2ee5bbd22537f5426cd276f10222980` / `fc6486b9ab6a48752e32a536a847c6e5635f8547` | public Git object readback |
-| A4 provenance/telemetry | `ed3c/enterprise_agent_system` | `ee4602423424b716f12fea7797372a7dc4f3e288` / `f81c41b1e725517f610b671fb00d28af3af4dfbb` | synthetic sanitize-before-export canary |
-| A5 discovery/admission | `ed3c/bettor-arena` | `81f02f4148273ffe5f5571c8605e1ee0afc59866` / `f9612314e47ced69796db00703dd5d34ab592e36` | matched sealed fixture benchmark |
-| A6 ingress/effects | `ed3c/bettor-arena` | `8cd4aea59ff203a6620cb834e6a0df82b5e8ecaa` / `b95b5abe6bcc28df38f9758da790356ade990a59` | UNKNOWN_EFFECT restart reconciliation |
+| Interface | Canonical owner | Exact subject | Hosted evidence | Shadow receipt |
+|---|---|---|---|---|
+| A1 compaction/recovery | `ed3c/bettor-arena` | `21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328` / `31ea6bec01899a4c9e4f994998ea6041116db49d` | `32259476821 PASS` | exact PR review `4972750319`; profile denominator `5343381027` |
+| A2R runtime contract | `ed3c/runtime-env` | owner head `2ff4efe7bee3d12fb3063fed93631f8d323cd64a` / `273c6873e7075d90a7f11275c5d39e746dd075dc` | `32249588945`, `32249588946 PASS` | exact PR review `4972041442` |
+| A2 sandbox/steering | `ed3c/agent-shield-monorepo` | `8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2` / `51adf9791485d597849c026a3828ded0088b3805` | `32262032532`, `32262032583`, `32262032553 PASS` | profile denominator `5343381027` |
+| A3 exact evidence | `ed3c/truth-verify-loop` | `5ea4dd42d2ee5bbd22537f5426cd276f10222980` / `fc6486b9ab6a48752e32a536a847c6e5635f8547` | `32260293092`, `32260291970 PASS` | exact PR review `4972977716`; profile denominator `5343381027` |
+| A4 provenance/telemetry | `ed3c/enterprise_agent_system` | `bf976c7c33e315d1743733a79c15521e645ff6dc` / `c09bef2457ad507433f253c8a5fd211147fae247` | `32261864341 PASS` | profile denominator `5343381027` |
+| A5 discovery/admission | `ed3c/bettor-arena` | `81f02f4148273ffe5f5571c8605e1ee0afc59866` / `f9612314e47ced69796db00703dd5d34ab592e36` | `32260835956 PASS` | exact PR review `4972939122`; profile denominator `5343381027` |
+| A6 ingress/effects | `ed3c/bettor-arena` | `c2613432736c65756ed13d871feb2df486c69118` / `53680d47048f88b9402c6320355121b7ec2f7244` | `32262080676 PASS` | profile denominator `5343381027` |
 
-The canonical machine copy is `evidence/ledgers/cross-repo-closure.json`. Branch names and URLs are navigation only.
+A2 sandbox consumes the earlier exact runtime-contract byte pin `cdfe74ac993cb0b4795fa80df237e8bb542409d2` / tree `0b2db695cdd812f81924b82689d96e3557b80158`; that consumed-byte identity is separate from the current runtime-env PR head above.
+
+The machine authority is `evidence/ledgers/cross-repo-closure.json`. Shadow receipts are typed as either `PR_REVIEW / EXACT_SUBJECT` or `ISSUE_COMMENT / PROFILE_PUBLIC_DENOMINATOR`; model/Judge agreement is not accepted as a Shadow receipt.
+
+## Freshness correction retained
+
+The first PR #31 Shadow review (`4973292423`) evaluated an earlier immutable denominator. Profile Shadow #19 later published issue comment `5343381027` with newer green A2/A4/A6 heads. PR #31 comment `5343652137` therefore marks the first X review superseded for final convergence credit. The history remains visible; no stale review is relabeled as current PASS.
 
 ## P5 State Machine
 
@@ -44,31 +50,32 @@ P4_SUBJECTS_BOUND
 → READY_FOR_PROFILE_X_AND_P6
 ```
 
-The current implementation is limited to the aggregate validation path through `PUBLIC_VERTICAL_CANARY_SELECTED`. An independent Shadow review of the final PR head is required before downstream handoff.
+The current implementation is limited to the aggregate validation path through `PUBLIC_VERTICAL_CANARY_SELECTED`. A fresh independent Shadow review of the final rebinding head is required before downstream handoff.
 
 ## Data flow
 
 ```text
-P4 owner commits/trees + hosted runs + Shadow reviews
-                  ↓
-        cross-repo closure ledger
-                  ↓
-     fail-closed convergence validator
-        ├─ one canonical owner/interface
-        ├─ exact immutable subjects
-        ├─ no lane substitution
-        ├─ no false Git ancestry
-        ├─ EAS-A remains NOT_IMPLEMENTED
-        └─ stronger lanes remain no-credit
-                  ↓
-  INCEPTION-P5-PUBLIC-REVERSIBLE-CHAIN
-                  │
-                  └── PLAN_ONLY / no private data / no external effects
-                  ↓
-          independent X Shadow
-          ├─ profile X #22
-          ├─ P6 docs #13
-          └─ stronger lanes → Local Handoff #14
+current exact owner commits/trees + hosted runs + typed Shadow receipts
+                              ↓
+                    cross-repo closure ledger
+                              ↓
+                 fail-closed convergence validator
+                    ├─ one canonical owner/interface
+                    ├─ exact immutable subjects
+                    ├─ no lane substitution
+                    ├─ typed Shadow provenance
+                    ├─ no false Git ancestry
+                    ├─ EAS-A remains NOT_IMPLEMENTED
+                    └─ stronger lanes remain no-credit
+                              ↓
+              INCEPTION-P5-PUBLIC-REVERSIBLE-CHAIN
+                              │
+                              └── PLAN_ONLY / no private data / no external effects
+                              ↓
+                       fresh X Shadow
+                       ├─ profile X #22
+                       ├─ P6 docs #13
+                       └─ stronger lanes → Local Handoff #14
 ```
 
 ## Git ancestry versus process dependencies
@@ -131,7 +138,7 @@ EAS-X writes only its aggregate convergence lease:
 src/enterprise_agent_system/convergence.py
 src/enterprise_agent_system/__init__.py          # export-only
 src/enterprise_agent_system/README.md            # route-only
- tests/test_convergence.py
+tests/test_convergence.py
 plans/architecture-closure.yaml
 plans/task-dag.json
 plans/molecular-stack-index.json
@@ -144,7 +151,7 @@ Root `README.md`, root `AGENTS.md`, `ARCHITECTURE.md`, `CONTEXT.md`, `docs/archi
 
 ## Next authority
 
-After exact-head validation plus independent Shadow:
+After exact-head validation plus a fresh independent Shadow:
 
 ```text
 profile-specific P5 convergence  → enterprise_agent_system#22
