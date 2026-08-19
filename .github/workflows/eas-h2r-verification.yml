@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable runner target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: c29e0344b3bbf8abf7453457947f1754db74b95f
+          ref: b05e7b3b2307d65bbb8031a9f175df5501f08d24
           persist-credentials: false
           fetch-depth: 0
 
@@ -33,8 +33,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="c29e0344b3bbf8abf7453457947f1754db74b95f"
-          tree="e8dab354c93466bb6c6e7158bd0e0f5967e9b96a"
+          target="b05e7b3b2307d65bbb8031a9f175df5501f08d24"
+          tree="c643fb5afbc5e3904f82c7f7a13e1dbcfb3648ac"
           parent="00b9ae644352485e4779102b1c3c2d18f6a7155c"
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse HEAD^{tree})" = "$tree"
@@ -71,6 +71,7 @@ jobs:
           assert p['mode']=='plan'
           assert p['active_item_id']=='LH-P7-01-FINAL-P6-LOCAL-READBACK'
           assert p['queue_execution']=='NOT_PERFORMED'
+          assert p['execute_requires_external_runner_admission'] is True
           assert p['queue_parent']['commit']=='00b9ae644352485e4779102b1c3c2d18f6a7155c'
           assert p['queue_parent']['tree']=='4effe7ce338753ee61972890f676700ad33c3e04'
           assert p['cleanup_ids']==['REMOVE_ROOT_D_WORKTREE','PRUNE_WORKTREES','DELETE_TEMP_ROOT_D_REF']
@@ -100,12 +101,16 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-H2RV exact local runner verification
-          target=c29e0344b3bbf8abf7453457947f1754db74b95f
-          tree=e8dab354c93466bb6c6e7158bd0e0f5967e9b96a
+          target=b05e7b3b2307d65bbb8031a9f175df5501f08d24
+          tree=c643fb5afbc5e3904f82c7f7a13e1dbcfb3648ac
           parent=00b9ae644352485e4779102b1c3c2d18f6a7155c
           writer_paths=4
-          runner_tests=13
+          runner_tests=18
           queue_refusals=18
+          external_runner_admission=REQUIRED
+          preexisting_residue_refusal=VERIFIED_HERMETIC
+          execution_roots_disjoint=VERIFIED_HERMETIC
+          receipt_schema_prewrite_validation=VERIFIED_HERMETIC
           verifier_definition_present=true
           execute_mode_invocation_absent=true
           real_runner_mode=plan_only
