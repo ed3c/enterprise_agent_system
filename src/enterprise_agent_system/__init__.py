@@ -1,5 +1,11 @@
 """Enterprise Agent System control-plane primitives."""
 
+from .convergence import (
+    ConvergenceContractError,
+    load_and_validate_convergence_json,
+    validate_convergence_snapshot,
+    validate_owner_record,
+)
 from .shadow import (
     ShadowContractError,
     ShadowFinding,
@@ -20,6 +26,10 @@ from .orchestration import (
 )
 
 __all__ = [
+    "ConvergenceContractError",
+    "load_and_validate_convergence_json",
+    "validate_convergence_snapshot",
+    "validate_owner_record",
     "ShadowContractError",
     "ShadowFinding",
     "ShadowVerdict",
