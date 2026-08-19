@@ -1,0 +1,20 @@
+{
+  "schema_version": "enterprise-agent-system/inception-telemetry-flow/v1",
+  "flow_id": "INCEPTION-A4-TRACE-FIXTURE-001",
+  "classification": "CONFIDENTIAL",
+  "stages": ["CLASSIFY", "SANITIZE", "NEGATIVE_LEAK_CONTROLS", "EXPORT", "STORE"],
+  "exporter": {
+    "subject": "fixture-local-otel-exporter",
+    "version": "v1",
+    "allowlisted_destination": "fixture-local-collector"
+  },
+  "storage": "fixture-local-storage",
+  "retention": "fixture-policy-7d",
+  "training_use_policy": "PROHIBITED",
+  "state": "CANDIDATE",
+  "claims_not_proven": [
+    "A local route does not prove zero leakage.",
+    "No live telemetry canary has executed.",
+    "No Human security review has been recorded."
+  ]
+}
