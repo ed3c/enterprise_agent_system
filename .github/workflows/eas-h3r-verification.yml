@@ -1,0 +1,135 @@
+name: EAS-H3R exact queue-v3 runner verification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/eas-h3r-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-queue-v3-runner-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable H3R target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: f81c2ecabaaac44ff82832a482524124baec106a
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/eas-h3r-exact-f81c2eca
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind exact queue-v3 parent and four-path writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="f81c2ecabaaac44ff82832a482524124baec106a"
+          tree="49170e045200b1cd42d8022ca6fcb81c23314932"
+          parent="a6dbbc52fba70c9732a1bf664f52a072cd83d608"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse HEAD^{tree})" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          unexpected="$(git diff --name-only "$parent"...HEAD | grep -Ev '^handoff/local-handoff-runner-contract\.json$|^handoff/run_active\.py$|^handoff/RUNBOOK\.md$|^tests/test_handoff_runner\.py$' || true)"
+          test -z "$unexpected" || { printf 'P7_H3R_PATH_LEASE_VIOLATION:\n%s\n' "$unexpected"; exit 2; }
+          test "$(git diff --name-only "$parent"...HEAD | wc -l)" -eq 4
+          git diff --quiet "$parent"..HEAD -- \
+            handoff/local-handoff-queue.json \
+            handoff/local-handoff-receipt.schema.json \
+            tests/verify_handoff.py \
+            README.md AGENTS.md ARCHITECTURE.md CONTEXT.md \
+            profiles src contracts plans evidence docs/prompts \
+            .github
+          printf 'PASS target=%s tree=%s parent=%s changed=4\n' "$target" "$tree" "$parent"
+
+      - name: Replay inherited queue-v3 controls
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+
+      - name: Execute H3R hermetic and orchestration tests
+        run: python3 tests/test_handoff_runner.py -v
+
+      - name: Execute real H3R plan mode only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 handoff/run_active.py --mode plan > /tmp/eas-h3r-plan.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/eas-h3r-plan.json'))
+          assert p['mode']=='plan'
+          assert p['queue_id']=='LH-EAS-INCEPTION-P7-V3-2026-08-20'
+          assert p['active_item_id']=='LH-P7-01-ROOT-D-V2-LOCAL-READBACK'
+          assert p['queue_parent']['commit']=='a6dbbc52fba70c9732a1bf664f52a072cd83d608'
+          assert p['queue_parent']['tree']=='7b54d0c56d088bf7edcf7b4c8984366a89ee9e36'
+          assert len(p['command_ids'])==9
+          assert p['cleanup_ids']==['REMOVE_ROOT_D_WORKTREE','PRUNE_WORKTREES','DELETE_TEMP_ROOT_D_REF']
+          assert p['required_environment_names']==['EAS_CHECKOUT','EAS_RECEIPT_DIR','EAS_WORKTREES']
+          assert p['superseded_queue_v2_authority']=='NONE'
+          assert p['superseded_runner_v2_authority']=='NONE'
+          assert p['execute_requires_external_runner_admission'] is True
+          assert p['queue_execution']=='NOT_PERFORMED'
+          PY
+
+      - name: Prove verifier definition never invokes real execute mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=".verifier/.github/workflows/eas-h3r-verification.yml"
+          test -f "$definition"
+          forbidden="--mode"" execute"
+          if grep -Fq -- "$forbidden" "$definition"; then
+            echo "REAL_QUEUE_EXECUTE_TOKEN_FOUND"
+            exit 2
+          fi
+          echo "PASS verifier-definition-present execute-mode-invocation-absent"
+
+      - name: Compile parse and patch hygiene
+        run: |
+          python3 -m json.tool handoff/local-handoff-runner-contract.json >/dev/null
+          python3 -m py_compile handoff/run_active.py tests/test_handoff_runner.py
+          git diff --check a6dbbc52fba70c9732a1bf664f52a072cd83d608...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-H3RV exact queue-v3 runner verification
+          target=f81c2ecabaaac44ff82832a482524124baec106a
+          tree=49170e045200b1cd42d8022ca6fcb81c23314932
+          parent=a6dbbc52fba70c9732a1bf664f52a072cd83d608
+          writer_paths=4
+          queue_v3_refusals=28
+          runner_tests=23
+          main_commands=9
+          cleanup_commands=3
+          old_queue_v2_authority=NONE
+          old_runner_v2_authority=NONE
+          external_runner_admission=REQUIRED
+          preexisting_residue_refusal=VERIFIED_HERMETIC
+          execution_roots_disjoint=VERIFIED_HERMETIC
+          receipt_non_overwrite=VERIFIED_HERMETIC
+          receipt_schema_prewrite_validation=VERIFIED_HERMETIC
+          failure_path_finally_cleanup=VERIFIED_HERMETIC
+          preflight_blocks_before_commands=VERIFIED_HERMETIC
+          verifier_definition_present=true
+          execute_mode_invocation_absent=true
+          real_runner_mode=plan_only
+          runner_execution=NOT_PERFORMED
+          queue_execution=NOT_PERFORMED
+          ACTIVE_local_execution=NOT_PERFORMED
+          provider_physical_private=NOT_EXERCISED
+          vertical_canary=PLAN_ONLY
+          Human_admission=NOT_PERFORMED
+          merge_release_rollback=NOT_PERFORMED
+          EOF
