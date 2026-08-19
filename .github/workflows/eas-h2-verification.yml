@@ -1,0 +1,82 @@
+name: EAS-H2 exact Local Handoff verification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/eas-h2-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-p7-queue-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable P7 target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 4cff97f5ea0333fa9be07b342b686ffe5ae5f39e
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact Root-D ancestry and P7 writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="4cff97f5ea0333fa9be07b342b686ffe5ae5f39e"
+          tree="00ae65b1cb6ad7eebd458b7705f2a51e47763c1d"
+          parent="89e12f5863c9bfd02bddb28de121d9c19cc25d16"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse HEAD^{tree})" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          unexpected="$(git diff --name-only "$parent"...HEAD | grep -Ev '^handoff/local-handoff-queue\.json$|^handoff/local-handoff-receipt\.schema\.json$|^handoff/history/|^handoff/README\.md$|^tests/verify_handoff\.py$' || true)"
+          test -z "$unexpected" || { printf 'P7_PATH_LEASE_VIOLATION:\n%s\n' "$unexpected"; exit 2; }
+          test "$(git diff --name-only "$parent"...HEAD | wc -l)" -eq 5
+          git diff --quiet "$parent"..HEAD -- \
+            README.md AGENTS.md ARCHITECTURE.md CONTEXT.md \
+            profiles src contracts plans evidence docs/prompts \
+            .github
+          printf 'PASS target=%s tree=%s parent=%s changed=5\n' "$target" "$tree" "$parent"
+
+      - name: Replay inherited P6 semantic controls
+        run: |
+          python3 tests/test_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py --selftest
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_ordered_controls.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Validate queue v2 and planted refusals
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+
+      - name: Parse compile and patch hygiene
+        run: |
+          python3 -m json.tool handoff/local-handoff-queue.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-receipt.schema.json >/dev/null
+          python3 -m json.tool handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json >/dev/null
+          python3 -m py_compile tests/verify_handoff.py
+          git diff --check 89e12f5863c9bfd02bddb28de121d9c19cc25d16...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-H2 exact queue-v2 verification
+          target=4cff97f5ea0333fa9be07b342b686ffe5ae5f39e
+          tree=00ae65b1cb6ad7eebd458b7705f2a51e47763c1d
+          parent=89e12f5863c9bfd02bddb28de121d9c19cc25d16
+          queue_items=11
+          active_items=1
+          blocked_successors=9
+          human_terminal=1
+          planted_refusals=18
+          vertical_canary=PLAN_ONLY
+          queue_execution=NOT_PERFORMED
+          Human_admission=NOT_PERFORMED
+          merge_release_rollback=NOT_PERFORMED
+          EOF
