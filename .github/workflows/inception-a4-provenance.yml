@@ -35,12 +35,16 @@ jobs:
           import subprocess
 
           root = pathlib.Path.cwd()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          print(f"subject commit={head} tree={tree}")
+
           manifest = json.loads((root / "profiles/agent-thinking-inception/owners/compliance/preflight.json").read_text())
           exact = {
               "schema_version": "inception-owner-preflight/v1",
               "atom_id": "INCEPTION-A4",
               "stage": "OWNER_IMPLEMENTATION",
-              "state": "FIRST_IMPLEMENTATION_CANDIDATE",
+              "state": "DETERMINISTIC_POLICY_CANDIDATE",
               "repository": "ed3c/enterprise_agent_system",
               "branch": "agent/inception-a4-provenance-policy",
           }
@@ -95,5 +99,5 @@ jobs:
           python3 -m json.tool profiles/agent-thinking-inception/policies/provenance/four-tier-policy-candidate.schema.json >/dev/null
           python3 -m json.tool profiles/agent-thinking-inception/policies/provenance/telemetry-flow.schema.json >/dev/null
 
-      - name: Check textual patch hygiene
-        run: git diff --check
+      - name: Check committed patch hygiene
+        run: git diff --check 6e0a916fd06dd8635d77c9a8c4d1b475185ea13e...HEAD
