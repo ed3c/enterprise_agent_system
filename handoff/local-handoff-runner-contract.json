@@ -20,6 +20,8 @@
   "default_mode": "plan",
   "modes": ["plan", "execute"],
   "allowed_runtime_kinds": ["CODEX_CLI_LOCAL", "CLAUDE_CODE_LOCAL"],
+  "execute_requires_external_runner_admission": true,
+  "execute_required_admission_fields": ["runner_commit", "runner_tree"],
   "execute_required_environment_names": ["EAS_CHECKOUT", "EAS_WORKTREES", "EAS_RECEIPT_DIR"],
   "subprocess_contract": {
     "shell": false,
@@ -32,16 +34,25 @@
     "environment_names_only": true,
     "relative_paths_only": true,
     "reject_parent_traversal": true,
-    "reject_root_escape": true
+    "reject_root_escape": true,
+    "execution_roots_pairwise_disjoint": true,
+    "receipt_root_outside_checkout": true
+  },
+  "preflight_contract": {
+    "checkout_must_be_clean": true,
+    "root_d_worktree_must_be_absent": true,
+    "root_d_worktree_registration_must_be_absent": true,
+    "temporary_root_d_ref_must_be_absent": true
   },
   "cleanup_contract": {
     "run_in_finally": true,
     "expected_command_ids": ["REMOVE_ROOT_D_WORKTREE", "PRUNE_WORKTREES", "DELETE_TEMP_ROOT_D_REF"],
-    "required_absent_residue": ["EAS_WORKTREES/root-d-final", "refs/remotes/origin/p7-root-d"],
+    "required_absent_residue": ["EAS_WORKTREES/root-d-final", "registered worktree EAS_WORKTREES/root-d-final", "refs/remotes/origin/p7-root-d"],
     "dirty_state_must_match_pre_execution": true
   },
   "receipt_contract": {
     "schema": "handoff/local-handoff-receipt.schema.json",
+    "validate_before_write": true,
     "write_mode": "ATOMIC_REPLACE",
     "secret_values_allowed": false,
     "resolved_local_paths_serialized": false,
