@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -22,7 +23,20 @@ QUEUE_PARENT_COMMIT = "00b9ae644352485e4779102b1c3c2d18f6a7155c"
 QUEUE_PARENT_TREE = "4effe7ce338753ee61972890f676700ad33c3e04"
 ACTIVE_ID = "LH-P7-01-FINAL-P6-LOCAL-READBACK"
 TEMP_REF = "refs/remotes/origin/p7-root-d"
-SAFE_HOST_ENV = ("PATH", "HOME", "TMPDIR", "TMP", "TEMP", "LANG", "LC_ALL", "SYSTEMROOT", "COMSPEC", "PATHEXT")
+SHA40 = re.compile(r"^[0-9a-f]{40}$")
+SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
+SAFE_HOST_ENV = (
+    "PATH",
+    "HOME",
+    "TMPDIR",
+    "TMP",
+    "TEMP",
+    "LANG",
+    "LC_ALL",
+    "SYSTEMROOT",
+    "COMSPEC",
+    "PATHEXT",
+)
 
 
 class RunnerError(RuntimeError):
@@ -95,6 +109,8 @@ def validate_runner_contract(contract: dict[str, Any]) -> None:
         raise RunnerError("DEFAULT_MODE_NOT_PLAN")
     if contract.get("runner_execution") != "NOT_PERFORMED" or contract.get("queue_execution") != "NOT_PERFORMED":
         raise RunnerError("FALSE_EXECUTION_PROMOTION")
+    if contract.get("execute_requires_external_runner_admission") is not True:
+        raise RunnerError("RUNNER_ADMISSION_NOT_REQUIRED")
 
 
 def assert_exact_parent_bytes(repo: pathlib.Path) -> None:
@@ -106,7 +122,11 @@ def assert_exact_parent_bytes(repo: pathlib.Path) -> None:
         raise RunnerError("RUNNER_NOT_TRUE_CHILD")
     unchanged = run_process(
         [
-            "git", "diff", "--quiet", f"{QUEUE_PARENT_COMMIT}..HEAD", "--",
+            "git",
+            "diff",
+            "--quiet",
+            f"{QUEUE_PARENT_COMMIT}..HEAD",
+            "--",
             "handoff/local-handoff-queue.json",
             "handoff/local-handoff-receipt.schema.json",
             "tests/verify_handoff.py",
@@ -115,6 +135,14 @@ def assert_exact_parent_bytes(repo: pathlib.Path) -> None:
     )
     if unchanged.returncode != 0:
         raise RunnerError("CONSUMED_QUEUE_BYTES_MUTATED")
+
+
+def assert_admitted_runner_subject(repo: pathlib.Path, commit: str, tree: str) -> None:
+    if SHA40.fullmatch(commit) is None or SHA40.fullmatch(tree) is None:
+        raise RunnerError("INVALID_ADMITTED_RUNNER_SUBJECT")
+    observed = git_subject(repo)
+    if (observed["commit"], observed["tree"]) != (commit, tree):
+        raise RunnerError("RUNNER_SUBJECT_NOT_ADMITTED")
 
 
 def active_item(queue: dict[str, Any]) -> dict[str, Any]:
@@ -134,7 +162,13 @@ def validate_relative(relative: str) -> pathlib.PurePath:
     return path
 
 
-def resolve_env_path(spec: Mapping[str, Any], environ: Mapping[str, str], allowlist: set[str], *, must_exist: bool = False) -> pathlib.Path:
+def resolve_env_path(
+    spec: Mapping[str, Any],
+    environ: Mapping[str, str],
+    allowlist: set[str],
+    *,
+    must_exist: bool = False,
+) -> pathlib.Path:
     env_name = spec.get("env")
     relative = spec.get("relative")
     if not isinstance(env_name, str) or env_name not in allowlist:
@@ -144,9 +178,10 @@ def resolve_env_path(spec: Mapping[str, Any], environ: Mapping[str, str], allowl
     raw_root = environ.get(env_name)
     if not raw_root:
         raise RunnerError(f"MISSING_ENV:{env_name}")
-    root = pathlib.Path(raw_root).expanduser().resolve()
-    if not pathlib.Path(raw_root).is_absolute():
+    raw_path = pathlib.Path(raw_root).expanduser()
+    if not raw_path.is_absolute():
         raise RunnerError(f"ENV_ROOT_NOT_ABSOLUTE:{env_name}")
+    root = raw_path.resolve()
     rel = validate_relative(relative)
     target = (root / rel).resolve()
     if target != root and root not in target.parents:
@@ -154,6 +189,22 @@ def resolve_env_path(spec: Mapping[str, Any], environ: Mapping[str, str], allowl
     if must_exist and not target.exists():
         raise RunnerError(f"PATH_MISSING:{env_name}")
     return target
+
+
+def resolve_execution_roots(environ: Mapping[str, str], allowlist: set[str]) -> dict[str, pathlib.Path]:
+    roots = {
+        "EAS_CHECKOUT": resolve_env_path({"env": "EAS_CHECKOUT", "relative": "."}, environ, allowlist, must_exist=True),
+        "EAS_WORKTREES": resolve_env_path({"env": "EAS_WORKTREES", "relative": "."}, environ, allowlist),
+        "EAS_RECEIPT_DIR": resolve_env_path({"env": "EAS_RECEIPT_DIR", "relative": "."}, environ, allowlist),
+    }
+    names = list(roots)
+    for index, left_name in enumerate(names):
+        left = roots[left_name]
+        for right_name in names[index + 1 :]:
+            right = roots[right_name]
+            if left == right or left in right.parents or right in left.parents:
+                raise RunnerError(f"EXECUTION_ROOTS_OVERLAP:{left_name}:{right_name}")
+    return roots
 
 
 def render_arg(arg: Mapping[str, Any], environ: Mapping[str, str], allowlist: set[str]) -> str:
@@ -214,7 +265,6 @@ def public_command_record(spec: Mapping[str, Any]) -> dict[str, Any]:
 
 def build_plan(queue: dict[str, Any], contract: dict[str, Any]) -> dict[str, Any]:
     item = active_item(queue)
-    cleanup_ids = [entry.get("command_id") for entry in item.get("cleanup", [])]
     return {
         "schema_version": "enterprise-agent-system/local-handoff-runner-plan/v1",
         "mode": "plan",
@@ -224,13 +274,20 @@ def build_plan(queue: dict[str, Any], contract: dict[str, Any]) -> dict[str, Any
         "required_runtime_any_of": item.get("required_runtime_any_of"),
         "required_environment_names": required_env_names(item),
         "command_ids": [entry.get("command_id") for entry in item.get("commands", [])],
-        "cleanup_ids": cleanup_ids,
+        "cleanup_ids": [entry.get("command_id") for entry in item.get("cleanup", [])],
         "receipt": item.get("required_receipt"),
+        "execute_requires_external_runner_admission": True,
         "queue_execution": "NOT_PERFORMED",
     }
 
 
-def command_result(spec: Mapping[str, Any], *, environ: Mapping[str, str], allowlist: set[str], child_env: Mapping[str, str]) -> tuple[int, str, str, dict[str, Any] | None]:
+def command_result(
+    spec: Mapping[str, Any],
+    *,
+    environ: Mapping[str, str],
+    allowlist: set[str],
+    child_env: Mapping[str, str],
+) -> tuple[int, str, str, dict[str, Any] | None]:
     cwd_spec = spec.get("cwd")
     argv_spec = spec.get("argv")
     timeout = spec.get("timeout_seconds")
@@ -240,14 +297,26 @@ def command_result(spec: Mapping[str, Any], *, environ: Mapping[str, str], allow
     argv = [render_arg(arg, environ, allowlist) for arg in argv_spec]
     try:
         result = run_process(argv, cwd=cwd, env=child_env, timeout=timeout)
-        failure = None if result.returncode == 0 else {"command_id": spec.get("command_id"), "kind": "NONZERO_EXIT", "exit_code": result.returncode}
+        failure = None if result.returncode == 0 else {
+            "command_id": spec.get("command_id"),
+            "kind": "NONZERO_EXIT",
+            "exit_code": result.returncode,
+        }
         return result.returncode, digest_bytes(result.stdout), digest_bytes(result.stderr), failure
     except subprocess.TimeoutExpired as exc:
         stdout = exc.stdout if isinstance(exc.stdout, bytes) else b""
         stderr = exc.stderr if isinstance(exc.stderr, bytes) else b""
-        return 124, digest_bytes(stdout), digest_bytes(stderr), {"command_id": spec.get("command_id"), "kind": "TIMEOUT", "timeout_seconds": timeout}
+        return 124, digest_bytes(stdout), digest_bytes(stderr), {
+            "command_id": spec.get("command_id"),
+            "kind": "TIMEOUT",
+            "timeout_seconds": timeout,
+        }
     except OSError as exc:
-        return 126, digest_bytes(b""), digest_bytes(str(type(exc).__name__).encode()), {"command_id": spec.get("command_id"), "kind": "OS_ERROR", "error_type": type(exc).__name__}
+        return 126, digest_bytes(b""), digest_bytes(type(exc).__name__.encode()), {
+            "command_id": spec.get("command_id"),
+            "kind": "OS_ERROR",
+            "error_type": type(exc).__name__,
+        }
 
 
 def temp_ref_present(checkout: pathlib.Path) -> bool:
@@ -259,8 +328,11 @@ def residue_inventory(environ: Mapping[str, str], allowlist: set[str]) -> dict[s
     checkout = resolve_env_path({"env": "EAS_CHECKOUT", "relative": "."}, environ, allowlist, must_exist=True)
     worktree = resolve_env_path({"env": "EAS_WORKTREES", "relative": "root-d-final"}, environ, allowlist)
     worktrees = git_bytes(["worktree", "list", "--porcelain"], checkout)
+    listing = worktrees.decode("utf-8", errors="replace")
+    registered = any(line == f"worktree {worktree}" for line in listing.splitlines())
     return {
         "root_d_worktree_exists": worktree.exists(),
+        "root_d_worktree_registered": registered,
         "temporary_root_d_ref_present": temp_ref_present(checkout),
         "worktree_listing_digest": digest_bytes(worktrees),
         "checkout_dirty_state": dirty_state(checkout),
@@ -270,9 +342,65 @@ def residue_inventory(environ: Mapping[str, str], allowlist: set[str]) -> dict[s
 def clean_residue(inventory: Mapping[str, Any], before_dirty: str) -> bool:
     return (
         inventory.get("root_d_worktree_exists") is False
+        and inventory.get("root_d_worktree_registered") is False
         and inventory.get("temporary_root_d_ref_present") is False
         and inventory.get("checkout_dirty_state") == before_dirty
     )
+
+
+def assert_clean_preflight_residue(inventory: Mapping[str, Any]) -> None:
+    if inventory.get("root_d_worktree_exists") or inventory.get("root_d_worktree_registered") or inventory.get("temporary_root_d_ref_present"):
+        raise RunnerError("PREEXISTING_RUNNER_RESIDUE_BLOCKED")
+
+
+def validate_subject(value: Any, reason: str) -> None:
+    if not isinstance(value, dict) or set(value) != {"repository", "commit", "tree"}:
+        raise RunnerError(reason)
+    if not isinstance(value.get("repository"), str) or not value["repository"]:
+        raise RunnerError(reason)
+    if SHA40.fullmatch(str(value.get("commit", ""))) is None or SHA40.fullmatch(str(value.get("tree", ""))) is None:
+        raise RunnerError(reason)
+
+
+def validate_receipt_against_schema(receipt: dict[str, Any], schema: dict[str, Any]) -> None:
+    properties = schema.get("properties")
+    required = schema.get("required")
+    if not isinstance(properties, dict) or not isinstance(required, list):
+        raise RunnerError("RECEIPT_SCHEMA_INVALID")
+    if set(receipt) - set(properties):
+        raise RunnerError("RECEIPT_ADDITIONAL_PROPERTIES")
+    if any(field not in receipt for field in required):
+        raise RunnerError("RECEIPT_REQUIRED_FIELDS")
+    if receipt.get("schema_version") != "enterprise-agent-system/local-handoff-receipt/v2":
+        raise RunnerError("RECEIPT_SCHEMA_VERSION")
+    validate_subject(receipt.get("subject_before"), "RECEIPT_SUBJECT_BEFORE")
+    validate_subject(receipt.get("subject_after"), "RECEIPT_SUBJECT_AFTER")
+    if SHA40.fullmatch(str(receipt.get("observed_commit", ""))) is None or SHA40.fullmatch(str(receipt.get("observed_tree", ""))) is None:
+        raise RunnerError("RECEIPT_OBSERVED_SUBJECT")
+    commands = receipt.get("commands")
+    codes = receipt.get("exit_codes")
+    stdout = receipt.get("stdout_digests")
+    stderr = receipt.get("stderr_digests")
+    if not all(isinstance(value, list) for value in (commands, codes, stdout, stderr)):
+        raise RunnerError("RECEIPT_COMMAND_ARRAYS")
+    if not (len(commands) == len(codes) == len(stdout) == len(stderr)) or not commands:
+        raise RunnerError("RECEIPT_COMMAND_CARDINALITY")
+    if any(not isinstance(code, int) for code in codes):
+        raise RunnerError("RECEIPT_EXIT_CODES")
+    if any(SHA256.fullmatch(str(value)) is None for value in stdout + stderr):
+        raise RunnerError("RECEIPT_DIGEST")
+    if receipt.get("result") not in properties["result"].get("enum", []):
+        raise RunnerError("RECEIPT_RESULT")
+    if receipt.get("cleanup_result") not in properties["cleanup_result"].get("enum", []):
+        raise RunnerError("RECEIPT_CLEANUP_RESULT")
+    for field in ("effect_state", "readback_state", "compensation_state"):
+        if field in receipt and receipt[field] not in properties[field].get("enum", []):
+            raise RunnerError(f"RECEIPT_{field.upper()}")
+    claims = receipt.get("claims_not_proven")
+    if not isinstance(claims, list) or not claims or any(not isinstance(value, str) or not value for value in claims):
+        raise RunnerError("RECEIPT_CLAIMS")
+    if not isinstance(receipt.get("next_transition"), str) or not receipt["next_transition"]:
+        raise RunnerError("RECEIPT_NEXT_TRANSITION")
 
 
 def atomic_write_json(path: pathlib.Path, value: Mapping[str, Any]) -> None:
@@ -290,11 +418,21 @@ def atomic_write_json(path: pathlib.Path, value: Mapping[str, Any]) -> None:
             os.unlink(tmp_name)
 
 
-def execute_active(queue: dict[str, Any], contract: dict[str, Any], *, runtime_kind: str, environ: Mapping[str, str]) -> tuple[dict[str, Any], pathlib.Path]:
+def execute_active(
+    queue: dict[str, Any],
+    contract: dict[str, Any],
+    schema: dict[str, Any],
+    *,
+    runtime_kind: str,
+    admitted_runner_commit: str,
+    admitted_runner_tree: str,
+    environ: Mapping[str, str],
+) -> tuple[dict[str, Any], pathlib.Path]:
     item = active_item(queue)
     allowed_runtime = item.get("required_runtime_any_of")
     if runtime_kind not in allowed_runtime or runtime_kind not in contract.get("allowed_runtime_kinds", []):
         raise RunnerError("RUNTIME_NOT_ADMITTED")
+    assert_admitted_runner_subject(ROOT, admitted_runner_commit, admitted_runner_tree)
 
     allowlist = set(queue.get("environment_name_allowlist", []))
     required_names = required_env_names(item)
@@ -302,13 +440,18 @@ def execute_active(queue: dict[str, Any], contract: dict[str, Any], *, runtime_k
         if name not in environ or not environ[name]:
             raise RunnerError(f"MISSING_ENV:{name}")
 
-    checkout = resolve_env_path({"env": "EAS_CHECKOUT", "relative": "."}, environ, allowlist, must_exist=True)
+    roots = resolve_execution_roots(environ, allowlist)
+    checkout = roots["EAS_CHECKOUT"]
     receipt_path = resolve_env_path(item["required_receipt"]["path"], environ, allowlist)
+    if receipt_path == checkout or checkout in receipt_path.parents:
+        raise RunnerError("RECEIPT_PATH_INSIDE_CHECKOUT")
     child_env = sanitized_child_env(environ, required_names)
     before_subject = git_subject(checkout)
     before_dirty = dirty_state(checkout)
     if before_dirty != "CLEAN":
         raise RunnerError("DIRTY_CHECKOUT_BLOCKED")
+    before_inventory = residue_inventory(environ, allowlist)
+    assert_clean_preflight_residue(before_inventory)
 
     started = now_iso()
     attempted: list[dict[str, Any]] = []
@@ -323,7 +466,12 @@ def execute_active(queue: dict[str, Any], contract: dict[str, Any], *, runtime_k
     try:
         for spec in item.get("commands", []):
             attempted.append(public_command_record(spec))
-            code, out_digest, err_digest, failure = command_result(spec, environ=environ, allowlist=allowlist, child_env=child_env)
+            code, out_digest, err_digest, failure = command_result(
+                spec,
+                environ=environ,
+                allowlist=allowlist,
+                child_env=child_env,
+            )
             exit_codes.append(code)
             stdout_digests.append(out_digest)
             stderr_digests.append(err_digest)
@@ -334,8 +482,8 @@ def execute_active(queue: dict[str, Any], contract: dict[str, Any], *, runtime_k
         worktree = resolve_env_path({"env": "EAS_WORKTREES", "relative": "root-d-final"}, environ, allowlist)
         if result_state == "PASS" and worktree.exists():
             observed = git_subject(worktree)
-            root = next(subject for subject in item["subjects"] if subject["subject_id"] == "ROOT-D")
-            if (observed["commit"], observed["tree"]) != (root["commit"], root["tree"]):
+            root_subject = next(subject for subject in item["subjects"] if subject["subject_id"] == "ROOT-D")
+            if (observed["commit"], observed["tree"]) != (root_subject["commit"], root_subject["tree"]):
                 failures.append({"kind": "ROOT_D_OBSERVED_SUBJECT_MISMATCH"})
                 result_state = "FAIL"
         elif result_state == "PASS":
@@ -343,11 +491,14 @@ def execute_active(queue: dict[str, Any], contract: dict[str, Any], *, runtime_k
             result_state = "FAIL"
     finally:
         for spec in item.get("cleanup", []):
-            code, out_digest, err_digest, failure = command_result(spec, environ=environ, allowlist=allowlist, child_env=child_env)
+            _code, _out_digest, _err_digest, failure = command_result(
+                spec,
+                environ=environ,
+                allowlist=allowlist,
+                child_env=child_env,
+            )
             if failure is not None:
                 cleanup_failures.append(failure)
-            # Cleanup digests are retained under residue inventory, not mixed with main command arrays.
-            _ = (code, out_digest, err_digest)
 
     inventory = residue_inventory(environ, allowlist)
     cleanup_result = "PASS" if not cleanup_failures and clean_residue(inventory, before_dirty) else "FAIL"
@@ -388,6 +539,7 @@ def execute_active(queue: dict[str, Any], contract: dict[str, Any], *, runtime_k
         "claims_not_proven": item["claims_not_proven"],
         "next_transition": next_transition,
     }
+    validate_receipt_against_schema(receipt, schema)
     atomic_write_json(receipt_path, receipt)
     return receipt, receipt_path
 
@@ -396,11 +548,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Fail-closed runner for the single ACTIVE Local Handoff item")
     parser.add_argument("--mode", choices=("plan", "execute"), default="plan")
     parser.add_argument("--runtime-kind", choices=("CODEX_CLI_LOCAL", "CLAUDE_CODE_LOCAL"))
+    parser.add_argument("--admitted-runner-commit")
+    parser.add_argument("--admitted-runner-tree")
     args = parser.parse_args(argv)
 
     contract = load_json(CONTRACT_PATH)
     queue = load_json(QUEUE_PATH)
-    _ = load_json(SCHEMA_PATH)
+    schema = load_json(SCHEMA_PATH)
     validate_runner_contract(contract)
     assert_exact_parent_bytes(ROOT)
 
@@ -409,8 +563,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if args.runtime_kind is None:
         raise RunnerError("EXECUTE_REQUIRES_RUNTIME_KIND")
-    receipt, _receipt_path = execute_active(queue, contract, runtime_kind=args.runtime_kind, environ=os.environ)
-    print(json.dumps({"item_id": receipt["item_id"], "result": receipt["result"], "cleanup_result": receipt["cleanup_result"], "next_transition": receipt["next_transition"]}, sort_keys=True))
+    if args.admitted_runner_commit is None or args.admitted_runner_tree is None:
+        raise RunnerError("EXECUTE_REQUIRES_ADMITTED_RUNNER_SUBJECT")
+    receipt, _receipt_path = execute_active(
+        queue,
+        contract,
+        schema,
+        runtime_kind=args.runtime_kind,
+        admitted_runner_commit=args.admitted_runner_commit,
+        admitted_runner_tree=args.admitted_runner_tree,
+        environ=os.environ,
+    )
+    print(
+        json.dumps(
+            {
+                "item_id": receipt["item_id"],
+                "result": receipt["result"],
+                "cleanup_result": receipt["cleanup_result"],
+                "next_transition": receipt["next_transition"],
+            },
+            sort_keys=True,
+        )
+    )
     return 0 if receipt["result"] == "PASS" else 2
 
 
