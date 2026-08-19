@@ -66,7 +66,7 @@ def main() -> None:
     refuse("handoff false execution", lambda: validate_receipts(receipts, base_canary), "HANDOFF_FALSE_EXECUTION")
 
     receipts = copy.deepcopy(base_receipts)
-    receipts["residue"]["authority"] = "PASS"
+    receipts["residue"]["superseded_branches"][0]["authority"] = "PASS"
     refuse("stale branch authority", lambda: validate_receipts(receipts, base_canary), "RESIDUE_AUTHORITY")
 
     receipts = copy.deepcopy(base_receipts)
