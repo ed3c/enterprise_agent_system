@@ -138,13 +138,18 @@ def validate(queue: dict[str, Any], schema: dict[str, Any], history: dict[str, A
     require(bound == {"ROOT-D": ROOT_D, "GENERIC-X": GENERIC_X, "PROFILE-D": PROFILE_D}, "ACTIVE_SUBJECTS")
     commands = first.get("commands")
     require(isinstance(commands, list) and len(commands) == 8, "ACTIVE_COMMANDS")
-    require(isinstance(first.get("cleanup"), list) and len(first["cleanup"]) == 2, "ACTIVE_CLEANUP")
+    cleanup = first.get("cleanup")
+    require(isinstance(cleanup, list) and len(cleanup) == 3, "ACTIVE_CLEANUP")
+    cleanup_ids = [x.get("command_id") for x in cleanup]
+    require(cleanup_ids == ["REMOVE_ROOT_D_WORKTREE", "PRUNE_WORKTREES", "DELETE_TEMP_ROOT_D_REF"], "CLEANUP_ORDER")
+    temp_ref_argv = [x.get("literal") for x in cleanup[-1].get("argv", [])]
+    require(temp_ref_argv == ["git", "update-ref", "-d", "refs/remotes/origin/p7-root-d"], "TEMP_REF_CLEANUP")
     receipt = first.get("required_receipt", {})
     require(receipt.get("schema") == "handoff/local-handoff-receipt.schema.json", "RECEIPT_SCHEMA_ROUTE")
     require(receipt.get("required_fields") == RECEIPT_FIELDS, "RECEIPT_FIELDS")
     require((first.get("rollback_subject", {}).get("commit"), first.get("rollback_subject", {}).get("tree")) == ROOT_D, "ROLLBACK_SUBJECT")
 
-    for command in commands + first["cleanup"]:
+    for command in commands + cleanup:
         require(isinstance(command.get("timeout_seconds"), int) and 0 < command["timeout_seconds"] <= 1800, f"TIMEOUT:{command.get('command_id')}")
         argv = command.get("argv")
         require(isinstance(argv, list) and argv, f"ARGV:{command.get('command_id')}")
@@ -177,7 +182,7 @@ def validate(queue: dict[str, Any], schema: dict[str, Any], history: dict[str, A
 
 def verify() -> None:
     validate(load(QUEUE_PATH), load(SCHEMA_PATH), load(HISTORY_PATH), README_PATH.read_text(encoding="utf-8"))
-    print("PASS P7 queue-v2 items=11 active=1 blocked=9 human=1 execution=NOT_PERFORMED")
+    print("PASS P7 queue-v2 items=11 active=1 blocked=9 human=1 cleanup=3 execution=NOT_PERFORMED")
 
 
 def must_refuse(label: str, mutate: Callable[[list[Any]], None]) -> None:
@@ -201,7 +206,7 @@ def selftest() -> None:
         ("allow credentials", lambda a: a[0].update({"credential_values_allowed": True})),
         ("unsafe shell", lambda a: a[0]["items"][0]["commands"][0]["argv"].append({"literal": "echo x && rm -rf /"})),
         ("unlisted env", lambda a: a[0]["items"][0]["commands"][0].update({"cwd": {"env": "SECRET_HOME", "relative": "."}})),
-        ("remove cleanup", lambda a: a[0]["items"][0].update({"cleanup": []})),
+        ("remove temp-ref cleanup", lambda a: a[0]["items"][0]["cleanup"].pop()),
         ("remove receipt field", lambda a: a[0]["items"][0]["required_receipt"]["required_fields"].pop()),
         ("canary executed", lambda a: a[0]["items"][8]["canary"].update({"current_state": "EXECUTED", "execution_receipt": "x"})),
         ("queue executed", lambda a: a[0].update({"queue_execution": "PASS"})),
