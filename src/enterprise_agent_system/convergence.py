@@ -15,6 +15,16 @@ SHA40 = re.compile(r"^[0-9a-f]{40}$")
 REPOSITORY = re.compile(r"^[^/\s]+/[^/\s]+$")
 ISSUE = re.compile(r"^https://github\.com/[^/]+/[^/]+/issues/[1-9][0-9]*$")
 
+EAS_A_SUBJECT = {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+    "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891",
+}
+EAS_A_VERIFY = 32295871632
+EAS_A_SHADOW = 4976213414
+EAS_A_AUTHORITY = "ADVISORY_ONLY"
+EAS_A_CEILING = "ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY"
+
 REQUIRED_INTERFACES = {
     "A1_COMPACTION_RECOVERY": "ed3c/bettor-arena",
     "A2R_RUNTIME_CONTRACT": "ed3c/runtime-env",
@@ -167,6 +177,30 @@ def validate_owner_record(value: Mapping[str, Any]) -> None:
     _nonempty_string(record["next_transition"], f"OWNER_NEXT_TRANSITION:{interface}")
 
 
+def _validate_process_dependency(value: Mapping[str, Any], process_atoms: set[str]) -> None:
+    dep = _strict_mapping(
+        value,
+        required={"atom", "issue", "state", "subject"},
+        optional={"verification_run", "shadow_review", "authority", "evidence_ceiling"},
+        name="PROCESS_DEPENDENCY",
+    )
+    atom = _nonempty_string(dep["atom"], "PROCESS_DEPENDENCY_ATOM")
+    _require(atom not in process_atoms, f"PROCESS_DEPENDENCY_DUPLICATE:{atom}")
+    process_atoms.add(atom)
+    _issue(dep["issue"], "PROCESS_DEPENDENCY_ISSUE")
+    _require(dep["state"] == "DETERMINISTIC_VERIFIED", f"PROCESS_DEPENDENCY_STATE:{atom}")
+    subject = _exact_subject(dep["subject"], prefix=f"PROCESS_DEPENDENCY_{atom}")
+    if atom == "EAS-A":
+        _require(dict(subject) == EAS_A_SUBJECT, "EAS_A_EXACT_SUBJECT_DRIFT")
+        _require(dep.get("verification_run") == EAS_A_VERIFY, "EAS_A_VERIFY_DRIFT")
+        _require(dep.get("shadow_review") == EAS_A_SHADOW, "EAS_A_SHADOW_DRIFT")
+        _require(dep.get("authority") == EAS_A_AUTHORITY, "EAS_A_AUTHORITY_WIDENING")
+        _require(dep.get("evidence_ceiling") == EAS_A_CEILING, "EAS_A_EVIDENCE_CEILING_DRIFT")
+    else:
+        _require(atom == "EAS-K", f"PROCESS_DEPENDENCY_UNKNOWN:{atom}")
+        _require(set(dep) == {"atom", "issue", "state", "subject"}, "EAS_K_EXTRA_AUTHORITY_FIELDS")
+
+
 def validate_convergence_snapshot(snapshot: Mapping[str, Any]) -> None:
     """Validate the aggregate P5 snapshot without promoting stronger evidence lanes."""
 
@@ -210,20 +244,7 @@ def validate_convergence_snapshot(snapshot: Mapping[str, Any]) -> None:
     _require(isinstance(process_dependencies, list) and process_dependencies, "PROCESS_DEPENDENCIES")
     process_atoms: set[str] = set()
     for item in process_dependencies:
-        dep = _strict_mapping(
-            item,
-            required={"atom", "issue", "state", "subject"},
-            name="PROCESS_DEPENDENCY",
-        )
-        atom = _nonempty_string(dep["atom"], "PROCESS_DEPENDENCY_ATOM")
-        _require(atom not in process_atoms, f"PROCESS_DEPENDENCY_DUPLICATE:{atom}")
-        process_atoms.add(atom)
-        _issue(dep["issue"], "PROCESS_DEPENDENCY_ISSUE")
-        if dep["state"] == "NOT_IMPLEMENTED":
-            _require(dep["subject"] is None, f"NOT_IMPLEMENTED_HAS_SUBJECT:{atom}")
-        else:
-            _require(dep["state"] == "DETERMINISTIC_VERIFIED", f"PROCESS_DEPENDENCY_STATE:{atom}")
-            _exact_subject(dep["subject"], prefix=f"PROCESS_DEPENDENCY_{atom}")
+        _validate_process_dependency(item, process_atoms)
     _require(process_atoms == {"EAS-K", "EAS-A"}, "PROCESS_DEPENDENCY_DENOMINATOR")
 
     owners = snapshot["owners"]
