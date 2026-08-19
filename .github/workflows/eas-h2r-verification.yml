@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable runner target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: b05e7b3b2307d65bbb8031a9f175df5501f08d24
+          ref: 521a8028ea66a137a7649a8292222ac408b87d25
           persist-credentials: false
           fetch-depth: 0
 
@@ -33,8 +33,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="b05e7b3b2307d65bbb8031a9f175df5501f08d24"
-          tree="c643fb5afbc5e3904f82c7f7a13e1dbcfb3648ac"
+          target="521a8028ea66a137a7649a8292222ac408b87d25"
+          tree="40e307283d50e92822677d0170fffb06d4b80dc9"
           parent="00b9ae644352485e4779102b1c3c2d18f6a7155c"
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse HEAD^{tree})" = "$tree"
@@ -101,16 +101,18 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-H2RV exact local runner verification
-          target=b05e7b3b2307d65bbb8031a9f175df5501f08d24
-          tree=c643fb5afbc5e3904f82c7f7a13e1dbcfb3648ac
+          target=521a8028ea66a137a7649a8292222ac408b87d25
+          tree=40e307283d50e92822677d0170fffb06d4b80dc9
           parent=00b9ae644352485e4779102b1c3c2d18f6a7155c
           writer_paths=4
-          runner_tests=18
+          runner_tests=20
           queue_refusals=18
           external_runner_admission=REQUIRED
           preexisting_residue_refusal=VERIFIED_HERMETIC
           execution_roots_disjoint=VERIFIED_HERMETIC
           receipt_schema_prewrite_validation=VERIFIED_HERMETIC
+          failure_path_finally_cleanup=VERIFIED_HERMETIC
+          preflight_blocks_before_commands=VERIFIED_HERMETIC
           verifier_definition_present=true
           execute_mode_invocation_absent=true
           real_runner_mode=plan_only
