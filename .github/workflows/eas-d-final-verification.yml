@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable root EAS-D target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 2e1aac5d409023f69136d2207398a492f898e32a
+          ref: e812e63640ae0e5d85a67b8963983af74cd66cab
           persist-credentials: false
           fetch-depth: 0
 
@@ -25,8 +25,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="2e1aac5d409023f69136d2207398a492f898e32a"
-          tree="26d87e1378be4795277851e34b992dec4b8bd0a5"
+          target="e812e63640ae0e5d85a67b8963983af74cd66cab"
+          tree="551ff9a381a5a9c8581985ab6e46f68764009f48"
           base="aa10bc13f2cfd4d33f0ffdf67f3e4923cb352c2f"
           gx="3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c"
           pd="690154a5f7154d551bef6942fe5d1f34091c2197"
@@ -131,8 +131,8 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-DV exact root documentation verification
-          target=2e1aac5d409023f69136d2207398a492f898e32a
-          tree=26d87e1378be4795277851e34b992dec4b8bd0a5
+          target=e812e63640ae0e5d85a67b8963983af74cd66cab
+          tree=551ff9a381a5a9c8581985ab6e46f68764009f48
           base=aa10bc13f2cfd4d33f0ffdf67f3e4923cb352c2f
           root_doc_paths=18
           fresh_session_prompts=8
