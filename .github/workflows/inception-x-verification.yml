@@ -1,0 +1,106 @@
+name: Inception X exact verification receipt
+
+on:
+  push:
+    branches: [verify/inception-x-exact-a27aa552]
+  pull_request:
+    paths:
+      - .github/workflows/inception-x-verification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-profile-x-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout immutable profile-X target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: a27aa552f1c258e09f515b4a5d117ba37f4d6615
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact target ancestry tree and writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="a27aa552f1c258e09f515b4a5d117ba37f4d6615"
+          tree="71eaa3f4acafd0b004ccdff16e4aa14bc2599649"
+          parent="6e0a916fd06dd8635d77c9a8c4d1b475185ea13e"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse HEAD^{tree})" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          unexpected="$(git diff --name-only "$parent"...HEAD | grep -Ev '^profiles/agent-thinking-inception/evidence/convergence/|^profiles/agent-thinking-inception/plans/vertical-canary\.json$|^profiles/agent-thinking-inception/plans/closure-record\.json$|^profiles/agent-thinking-inception/prompts/11-profile-convergence\.system\.md$|^profiles/agent-thinking-inception/tests/convergence/' || true)"
+          test -z "$unexpected" || { printf 'PROFILE_X_PATH_LEASE_VIOLATION:\n%s\n' "$unexpected"; exit 2; }
+          git diff --quiet "$parent"..HEAD -- \
+            profiles/agent-thinking-inception/source \
+            profiles/agent-thinking-inception/requirements \
+            profiles/agent-thinking-inception/contracts \
+            profiles/agent-thinking-inception/examples/inception-contract-bundle.example.json \
+            profiles/agent-thinking-inception/tests/verify_profile.py \
+            profiles/agent-thinking-inception/tests/contracts/verify_contracts.py \
+            profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py
+          printf 'PASS exact_target=%s tree=%s changed=%s\n' "$target" "$tree" "$(git diff --name-only "$parent"...HEAD | wc -l)"
+
+      - name: Bind inherited profile source blob identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:profiles/agent-thinking-inception/requirements/requirements.json)" = "06698be5e2a5d7b583078ec8b282f6c6c1f98198"
+          test "$(git rev-parse HEAD:profiles/agent-thinking-inception/requirements/control-requirements.json)" = "160be43c55f7c031e48abb4ebe264dcbd93150fb"
+          test "$(git rev-parse HEAD:profiles/agent-thinking-inception/requirements/assurance-requirements.json)" = "ddac27b1ca1b2c5f2fbc57f5c02018f89ed74cfe"
+          test "$(git rev-parse HEAD:profiles/agent-thinking-inception/requirements/delivery-requirements.json)" = "565a9227a9ef0d1eda3cc57a90727859bf56f1f5"
+          test "$(git rev-parse HEAD:profiles/agent-thinking-inception/requirements/contradictions.json)" = "ecbb4e5faa0df3b1acf3a0fbf506bb7c44dc76f8"
+          echo 'PASS inherited profile source blobs'
+
+      - name: Execute inherited source profile controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/verify_profile.py
+          python3 profiles/agent-thinking-inception/tests/verify_profile.py --selftest
+
+      - name: Execute inherited detailed contract controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/contracts/verify_contracts.py
+          python3 profiles/agent-thinking-inception/tests/contracts/verify_contracts.py --selftest
+
+      - name: Execute inherited profile DAG controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py
+          python3 profiles/agent-thinking-inception/tests/dag/verify_profile_dag.py --selftest
+
+      - name: Execute profile-X convergence positive and denominator replay
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py --selftest
+
+      - name: Execute ordered digest and authority widening controls
+        run: python3 profiles/agent-thinking-inception/tests/convergence/verify_ordered_controls.py
+
+      - name: Compile and parse exact profile-X subjects
+        run: |
+          python3 -m py_compile \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_ordered_controls.py
+          python3 -m json.tool profiles/agent-thinking-inception/plans/vertical-canary.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/closure-record.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/evidence/convergence/receipt-index.json >/dev/null
+          git diff --check "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e...HEAD"
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS INCEPTION-XV exact verification-only receipt
+          target=a27aa552f1c258e09f515b4a5d117ba37f4d6615
+          tree=71eaa3f4acafd0b004ccdff16e4aa14bc2599649
+          profile_parent=6e0a916fd06dd8635d77c9a8c4d1b475185ea13e
+          requirements=15
+          contradictions=14
+          vertical_canary=PLAN_ONLY
+          external_effects=NOT_PERFORMED
+          Human_admission=NOT_PERFORMED
+          merge_release_rollback=NOT_PERFORMED
+          EOF
