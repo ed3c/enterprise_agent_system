@@ -42,19 +42,24 @@ Local/Human Plane
 11. A public/deterministic fixture cannot proxy provider/private/physical/user/Human/release evidence.
 12. Human-owned irreversible transitions cannot be self-promoted by an Agent, model, CI, PR state or issue state.
 
-## Exact P6 convergence topology
+## Current P5/P6 Git topology
 
 ```text
-Generic EAS-X #31
-3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c
-             \
-              +-- root EAS-D convergence base -- root docs
-             /
-Profile-D #37
-690154a5f7154d551bef6942fe5d1f34091c2197
+Generic EAS-X #31 @ 8b1bfa38c103e1c064b8ef0aafecfc8f2a2642dc
+                     \
+                      +-- Profile-X v3 #40 @ fe2748e09a5222f439f09c5d0d71e486e1ade3e8
+                     /                   |
+Profile-E #32 @ 9f25b94ca891faf0d926b0fc22b67be88925aa81
+                                         |
+                                         v
+                                Profile-D v4 #44
+                                a7a034ef1db778fcee586fff8d8ff7848bc9a1ab
+                                         |
+                                         v
+                                  Root-D v2 candidate
 ```
 
-The root convergence base is a real multi-parent Git commit whose tree contains Generic-X control/convergence bytes and the complete Profile-D profile subtree plus inherited profile workflows. Historical PR #26 is a documentation blueprint/process dependency, not a final parent.
+Profile-X v3 is the true multi-parent child of Generic-X + Profile-E. Profile-D v4 is its true child. Root-D v2 is therefore a direct child of Profile-D v4; it does **not** create a redundant second Generic-X/Profile-D merge base. Verification siblings are evidence only and never Git parents.
 
 ## Canonical ownership map
 
@@ -72,19 +77,19 @@ Human authority           legal/security, irreversible effects, merge/release/ro
 
 ```text
 SOURCE_PROPOSAL
--> OWNER_AND_CONTRACT_BOUND
--> MECHANISM_IMPLEMENTED
--> DETERMINISTIC_EVIDENCE_VERIFIED
--> LIVE_OR_PHYSICAL_EVIDENCE_VERIFIED
--> USER_OUTCOME_VERIFIED
--> HUMAN_ADMITTED
--> RELEASED
--> OPERATED_WITH_ROLLBACK
+→ OWNER_AND_CONTRACT_BOUND
+→ MECHANISM_IMPLEMENTED
+→ DETERMINISTIC_EVIDENCE_VERIFIED
+→ LIVE_OR_PHYSICAL_EVIDENCE_VERIFIED
+→ USER_OUTCOME_VERIFIED
+→ HUMAN_ADMITTED
+→ RELEASED
+→ OPERATED_WITH_ROLLBACK
 ```
 
-No transition can be inferred from a later-looking label elsewhere. For example, a PR merged state does not prove user outcome; a provider 2xx does not prove effect commitment; a model agreement does not prove Human admission.
+No transition can be inferred from a later-looking label elsewhere. A PR state does not prove user outcome; provider/API success does not prove effect commitment; model agreement does not prove Human admission.
 
-## Profile-specific owner split
+## Profile owner split
 
 ```text
 A1  bettor-arena              durable state/compaction/recovery
@@ -94,23 +99,34 @@ A3  truth-verify-loop         exact evidence owner
 A4  enterprise_agent_system   provenance/policy candidate + synthetic evidence only
 A5  bettor-arena              discovery/admission candidate
 A6  bettor-arena              ingress/effect semantics
-E   enterprise_agent_system   read-only profile Shadow
+E   enterprise_agent_system   read-only Profile Shadow
 X   enterprise_agent_system   exact-subject profile convergence
 D   enterprise_agent_system   documentation projection
 ```
 
-`TELEMETRY-001` still has Agent Shield as canonical runtime owner. A4 evidence does not re-own telemetry runtime. `HITL-001` binds EAS-H #27 queue contract; queue execution and Human admission remain separate.
+`TELEMETRY-001` keeps Agent Shield as canonical runtime owner. A4 evidence does not re-own telemetry runtime. Local Handoff #14 owns P7 queue compilation; Human execution remains separate.
 
-## Evidence status at P6
+## Current exact evidence ceiling
 
 ```text
-requirements 15/15 exact owners
-required lanes satisfied 1/15
-requirement closure credit 0
-contradictions 14/14 preserved
-profile Shadow BLOCKED_FOR_CLOSURE
-vertical canary PLAN_ONLY
-profile release NOT_ADMITTED
+Profile-D #44 target        a7a034ef1db778fcee586fff8d8ff7848bc9a1ab
+Profile-D hosted verify     32282726313 PASS
+Profile-D Shadow            4975046170 ADMIT_FOR_ROOT_EAS_D
+requirements                15
+contradictions              14
+stronger no-credit lanes    13
+required lanes satisfied    1
+requirement closure credit  0
+Profile-X hosted Gate       ABSENT
+vertical canary             PLAN_ONLY / execution_receipt=null
+full architecture           BLOCKED_FOR_CLOSURE
+profile release             NOT_ADMITTED
 ```
+
+A1 current hosted receipt is `32259216877`; stale `32259476821` is historical only and excluded from current machine authority.
+
+## Projection boundary
+
+GitHub exact commits/trees and typed Actions/review receipts are canonical publication metadata. Google Docs/Sheets are `ADVISORY_ONLY`. Root/profile docs are projections and cannot write canonical task/workflow/effect/Human/release state.
 
 See `docs/architecture/STATE_MACHINES.md`, `docs/architecture/DATA_FLOW.md`, and `docs/traceability/MOLECULAR_STACK_INDEX.md` for operational routing.
