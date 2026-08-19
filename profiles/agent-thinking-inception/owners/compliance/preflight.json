@@ -1,8 +1,8 @@
 {
   "schema_version": "inception-owner-preflight/v1",
   "atom_id": "INCEPTION-A4",
-  "stage": "OWNER_IMPLEMENTATION",
-  "state": "DETERMINISTIC_POLICY_CANDIDATE",
+  "stage": "OWNER_PUBLIC_VERIFICATION",
+  "state": "TELEMETRY_LEAK_CANARY_CANDIDATE",
   "repository": "ed3c/enterprise_agent_system",
   "branch": "agent/inception-a4-provenance-policy",
   "base_subject": {
@@ -24,7 +24,7 @@
     "class": "SOURCE_PROPOSAL",
     "egress": "LOCAL_ONLY"
   },
-  "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/16",
+  "owner_issue": "ed3c/enterprise_agent_system#16",
   "interface": "inception/four-tier-provenance",
   "state_machine": [
     "FOUR_TIER_SUBJECTS_DECLARED",
@@ -48,6 +48,8 @@
     "profiles/agent-thinking-inception/evidence/compliance/four-tier-policy.example.json",
     "profiles/agent-thinking-inception/evidence/compliance/telemetry-flow.example.json",
     "profiles/agent-thinking-inception/owners/compliance/verify_policy.py",
+    "profiles/agent-thinking-inception/owners/compliance/telemetry_canary.py",
+    "profiles/agent-thinking-inception/owners/compliance/test_telemetry_canary.py",
     "profiles/agent-thinking-inception/prompts/07-provenance-owner.system.md"
   ],
   "writable_paths": [
@@ -73,17 +75,24 @@
   "resource_leases": [
     "policy-registry:inception-four-tier",
     "telemetry-flow:inception-local-fixture",
+    "telemetry-sink:temporary-local-file-only",
     "human-review-route:inception-legal-security"
   ],
-  "required_evidence_lanes": ["DETERMINISTIC_POLICY", "INDEPENDENT_SECURITY", "HUMAN_LEGAL", "PROVIDER_OR_LOCAL_TELEMETRY_SEPARATE"],
+  "required_evidence_lanes": [
+    "DETERMINISTIC_POLICY",
+    "SYNTHETIC_LEAK_CANARY",
+    "INDEPENDENT_SECURITY",
+    "HUMAN_LEGAL",
+    "PROVIDER_OR_LOCAL_TELEMETRY_SEPARATE"
+  ],
   "positive_controls": [
-    "each provenance dimension binds an exact subject version content digest and terms digest",
-    "each provenance dimension binds a non-empty Human review owner without fabricating a Human receipt",
-    "obligations blockers expiry and policy state remain separate per dimension",
-    "trace payload classes and explicit redacted/dropped fields are recorded before export",
-    "collector exporter and storage configurations are content-addressed",
-    "RBAC tenant scope retention deletion and training-use policy are explicit",
-    "negative leak controls are machine-readable records with evidence-lane ceilings",
+    "each provenance dimension binds exact subject version content and terms digests",
+    "trace flow orders CLASSIFY SANITIZE NEGATIVE_LEAK_CONTROLS before EXPORT",
+    "synthetic secret PII prompt and proprietary-source markers are planted before sanitization",
+    "redacted fields become a fixed redaction marker before local sink write",
+    "dropped fields are absent before local sink write",
+    "non-allowlisted destinations are refused",
+    "local sink readback is rescanned for every planted value",
     "automated result remains candidate blocked unknown expired or Human review required"
   ],
   "mutation_controls": [
@@ -96,18 +105,17 @@
     "Human review required with no Human owner",
     "unknown nested policy or telemetry field accepted",
     "telemetry sanitizer or leak controls run after exporter",
-    "explicit redacted or dropped field denominator omitted",
-    "RBAC or tenant scope omitted",
-    "retention deletion stage or deletion receipt requirement omitted",
-    "negative leak controls omitted",
-    "secret PII proprietary prompt or code leak",
+    "required redaction removed and planted secret reaches sink",
+    "dropped field retained",
+    "non-allowlisted destination accepted",
+    "RBAC tenant scope retention deletion or training-use policy omitted",
     "self-hosted or local route represented as zero leakage",
     "expired or changed terms retain admission",
     "automated system writes Human legal disposition"
   ],
   "cleanup_contract": {
     "required": true,
-    "inventory": ["policy_fixture", "trace_payload", "collector", "exporter", "storage", "artifact", "deletion_receipt"],
+    "inventory": ["policy_fixture", "trace_payload", "temporary_sink", "collector", "exporter", "storage", "artifact", "deletion_receipt"],
     "rollback_subject": "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e"
   },
   "forbidden_actions": [
@@ -121,10 +129,11 @@
     "rollback"
   ],
   "claims_not_proven": [
+    "Synthetic local-sink canary PASS does not prove zero leakage in a live runtime.",
     "No exact external Code Model Data or Trace terms subjects are admitted.",
-    "No telemetry exporter, independent security review or Human legal review has executed.",
-    "No live leak canary, deletion receipt or provider observation exists for this subject.",
-    "No provider activation, merge, release or rollback has occurred."
+    "No live collector exporter storage deletion or provider observation has executed.",
+    "No independent security review or Human legal review has executed.",
+    "No provider activation merge release or rollback has occurred."
   ],
-  "next_transition": "BIND_EXACT_TERMS_SUBJECTS_AND_RUN_TELEMETRY_LEAK_CANARY"
+  "next_transition": "BIND_EXACT_EXTERNAL_TERMS_AND_RUN_SCOPED_LIVE_TELEMETRY_CANARY"
 }
