@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable EAS-X target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 0e07d52507b6657e0b75d664deb882408b52ca83
+          ref: b295eabec7b4c9d4e1f65f7fb0238034f454ae7f
           persist-credentials: false
           fetch-depth: 0
 
@@ -25,8 +25,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="0e07d52507b6657e0b75d664deb882408b52ca83"
-          tree="3662c0b44ca8afea1e08fe800d6f34d055344f39"
+          target="b295eabec7b4c9d4e1f65f7fb0238034f454ae7f"
+          tree="25bd4c7e934690b3ac15692ba04af4418a46b1f2"
           parent="177ba870c41cc5605532ea79770d54aea124fa0c"
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse HEAD^{tree})" = "$tree"
@@ -130,8 +130,8 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-X exact EAS-A rebind verification
-          target=0e07d52507b6657e0b75d664deb882408b52ca83
-          tree=3662c0b44ca8afea1e08fe800d6f34d055344f39
+          target=b295eabec7b4c9d4e1f65f7fb0238034f454ae7f
+          tree=25bd4c7e934690b3ac15692ba04af4418a46b1f2
           git_parent=177ba870c41cc5605532ea79770d54aea124fa0c
           EAS_A_commit=250717db1cad584d50890c0d851153fa2cd755e8
           EAS_A_tree=fbf6a75b6e89e906f227110dc5a61e4355b8a891
