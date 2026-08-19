@@ -1,0 +1,54 @@
+version: 1
+defaults:
+  projection_authority: ADVISORY_ONLY
+  canonical_state_mutation: false
+  write_enabled: false
+  secret_values_allowed: false
+
+triggers:
+  github_public:
+    provider: GITHUB
+    classification: PUBLIC
+    egress_policy: PUBLIC_ONLY
+    required_identity:
+      - repository
+      - commit
+      - tree
+      - content_digest
+    read_capability: EXERCISED
+    write_capability: NOT_REQUESTED
+
+  google_docs_advisory:
+    provider: GOOGLE_DOCS
+    classification: INTERNAL_METADATA_ONLY
+    egress_policy: METADATA_ONLY
+    required_identity:
+      - document_id
+      - revision
+      - content_digest
+    allowed_targets:
+      - NARRATIVE
+      - PROMPT_CATALOGUE_MIRROR
+    write_capability: NOT_REQUESTED
+
+  google_sheets_advisory:
+    provider: GOOGLE_SHEETS
+    classification: INTERNAL_METADATA_ONLY
+    egress_policy: METADATA_ONLY
+    required_identity:
+      - document_id
+      - revision
+      - content_digest
+    allowed_targets:
+      - DASHBOARD
+    write_capability: NOT_REQUESTED
+
+stop_conditions:
+  - missing revision or digest for CURRENT content
+  - provider access refused or absent but represented as successful empty content
+  - URL used as immutable identity
+  - Google projection targets canonical state
+  - write requested without separate explicit authority
+  - secret or session material would be persisted
+  - stale revision accepted as CURRENT
+  - one provider receipt used as another provider's evidence
