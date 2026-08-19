@@ -1,7 +1,7 @@
 # EAS-X — cross-repository P5 convergence
 
-Status: **P5 CROSS-REPO CONVERGENCE CANDIDATE — EAS-A REBOUND**  
-Owner: `ed3c/enterprise_agent_system#12`  
+Status: **P5 CROSS-REPO CONVERGENCE CANDIDATE — EAS-A REBOUND**
+Owner: `ed3c/enterprise_agent_system#12`
 Git parent: `EAS-E` PR #25 at `177ba870c41cc5605532ea79770d54aea124fa0c` / tree `20073aa3b719f30c95a6cbf449f0d6a2144f71c3`.
 
 EAS-X is the aggregate ownership, subject and evidence-consistency layer. It does not own runtime execution, durable workflow state, effect state, provider adapters, independent verification, Human admission or release.
