@@ -18,7 +18,7 @@ jobs:
       - name: Checkout immutable EAS-A target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: dc7c5b57c3d175c861378474eff40e4b3ac9232d
+          ref: 250717db1cad584d50890c0d851153fa2cd755e8
           persist-credentials: false
           fetch-depth: 0
 
@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="dc7c5b57c3d175c861378474eff40e4b3ac9232d"
+          target="250717db1cad584d50890c0d851153fa2cd755e8"
           tree="fbf6a75b6e89e906f227110dc5a61e4355b8a891"
           base="5dda08e6d3376da98ed93fd3ef1c4211d89d6890"
           test "$(git rev-parse HEAD)" = "$target"
@@ -123,7 +123,7 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-AV exact advisory projection verification
-          target=dc7c5b57c3d175c861378474eff40e4b3ac9232d
+          target=250717db1cad584d50890c0d851153fa2cd755e8
           tree=fbf6a75b6e89e906f227110dc5a61e4355b8a891
           writer_paths=8
           positive_fixtures=3
