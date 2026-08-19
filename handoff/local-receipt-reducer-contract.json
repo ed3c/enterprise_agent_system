@@ -1,0 +1,64 @@
+{
+  "schema_version": "enterprise-agent-system/local-receipt-reducer-contract/v1",
+  "contract_id": "EAS-H3RR-P7-QUEUE-V3-RECEIPT-REDUCER-2026-08-20",
+  "state": "REDUCER_IMPLEMENTATION_CANDIDATE",
+  "queue_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 59,
+    "commit": "a6dbbc52fba70c9732a1bf664f52a072cd83d608",
+    "tree": "7b54d0c56d088bf7edcf7b4c8984366a89ee9e36",
+    "verification_run": 32286101504,
+    "shadow_review": 4975366131
+  },
+  "runner_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 67,
+    "commit": "f81c2ecabaaac44ff82832a482524124baec106a",
+    "tree": "49170e045200b1cd42d8022ca6fcb81c23314932",
+    "verification_run": 32293402604,
+    "shadow_review": 4976016596,
+    "relationship": "TRUE_GIT_PARENT"
+  },
+  "active_item_id": "LH-P7-01-ROOT-D-V2-LOCAL-READBACK",
+  "next_item_id": "LH-P7-02-A2R-CONTEXT-TOKENIZER",
+  "required_receipt": {
+    "schema": "handoff/local-handoff-receipt.schema.json",
+    "schema_version": "enterprise-agent-system/local-handoff-receipt/v2",
+    "environment_name": "EAS_RECEIPT_DIR",
+    "filename": "LH-P7-01-ROOT-D-V2-LOCAL-READBACK.json",
+    "origin": "EXTERNAL_ADMITTED_LOCAL_EXECUTION_ONLY"
+  },
+  "reducer_laws": {
+    "missing_receipt": "BLOCKED_BY_MISSING_REAL_LOCAL_RECEIPT",
+    "synthetic_fixture_receives_real_local_credit": false,
+    "trust_receipt_result_without_readback": false,
+    "require_exact_runner_subject": true,
+    "require_exact_root_d_observation_for_pass": true,
+    "require_complete_command_cleanup_denominator_for_pass": true,
+    "require_clean_residue_for_pass": true,
+    "require_local_deterministic_lane": true,
+    "queue_mutation": false,
+    "direct_queue_advancement": false,
+    "output": "NEXT_EPOCH_CANDIDATE_ONLY"
+  },
+  "expected_pass_denominator": {
+    "main_commands": 9,
+    "cleanup_commands": 3,
+    "total_command_records": 12,
+    "root_d_commit": "68828ec8de5f3ad5aa133a5c772eefb80c775568",
+    "root_d_tree": "bf338e0cd959a2b97adee79af7459222bd5211b9",
+    "success_transition": "CANDIDATE_RECEIPT_READY_FOR_CANONICAL_REDUCER"
+  },
+  "public_verification": {
+    "synthetic_receipt_fixtures_allowed": true,
+    "real_canonical_receipt_creation_allowed": false,
+    "active_execution_allowed": false,
+    "queue_write_allowed": false
+  },
+  "evidence_ceiling": "PUBLIC_RECEIPT_REDUCER_SEMANTICS_ONLY",
+  "claims_not_proven": [
+    "A synthetic PASS fixture does not prove a real local receipt exists.",
+    "A valid local PASS receipt only permits a next-epoch candidate after reducer readback; it does not itself mutate the queue.",
+    "LOCAL_DETERMINISTIC evidence grants no provider, physical, private, external-effect, user, Human, merge, release or rollback credit."
+  ]
+}
