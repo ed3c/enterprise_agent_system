@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import re
 import sys
-from typing import Any
+from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = ROOT / "evidence" / "compliance" / "four-tier-policy.example.json"
@@ -19,6 +19,29 @@ FLOW_SCHEMA = ROOT / "policies" / "provenance" / "telemetry-flow.schema.json"
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 ALLOWED_STATES = {"CANDIDATE", "BLOCKED", "UNKNOWN", "HUMAN_REVIEW_REQUIRED", "EXPIRED"}
 FORBIDDEN_CONCLUSIONS = {"ADMITTED", "COMMERCIALLY_SAFE", "ZERO_LEAKAGE"}
+POLICY_ROOT_KEYS = {"schema_version", "candidate_id", "dimensions", "overall_state", "claims_not_proven"}
+DIMENSION_KEYS = {
+    "subject", "version", "content_digest", "terms_digest", "obligations", "blockers",
+    "expiry_trigger", "policy_state", "human_review_owner", "human_review_subject",
+}
+FLOW_ROOT_KEYS = {
+    "schema_version", "flow_id", "classification", "payload_classes", "redacted_fields",
+    "dropped_fields", "stages", "collector", "exporter", "storage", "access_policy",
+    "retention", "deletion_policy", "training_use_policy", "negative_controls", "state",
+    "claims_not_proven",
+}
+COMPONENT_KEYS = {"subject", "version", "config_digest"}
+EXPORTER_KEYS = COMPONENT_KEYS | {"allowlisted_destination"}
+ACCESS_KEYS = {"rbac_roles", "tenant_scope"}
+RETENTION_KEYS = {"policy_id", "duration", "delete_after_retention"}
+DELETION_KEYS = {"mode", "receipt_required", "rebuild_behavior"}
+CONTROL_KEYS = {"control_id", "assertion", "evidence_lane", "expected_result"}
+ALLOWED_PAYLOAD_CLASSES = {
+    "PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "SECRET", "PII",
+    "PROPRIETARY_SOURCE", "PROMPT_CONTENT",
+}
+ALLOWED_CONTROL_LANES = {"DETERMINISTIC_FIXTURE", "LOCAL_LIVE", "PROVIDER_LIVE", "PHYSICAL"}
+ALLOWED_CONTROL_RESULTS = {"REFUSE", "REDACT", "DROP", "BLOCK_EXPORT"}
 
 
 class PolicyContractError(ValueError):
@@ -30,54 +53,117 @@ def _require(condition: bool, message: str) -> None:
         raise PolicyContractError(message)
 
 
+def _strict_keys(value: dict[str, Any], expected: set[str], label: str) -> None:
+    _require(isinstance(value, dict), f"{label}:object")
+    _require(set(value) == expected, f"{label}:keys")
+
+
+def _nonempty_unique_strings(value: Any, label: str) -> None:
+    _require(isinstance(value, list) and value, label)
+    _require(all(isinstance(item, str) and item.strip() for item in value), label)
+    _require(len(value) == len(set(value)), f"{label}:unique")
+
+
+def _digest(value: Any, label: str) -> None:
+    _require(isinstance(value, str) and bool(DIGEST.fullmatch(value)), label)
+
+
 def validate_policy(value: dict[str, Any]) -> None:
-    _require(value.get("schema_version") == "enterprise-agent-system/inception-four-tier-policy-candidate/v1", "schema_version")
-    _require(set(value.get("dimensions", {})) == {"code", "model", "data", "trace"}, "four-tier denominator")
-    _require(value.get("overall_state") in ALLOWED_STATES, "overall_state")
-    _require(value.get("overall_state") not in FORBIDDEN_CONCLUSIONS, "automated legal conclusion")
-    claims = value.get("claims_not_proven")
-    _require(isinstance(claims, list) and claims and len(claims) == len(set(claims)), "claims_not_proven")
+    _strict_keys(value, POLICY_ROOT_KEYS, "policy")
+    _require(value["schema_version"] == "enterprise-agent-system/inception-four-tier-policy-candidate/v1", "schema_version")
+    _require(isinstance(value["candidate_id"], str) and value["candidate_id"].strip(), "candidate_id")
+    _require(isinstance(value["dimensions"], dict), "dimensions")
+    _require(set(value["dimensions"]) == {"code", "model", "data", "trace"}, "four-tier denominator")
+    _require(value["overall_state"] in ALLOWED_STATES, "overall_state")
+    _require(value["overall_state"] not in FORBIDDEN_CONCLUSIONS, "automated legal conclusion")
+    _nonempty_unique_strings(value["claims_not_proven"], "claims_not_proven")
+
     for name, dimension in value["dimensions"].items():
-        for field in ("subject", "version", "content_digest", "terms_digest", "obligations", "blockers", "expiry_trigger", "policy_state", "human_review_subject"):
-            _require(field in dimension, f"{name}:{field}")
+        _strict_keys(dimension, DIMENSION_KEYS, f"{name}:dimension")
         _require(isinstance(dimension["subject"], str) and dimension["subject"].strip(), f"{name}:subject")
         _require(isinstance(dimension["version"], str) and dimension["version"].strip(), f"{name}:version")
-        _require(bool(DIGEST.fullmatch(dimension["content_digest"])), f"{name}:content_digest")
-        _require(bool(DIGEST.fullmatch(dimension["terms_digest"])), f"{name}:terms_digest")
-        _require(isinstance(dimension["obligations"], list) and dimension["obligations"], f"{name}:obligations")
+        _digest(dimension["content_digest"], f"{name}:content_digest")
+        _digest(dimension["terms_digest"], f"{name}:terms_digest")
+        _nonempty_unique_strings(dimension["obligations"], f"{name}:obligations")
         _require(isinstance(dimension["blockers"], list), f"{name}:blockers")
+        _require(all(isinstance(item, str) and item.strip() for item in dimension["blockers"]), f"{name}:blockers")
+        _require(len(dimension["blockers"]) == len(set(dimension["blockers"])), f"{name}:blockers:unique")
         _require(isinstance(dimension["expiry_trigger"], str) and dimension["expiry_trigger"].strip(), f"{name}:expiry_trigger")
         _require(dimension["policy_state"] in ALLOWED_STATES, f"{name}:policy_state")
         _require(dimension["policy_state"] not in FORBIDDEN_CONCLUSIONS, f"{name}:forbidden conclusion")
+        _require(isinstance(dimension["human_review_owner"], str) and dimension["human_review_owner"].strip(), f"{name}:human_review_owner")
         human = dimension["human_review_subject"]
         _require(human is None or (isinstance(human, str) and human.strip()), f"{name}:human_review_subject")
 
 
+def _validate_component(value: dict[str, Any], keys: set[str], label: str) -> None:
+    _strict_keys(value, keys, label)
+    for field in ("subject", "version"):
+        _require(isinstance(value[field], str) and value[field].strip(), f"{label}:{field}")
+    _digest(value["config_digest"], f"{label}:config_digest")
+
+
 def validate_flow(value: dict[str, Any]) -> None:
-    _require(value.get("schema_version") == "enterprise-agent-system/inception-telemetry-flow/v1", "flow schema_version")
-    stages = value.get("stages")
+    _strict_keys(value, FLOW_ROOT_KEYS, "flow")
+    _require(value["schema_version"] == "enterprise-agent-system/inception-telemetry-flow/v1", "flow schema_version")
+    _require(isinstance(value["flow_id"], str) and value["flow_id"].strip(), "flow_id")
+    _require(value["classification"] in {"PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED"}, "classification")
+
+    payload_classes = value["payload_classes"]
+    _nonempty_unique_strings(payload_classes, "payload_classes")
+    _require(set(payload_classes) <= ALLOWED_PAYLOAD_CLASSES, "payload_classes:enum")
+    _nonempty_unique_strings(value["redacted_fields"], "redacted_fields")
+    _nonempty_unique_strings(value["dropped_fields"], "dropped_fields")
+
+    stages = value["stages"]
     _require(isinstance(stages, list) and len(stages) == len(set(stages)), "stages")
-    for required in ("CLASSIFY", "SANITIZE", "NEGATIVE_LEAK_CONTROLS", "EXPORT", "STORE"):
-        _require(required in stages, f"missing stage:{required}")
-    _require(stages.index("CLASSIFY") < stages.index("SANITIZE"), "classify before sanitize")
-    _require(stages.index("SANITIZE") < stages.index("NEGATIVE_LEAK_CONTROLS"), "sanitize before leak controls")
-    _require(stages.index("NEGATIVE_LEAK_CONTROLS") < stages.index("EXPORT"), "controls before export")
-    _require(value.get("state") in ALLOWED_STATES, "flow state")
-    _require(value.get("state") not in FORBIDDEN_CONCLUSIONS, "flow automated conclusion")
-    exporter = value.get("exporter")
-    _require(isinstance(exporter, dict), "exporter")
-    for field in ("subject", "version", "allowlisted_destination"):
-        _require(isinstance(exporter.get(field), str) and exporter[field].strip(), f"exporter:{field}")
-    _require(value.get("training_use_policy") in {"PROHIBITED", "HUMAN_REVIEW_REQUIRED", "UNKNOWN"}, "training_use_policy")
-    claims = value.get("claims_not_proven")
-    _require(isinstance(claims, list) and claims, "flow claims_not_proven")
+    required_stages = ["CLASSIFY", "SANITIZE", "NEGATIVE_LEAK_CONTROLS", "EXPORT", "STORE", "DELETE"]
+    _require(set(stages) == set(required_stages), "stages:denominator")
+    for left, right in zip(required_stages, required_stages[1:]):
+        _require(stages.index(left) < stages.index(right), f"stage order:{left}->{right}")
+
+    _validate_component(value["collector"], COMPONENT_KEYS, "collector")
+    _validate_component(value["exporter"], EXPORTER_KEYS, "exporter")
+    _require(isinstance(value["exporter"]["allowlisted_destination"], str) and value["exporter"]["allowlisted_destination"].strip(), "exporter:allowlisted_destination")
+    _validate_component(value["storage"], COMPONENT_KEYS, "storage")
+
+    _strict_keys(value["access_policy"], ACCESS_KEYS, "access_policy")
+    _nonempty_unique_strings(value["access_policy"]["rbac_roles"], "access_policy:rbac_roles")
+    _require(isinstance(value["access_policy"]["tenant_scope"], str) and value["access_policy"]["tenant_scope"].strip(), "access_policy:tenant_scope")
+
+    _strict_keys(value["retention"], RETENTION_KEYS, "retention")
+    _require(isinstance(value["retention"]["policy_id"], str) and value["retention"]["policy_id"].strip(), "retention:policy_id")
+    _require(isinstance(value["retention"]["duration"], str) and value["retention"]["duration"].strip(), "retention:duration")
+    _require(value["retention"]["delete_after_retention"] is True, "retention:delete_after_retention")
+
+    _strict_keys(value["deletion_policy"], DELETION_KEYS, "deletion_policy")
+    _require(value["deletion_policy"]["mode"] in {"DELETE", "TOMBSTONE_THEN_DELETE", "REBUILD_WITHOUT_SUBJECT"}, "deletion_policy:mode")
+    _require(value["deletion_policy"]["receipt_required"] is True, "deletion_policy:receipt_required")
+    _require(isinstance(value["deletion_policy"]["rebuild_behavior"], str) and value["deletion_policy"]["rebuild_behavior"].strip(), "deletion_policy:rebuild_behavior")
+
+    _require(value["training_use_policy"] in {"PROHIBITED", "HUMAN_REVIEW_REQUIRED", "UNKNOWN"}, "training_use_policy")
+    controls = value["negative_controls"]
+    _require(isinstance(controls, list) and controls, "negative_controls")
+    seen: set[str] = set()
+    for control in controls:
+        _strict_keys(control, CONTROL_KEYS, "negative_control")
+        _require(isinstance(control["control_id"], str) and control["control_id"].strip(), "negative_control:control_id")
+        _require(control["control_id"] not in seen, "negative_control:duplicate")
+        seen.add(control["control_id"])
+        _require(isinstance(control["assertion"], str) and control["assertion"].strip(), "negative_control:assertion")
+        _require(control["evidence_lane"] in ALLOWED_CONTROL_LANES, "negative_control:evidence_lane")
+        _require(control["expected_result"] in ALLOWED_CONTROL_RESULTS, "negative_control:expected_result")
+
+    _require(value["state"] in ALLOWED_STATES, "flow state")
+    _require(value["state"] not in FORBIDDEN_CONCLUSIONS, "flow automated conclusion")
+    _nonempty_unique_strings(value["claims_not_proven"], "flow claims_not_proven")
 
 
 def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def expect_refusal(label: str, value: dict[str, Any], validator, contains: str) -> None:
+def expect_refusal(label: str, value: dict[str, Any], validator: Callable[[dict[str, Any]], None], contains: str) -> None:
     try:
         validator(value)
     except PolicyContractError as exc:
@@ -103,6 +189,14 @@ def selftest() -> None:
     expect_refusal("missing obligations", bad, validate_policy, "obligations")
 
     bad = copy.deepcopy(policy)
+    bad["dimensions"]["model"]["human_review_owner"] = ""
+    expect_refusal("missing human owner", bad, validate_policy, "human_review_owner")
+
+    bad = copy.deepcopy(policy)
+    bad["dimensions"]["trace"]["unexpected"] = true if False else "not-allowed"
+    expect_refusal("unknown nested policy field", bad, validate_policy, "dimension:keys")
+
+    bad = copy.deepcopy(policy)
     bad["overall_state"] = "COMMERCIALLY_SAFE"
     expect_refusal("commercial clearance", bad, validate_policy, "overall_state")
 
@@ -111,8 +205,32 @@ def selftest() -> None:
     expect_refusal("human authority", bad, validate_policy, "policy_state")
 
     bad = copy.deepcopy(flow)
-    bad["stages"] = ["CLASSIFY", "EXPORT", "SANITIZE", "NEGATIVE_LEAK_CONTROLS", "STORE"]
-    expect_refusal("sanitize after export", bad, validate_flow, "controls before export")
+    bad["stages"] = ["CLASSIFY", "EXPORT", "SANITIZE", "NEGATIVE_LEAK_CONTROLS", "STORE", "DELETE"]
+    expect_refusal("sanitize after export", bad, validate_flow, "stage order:NEGATIVE_LEAK_CONTROLS->EXPORT")
+
+    bad = copy.deepcopy(flow)
+    bad["redacted_fields"] = []
+    expect_refusal("missing redaction denominator", bad, validate_flow, "redacted_fields")
+
+    bad = copy.deepcopy(flow)
+    bad["access_policy"]["rbac_roles"] = []
+    expect_refusal("missing rbac", bad, validate_flow, "rbac_roles")
+
+    bad = copy.deepcopy(flow)
+    bad["stages"].remove("DELETE")
+    expect_refusal("missing delete stage", bad, validate_flow, "stages:denominator")
+
+    bad = copy.deepcopy(flow)
+    bad["deletion_policy"]["receipt_required"] = False
+    expect_refusal("deletion receipt optional", bad, validate_flow, "receipt_required")
+
+    bad = copy.deepcopy(flow)
+    bad["negative_controls"] = []
+    expect_refusal("missing leak controls", bad, validate_flow, "negative_controls")
+
+    bad = copy.deepcopy(flow)
+    bad["exporter"]["unexpected"] = "not-allowed"
+    expect_refusal("unknown nested flow field", bad, validate_flow, "exporter:keys")
 
     bad = copy.deepcopy(flow)
     bad["state"] = "ZERO_LEAKAGE"

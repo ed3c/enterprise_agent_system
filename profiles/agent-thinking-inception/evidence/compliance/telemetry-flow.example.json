@@ -2,19 +2,66 @@
   "schema_version": "enterprise-agent-system/inception-telemetry-flow/v1",
   "flow_id": "INCEPTION-A4-TRACE-FIXTURE-001",
   "classification": "CONFIDENTIAL",
-  "stages": ["CLASSIFY", "SANITIZE", "NEGATIVE_LEAK_CONTROLS", "EXPORT", "STORE"],
+  "payload_classes": ["CONFIDENTIAL", "SECRET", "PII", "PROPRIETARY_SOURCE", "PROMPT_CONTENT"],
+  "redacted_fields": ["authorization", "cookie", "user_email", "prompt_fragment"],
+  "dropped_fields": ["raw_secret", "raw_source_blob"],
+  "stages": ["CLASSIFY", "SANITIZE", "NEGATIVE_LEAK_CONTROLS", "EXPORT", "STORE", "DELETE"],
+  "collector": {
+    "subject": "fixture-local-otel-collector",
+    "version": "v1",
+    "config_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+  },
   "exporter": {
     "subject": "fixture-local-otel-exporter",
     "version": "v1",
+    "config_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
     "allowlisted_destination": "fixture-local-collector"
   },
-  "storage": "fixture-local-storage",
-  "retention": "fixture-policy-7d",
+  "storage": {
+    "subject": "fixture-local-storage",
+    "version": "v1",
+    "config_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+  },
+  "access_policy": {
+    "rbac_roles": ["telemetry-reader", "telemetry-admin"],
+    "tenant_scope": "fixture-tenant-only"
+  },
+  "retention": {
+    "policy_id": "fixture-policy-7d",
+    "duration": "P7D",
+    "delete_after_retention": true
+  },
+  "deletion_policy": {
+    "mode": "TOMBSTONE_THEN_DELETE",
+    "receipt_required": true,
+    "rebuild_behavior": "rebuild derived stores without deleted subject data"
+  },
   "training_use_policy": "PROHIBITED",
-  "state": "CANDIDATE",
+  "negative_controls": [
+    {
+      "control_id": "A4-TRACE-SECRET-001",
+      "assertion": "raw secrets never cross the exporter boundary",
+      "evidence_lane": "DETERMINISTIC_FIXTURE",
+      "expected_result": "DROP"
+    },
+    {
+      "control_id": "A4-TRACE-PII-002",
+      "assertion": "PII is redacted before export",
+      "evidence_lane": "DETERMINISTIC_FIXTURE",
+      "expected_result": "REDACT"
+    },
+    {
+      "control_id": "A4-TRACE-DEST-003",
+      "assertion": "non-allowlisted destinations are refused",
+      "evidence_lane": "DETERMINISTIC_FIXTURE",
+      "expected_result": "BLOCK_EXPORT"
+    }
+  ],
+  "state": "HUMAN_REVIEW_REQUIRED",
   "claims_not_proven": [
     "A local route does not prove zero leakage.",
     "No live telemetry canary has executed.",
+    "No deletion receipt has been produced by a live storage system.",
     "No Human security review has been recorded."
   ]
 }

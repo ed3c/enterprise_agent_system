@@ -27,7 +27,7 @@
     "dimension": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["subject", "version", "content_digest", "terms_digest", "obligations", "blockers", "expiry_trigger", "policy_state", "human_review_subject"],
+      "required": ["subject", "version", "content_digest", "terms_digest", "obligations", "blockers", "expiry_trigger", "policy_state", "human_review_owner", "human_review_subject"],
       "properties": {
         "subject": {"type": "string", "minLength": 1},
         "version": {"type": "string", "minLength": 1},
@@ -37,6 +37,7 @@
         "blockers": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "expiry_trigger": {"type": "string", "minLength": 1},
         "policy_state": {"enum": ["CANDIDATE", "BLOCKED", "UNKNOWN", "HUMAN_REVIEW_REQUIRED", "EXPIRED"]},
+        "human_review_owner": {"type": "string", "minLength": 1},
         "human_review_subject": {"type": ["string", "null"]}
       }
     }

@@ -1,10 +1,10 @@
 # Inception A4 — Code, Model, Data and Trace provenance
 
-Status: **FIRST PUBLIC IMPLEMENTATION CANDIDATE**  
+Status: **DETERMINISTIC POLICY CANDIDATE — SHADOW READBACK REQUIRED**  
 Upstream profile issue: `ed3c/enterprise_agent_system#16`  
 True parent: `agent/inception-k-profile-dag@6e0a916fd06dd8635d77c9a8c4d1b475185ea13e`
 
-This leaf implements a bounded, deterministic policy-candidate surface for four separately attributable provenance dimensions plus a sanitize-before-export telemetry-flow contract. It does not produce legal advice, commercial clearance, provider activation, telemetry deployment, Human admission, merge, release or rollback.
+This leaf implements a bounded policy-candidate surface for four separately attributable provenance dimensions and an explicit sanitize-before-export telemetry-flow contract. It does not produce legal advice, commercial clearance, provider activation, telemetry deployment, Human admission, merge, release or rollback.
 
 ## Exact lineage
 
@@ -27,9 +27,10 @@ policies/provenance/telemetry-flow.schema.json
 evidence/compliance/four-tier-policy.example.json
 evidence/compliance/telemetry-flow.example.json
 owners/compliance/verify_policy.py
+prompts/07-provenance-owner.system.md
 ```
 
-Every Code, Model, Data and Trace dimension retains its own subject, explicit version, content digest, terms digest, obligations, blockers, expiry trigger, policy state and optional Human review subject. Allowed automated states are only:
+Every Code, Model, Data and Trace dimension retains its own subject, explicit version, content digest, terms digest, obligations, blockers, expiry trigger, policy state, Human review owner and optional Human review receipt subject. Automated states are limited to:
 
 ```text
 CANDIDATE
@@ -39,7 +40,7 @@ HUMAN_REVIEW_REQUIRED
 EXPIRED
 ```
 
-The deterministic verifier refuses missing dimensions, mutable/missing terms digests, missing obligations, automated `COMMERCIALLY_SAFE` / `ADMITTED` outcomes and telemetry flows in which sanitization and negative leak controls occur after export.
+The deterministic verifier rejects missing dimensions, mutable/missing terms digests, missing obligations, absent Human owners, unknown nested fields, automated `COMMERCIALLY_SAFE` / `ADMITTED` outcomes and telemetry flows that omit required sanitization, access, retention, deletion or negative-control contracts.
 
 ## State Machine
 
@@ -54,20 +55,22 @@ FOUR_TIER_SUBJECTS_DECLARED
 → ADMITTED | BLOCKED | UNKNOWN | EXPIRED
 ```
 
-The current implementation covers the deterministic candidate portion through `AUTOMATED_POLICY_CANDIDATE_EMITTED`. Independent security and Human legal disposition remain separate lanes.
+This atom covers only the deterministic candidate portion through `AUTOMATED_POLICY_CANDIDATE_EMITTED`. Independent security, real terms subjects and Human legal disposition remain separate lanes.
 
 ## Telemetry data flow
 
 ```text
 runtime event
-→ CLASSIFY
-→ SANITIZE
+→ CLASSIFY payload classes
+→ SANITIZE explicit fields
+→ DROP disallowed fields
 → NEGATIVE_LEAK_CONTROLS
-→ EXPORT to an allowlisted destination
-→ STORE under explicit retention/training-use policy
+→ EXPORT through exact allowlisted exporter
+→ STORE under explicit RBAC + tenant scope + retention policy
+→ DELETE with required deletion receipt
 ```
 
-A local or self-hosted route does not by itself prove zero leakage.
+Collector, exporter and storage are versioned and content-addressed by configuration digest. The fixture records redacted and dropped fields, RBAC roles, tenant scope, retention, deletion/rebuild behavior, training-use policy and planted leak-control expectations. A local or self-hosted route still does not prove zero leakage.
 
 ## Writer lease
 
@@ -79,13 +82,26 @@ profiles/agent-thinking-inception/prompts/07-provenance-owner.system.md
 .github/workflows/inception-a4-provenance.yml
 ```
 
-Profile source, requirements, orchestration, generic Shadow, root docs, aggregate closure and Local Handoff remain read-only.
+Profile source, requirements, contracts, orchestration, generic Shadow, root docs, aggregate closure and Local Handoff remain read-only.
+
+## Shadow hardening closed by this candidate
+
+```text
+SH-A4-001  Human review required but Human owner absent        CLOSED_BY_CONTRACT
+SH-A4-002  trace schema omitted explicit redacted/dropped data CLOSED_BY_CONTRACT
+SH-A4-003  trace schema omitted RBAC / tenant scope            CLOSED_BY_CONTRACT
+SH-A4-004  retention had no deletion receipt contract          CLOSED_BY_CONTRACT
+SH-A4-005  leak assertions were prose rather than records      CLOSED_BY_CONTRACT
+SH-A4-006  nested unknown fields could bypass manual checker   CLOSED_BY_MUTATION
+```
+
+These are implementation claims until exact-head CI and independent Shadow readback succeed.
 
 ## Next transition
 
 `BIND_EXACT_TERMS_SUBJECTS_AND_RUN_TELEMETRY_LEAK_CANARY`
 
-The next atom must bind real external terms/version subjects and run an isolated leak-control canary. Automated checks still cannot make the Human legal/security disposition.
+The next atom must bind real external terms/version subjects and run an isolated leak-control canary. Automated checks cannot make the Human legal/security disposition.
 
 ## Evidence ceiling
 

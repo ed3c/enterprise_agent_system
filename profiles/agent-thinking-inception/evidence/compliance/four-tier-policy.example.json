@@ -11,6 +11,7 @@
       "blockers": [],
       "expiry_trigger": "source or terms digest changes",
       "policy_state": "CANDIDATE",
+      "human_review_owner": "ed3c",
       "human_review_subject": null
     },
     "model": {
@@ -22,6 +23,7 @@
       "blockers": ["Human terms review absent"],
       "expiry_trigger": "provider terms or model version changes",
       "policy_state": "HUMAN_REVIEW_REQUIRED",
+      "human_review_owner": "ed3c",
       "human_review_subject": null
     },
     "data": {
@@ -33,6 +35,7 @@
       "blockers": [],
       "expiry_trigger": "dataset snapshot or terms changes",
       "policy_state": "CANDIDATE",
+      "human_review_owner": "ed3c",
       "human_review_subject": null
     },
     "trace": {
@@ -40,10 +43,11 @@
       "version": "v1",
       "content_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
       "terms_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-      "obligations": ["sanitize before export", "enforce retention and training-use policy"],
+      "obligations": ["sanitize before export", "enforce retention, RBAC, deletion and training-use policy"],
       "blockers": ["live leak canary absent"],
       "expiry_trigger": "collector exporter storage or policy changes",
       "policy_state": "HUMAN_REVIEW_REQUIRED",
+      "human_review_owner": "ed3c",
       "human_review_subject": null
     }
   },
