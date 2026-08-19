@@ -39,7 +39,7 @@
     ],
     "completion_assertions": [
       "all seven constituent subjects are immutable and unique",
-      "each constituent hosted run is evidence for its declared public lane only",
+      "each constituent hosted run is read-only evidence for its declared public lane only",
       "no constituent receipt is promoted to provider, private, physical, user, Human, release or rollback evidence",
       "canary execution remains absent until an independent integrated receipt exists"
     ]
