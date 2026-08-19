@@ -8,9 +8,12 @@ This file is a convenience projection. Immutable evidence remains the named repo
 program issue  #6
 phase          P6 root documentation convergence
 owner issue    #13
-state          IN_PROGRESS
-next           exact-target docs verification -> Shadow -> P6 phase receipt
+state          P6_ROOT_DOCUMENTATION_CANDIDATE_COMPLETE
+next authority #14 P7 Local Handoff preparation
+P7 execution   NOT_PERFORMED
 ```
+
+The final root-D commit/tree, exact-target verification run and Shadow review are external receipts and are intentionally **not written back into the branch they review**. Downstream P7 must read them from the PR/issue receipt against the immutable head.
 
 ## Exact inputs
 
@@ -63,6 +66,7 @@ Canary digest: `sha256:2146c02c23bbf87b6797900141c491a53f6936714b0b620a23016a2b2
 
 - Profile-X inherited K workflow `32267670154 RED`: ancestry/consumed bytes passed; P2 K writer lease correctly rejected P5 child paths. Classification: `K_WRITER_GATE_NOT_APPLICABLE_TO_P5_CHILD`.
 - Profile-D DV `32270129840 RED`: all semantic controls passed; patch hygiene found two README trailing spaces. Fixed by `690154a5...`; rebound DV `32270454491 PASS`.
+- Root-D DV `32271993913 RED`: multi-parent/path lease and inherited semantic controls passed; root prompt portability Gate found a missing explicit no-prior-chat/fresh-session law. The P1/P4/P5/P7 prompt contract was corrected; the exact final receipt must be read externally.
 - Historical docs PR #26: documentation blueprint only; not final P6 evidence.
 
 ## Open stronger lanes
