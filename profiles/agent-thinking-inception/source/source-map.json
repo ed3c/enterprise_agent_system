@@ -1,0 +1,22 @@
+{
+  "schema_version": "enterprise-agent-system/inception-source-map/v1",
+  "source_subject_id": "SRC-PDF-INCEPTION-001",
+  "page_count": 26,
+  "sections": [
+    {"pages": [1, 2, 3], "topic": "Context compaction, VFS snapshot, reconstruction, and soft landing", "requirement_families": ["CONTEXT", "STATE", "STEERING"]},
+    {"pages": [4, 5], "topic": "Supervisor fan-out, sub-agent reflect loop, reducer, citation verification, repair", "requirement_families": ["DAG", "EVIDENCE"]},
+    {"pages": [6, 7], "topic": "Application scenarios and continuous discovery/convergence proposal", "requirement_families": ["CONVERGE", "EVIDENCE"]},
+    {"pages": [8, 9], "topic": "License gate, Protocol/SPI adapters, AST slicing, sandbox validation", "requirement_families": ["COMPLIANCE", "CONVERGE", "SANDBOX"]},
+    {"pages": [10, 11], "topic": "Code/Model/Data/Trace compliance and local telemetry proposal", "requirement_families": ["COMPLIANCE", "TELEMETRY"]},
+    {"pages": [12, 13, 14], "topic": "Unified architecture, LangGraph state graph, verification and telemetry stages", "requirement_families": ["DAG", "STATE", "EVIDENCE", "TELEMETRY"]},
+    {"pages": [15, 16], "topic": "Deterministic macro workflow plus bounded local Agent; external Domain State and stage gates", "requirement_families": ["DAG", "STATE", "HITL"]},
+    {"pages": [17, 18, 19], "topic": "Code trace schema, deterministic path/line/AST gate, retry and escalation graph", "requirement_families": ["EVIDENCE", "HITL"]},
+    {"pages": [20, 21, 22], "topic": "Enterprise directory, issue-triggered data flow, sandbox, gates, writeback and metrics", "requirement_families": ["INGRESS", "SANDBOX", "DAG", "TELEMETRY"]},
+    {"pages": [23, 24, 25, 26], "topic": "Illustrative FastAPI webhook, Docker background execution, signatures and cleanup", "requirement_families": ["INGRESS", "SANDBOX", "HITL"]}
+  ],
+  "private_or_ephemeral_locators_excluded": [
+    "Gemini conversation URL printed by the source",
+    "local attachment path",
+    "session-specific identifiers"
+  ]
+}
