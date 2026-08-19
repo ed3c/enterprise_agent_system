@@ -3,14 +3,14 @@
   "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
   "canary_id": "INCEPTION-X-PUBLIC-NO-EFFECT-001",
   "state": "PLAN_ONLY",
-  "contract_digest": "sha256:aeef053aaaced7d84cd7f76c0cd9c9809146d841a583a80d4ee99fb614991cb4",
+  "contract_digest": "sha256:7a881bbe4b2b9605d56838f5f1e9a3c76dbf45ebc1b0aa7a973fd1329f88efbb",
   "contract": {
     "generic_x": {
       "repository": "ed3c/enterprise_agent_system",
       "pull_request": 31,
-      "commit": "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c",
-      "tree": "e1be41234ff336297ce591b564291c9a0cd819ed",
-      "shadow_review": 4973461122
+      "commit": "8b1bfa38c103e1c064b8ef0aafecfc8f2a2642dc",
+      "tree": "9c8fb0e8e25f357fdb695a94c4ab74fc3dcd4631",
+      "shadow_review": 4973896050
     },
     "profile_shadow": {
       "repository": "ed3c/enterprise_agent_system",
