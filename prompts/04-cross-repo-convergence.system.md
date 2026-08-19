@@ -18,50 +18,70 @@ The X branch must be a true child of that exact subject. Do not treat EAS-K, EAS
 
 ## Objective
 
-Compile an exact-subject cross-repository closure graph over the public P4 owner evidence. Verify ownership, immutable subject identity, evidence-lane compatibility, blocker completeness and next authority. Select one useful public/test-safe vertical canary **plan** without executing private/provider/Human operations.
+Compile an exact-subject cross-repository closure graph over the current admitted public owner evidence. Verify ownership, immutable subject identity, hosted evidence, typed Shadow provenance, evidence-lane compatibility, blocker completeness and next authority. Select one useful public/test-safe vertical canary **plan** without executing private/provider/Human operations.
 
 EAS-X routes and reconciles. It must never become a second runtime, workflow reducer, effect ledger, provider adapter, verifier, Human state writer or release authority.
 
-## Canonical P4 inputs
+## Current admitted owner denominator
 
 ```text
 A1  ed3c/bettor-arena
     21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328
     tree 31ea6bec01899a4c9e4f994998ea6041116db49d
-    run 32259216877 / Shadow 4972750319
+    run 32259476821
+    Shadow PR review 4972750319 + profile denominator issue comment 5343381027
 
 A2R ed3c/runtime-env
-    cdfe74ac993cb0b4795fa80df237e8bb542409d2
-    tree 0b2db695cdd812f81924b82689d96e3557b80158
-    runs 32248796959,32248796967 / Shadow 4972041442
+    owner head 2ff4efe7bee3d12fb3063fed93631f8d323cd64a
+    tree 273c6873e7075d90a7f11275c5d39e746dd075dc
+    runs 32249588945,32249588946
+    Shadow PR review 4972041442
+    consumed by A2 at contract pin cdfe74ac993cb0b4795fa80df237e8bb542409d2
+    consumed contract tree 0b2db695cdd812f81924b82689d96e3557b80158
 
 A2  ed3c/agent-shield-monorepo
-    a611d9a4fd0122977539074b2d9009e422379c3f
-    tree 597393c94fdd7733ac3fe0c4311c7f3c7dce18a3
-    runs 32260646631,32260646656,32260647342 / Shadow 4972970293
+    8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2
+    tree 51adf9791485d597849c026a3828ded0088b3805
+    runs 32262032532,32262032583,32262032553
+    Shadow profile denominator issue comment 5343381027
 
 A3  ed3c/truth-verify-loop
     5ea4dd42d2ee5bbd22537f5426cd276f10222980
     tree fc6486b9ab6a48752e32a536a847c6e5635f8547
-    runs 32260293092,32260291970 / Shadow 4972977716
+    runs 32260293092,32260291970
+    Shadow PR review 4972977716 + profile denominator issue comment 5343381027
 
 A4  ed3c/enterprise_agent_system
-    ee4602423424b716f12fea7797372a7dc4f3e288
-    tree f81c41b1e725517f610b671fb00d28af3af4dfbb
-    run 32260074361 / Shadow 4972960995
+    bf976c7c33e315d1743733a79c15521e645ff6dc
+    tree c09bef2457ad507433f253c8a5fd211147fae247
+    run 32261864341
+    Shadow profile denominator issue comment 5343381027
 
 A5  ed3c/bettor-arena
     81f02f4148273ffe5f5571c8605e1ee0afc59866
     tree f9612314e47ced69796db00703dd5d34ab592e36
-    run 32260835956 / Shadow 4972939122
+    run 32260835956
+    Shadow PR review 4972939122 + profile denominator issue comment 5343381027
 
 A6  ed3c/bettor-arena
-    8cd4aea59ff203a6620cb834e6a0df82b5e8ecaa
-    tree b95b5abe6bcc28df38f9758da790356ade990a59
-    run 32261120485 / Shadow 4972945200
+    c2613432736c65756ed13d871feb2df486c69118
+    tree 53680d47048f88b9402c6320355121b7ec2f7244
+    run 32262080676
+    Shadow profile denominator issue comment 5343381027
 ```
 
-Re-read each exact commit/tree before rebinding. A moved branch does not invalidate an already reviewed immutable subject, but a new subject requires new exact-subject evidence and Shadow review.
+Shadow provenance is typed. Legal kinds are:
+
+```text
+PR_REVIEW    / EXACT_SUBJECT
+ISSUE_COMMENT / PROFILE_PUBLIC_DENOMINATOR
+```
+
+A model/Judge agreement is never a Shadow receipt. Re-read each exact commit/tree before rebinding. A moved branch does not invalidate an already reviewed immutable subject, but a newer subject cannot silently inherit an older exact-subject review.
+
+## Freshness law
+
+The first PR #31 X review `4973292423` evaluated an earlier owner denominator and is historical only. Profile Shadow #19 later emitted issue comment `5343381027` with newer green A2/A4/A6 heads. The final X head must bind the current subjects above and receive a **new** exact-head Shadow review before downstream handoff.
 
 ## Process dependencies
 
@@ -114,20 +134,23 @@ Do not edit these in P5. Root documentation belongs to P6 #13; Local Handoff bel
 
 1. Seven owner interfaces remain explicit: A1, A2R, A2, A3, A4, A5, A6.
 2. Each interface has exactly one canonical repository and immutable commit/tree.
-3. A2R runtime contract and A2 sandbox execution remain separate evidence lanes.
-4. `PUBLIC_VERIFIED` or `DETERMINISTIC_VERIFIED` never promotes a physical/provider/private/user/Human/release lane.
-5. EAS-A remains `NOT_IMPLEMENTED` until an exact implementation subject exists.
-6. Start-readiness and completion-readiness are distinct DAG edges.
-7. Process dependencies are not false Git parents.
-8. The selected vertical canary remains `PLAN_ONLY`, public, reversible, no-effect and no-Human.
-9. Every stronger unresolved lane has one owner issue and zero closure credit.
-10. Release/rollback remains owned by `ed3c/bettor-arena#68`.
+3. A2R runtime owner head and the A2-consumed runtime contract pin remain distinguishable.
+4. Every owner has at least one typed Shadow receipt; no generic model/Judge may impersonate Shadow.
+5. `PUBLIC_VERIFIED` or `DETERMINISTIC_VERIFIED` never promotes a physical/provider/private/user/Human/release lane.
+6. EAS-A remains `NOT_IMPLEMENTED` until an exact implementation subject exists.
+7. Start-readiness and completion-readiness are distinct DAG edges.
+8. Process dependencies are not false Git parents.
+9. The selected vertical canary remains `PLAN_ONLY`, public, reversible, no-effect and no-Human.
+10. Every stronger unresolved lane has one owner issue and zero closure credit.
+11. Release/rollback remains owned by `ed3c/bettor-arena#68`.
+12. A stale X review cannot be reused after owner-subject rebinding.
 
 ## Positive controls
 
 - the complete owner denominator validates;
 - every subject is exact repository/40-hex commit/40-hex tree;
-- hosted run IDs and Shadow review IDs are present;
+- hosted run IDs and typed Shadow receipts are present;
+- current A2/A4/A6 subjects match the profile Shadow denominator;
 - no two interfaces share one exact subject;
 - all stronger lanes are present and no-credit;
 - the Molecular Stack contains C/K/A/E/X/D with A/D gaps visible;
@@ -141,6 +164,8 @@ Require named refusal for at least:
 missing owner interface
 owner repository substitution
 runtime-contract owner replaced by consumer
+owner has no Shadow receipt
+MODEL_JUDGE represented as Shadow receipt
 EAS-A NOT_IMPLEMENTED with fabricated subject
 EAS-K process dependency represented as X Git parent
 stronger lane promoted from NOT_EXERCISED to public PASS
@@ -160,10 +185,11 @@ A mutation that fails only through unrelated parsing is not sufficient; preserve
 P4_SUBJECTS_BOUND
 → OWNER_UNIQUENESS_VERIFIED
 → EXACT_SUBJECTS_READ_BACK
+→ SHADOW_PROVENANCE_TYPED
 → EVIDENCE_LANES_RECONCILED
 → STRONGER_LANES_PRESERVED
 → PUBLIC_VERTICAL_CANARY_SELECTED
-→ SHADOW_REVIEW_REQUIRED
+→ FRESH_SHADOW_REVIEW_REQUIRED
 → READY_FOR_PROFILE_X_AND_P6
 ```
 
@@ -175,11 +201,14 @@ Return and persist:
 exact EAS-X PR head commit/tree
 exact EAS-E Git parent
 changed-path lease check
-test counts and mutation controls
+X positive and mutation-control results
 owner interface denominator
+current hosted run IDs
+typed Shadow receipt denominator
 stronger-lane denominator
 selected vertical canary state
-independent Shadow review id/verdict
+fresh independent X Shadow review id/verdict
+superseded review ids
 claims_not_proven
 next authority #22/#13/#14
 ```
@@ -189,8 +218,9 @@ next authority #22/#13/#14
 Stop and mark `BLOCKED` rather than smoothing if:
 
 - X branch is not a descendant of the exact EAS-E parent;
-- an owner subject or evidence receipt cannot be read back;
+- an owner subject or hosted/Shadow receipt cannot be read back;
 - one interface has two owners or no owner;
+- a current owner head is rebound using a stale Shadow receipt;
 - a provider/private/physical/user/Human/release lane is substituted by a cheaper fixture;
 - EAS-A absence is hidden;
 - a semantic conflict requires Human resolution;
