@@ -82,7 +82,8 @@
       },
       "cleanup": [
         {"command_id": "REMOVE_ROOT_D_WORKTREE", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "remove"}, {"literal": "--force"}, {"env_path": {"env": "EAS_WORKTREES", "relative": "root-d-final"}}], "timeout_seconds": 60},
-        {"command_id": "PRUNE_WORKTREES", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "prune"}], "timeout_seconds": 60}
+        {"command_id": "PRUNE_WORKTREES", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "prune"}], "timeout_seconds": 60},
+        {"command_id": "DELETE_TEMP_ROOT_D_REF", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "update-ref"}, {"literal": "-d"}, {"literal": "refs/remotes/origin/p7-root-d"}], "timeout_seconds": 60}
       ],
       "rollback_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "89e12f5863c9bfd02bddb28de121d9c19cc25d16", "tree": "16e51462b2a0a693c1af92ad344fa3db6bbd4879"},
       "success_transition": "CANDIDATE_RECEIPT_READY_FOR_CANONICAL_REDUCER",
