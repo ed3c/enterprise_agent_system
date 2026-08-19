@@ -8,6 +8,7 @@ import pathlib
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "handoff/run_active.py"
@@ -284,6 +285,106 @@ class HandoffRunnerTests(unittest.TestCase):
     def test_execute_cli_requires_external_runner_subject_before_environment(self):
         with self.assertRaisesRegex(runner.RunnerError, "EXECUTE_REQUIRES_ADMITTED_RUNNER_SUBJECT"):
             runner.main(["--mode", "execute", "--runtime-kind", "CODEX_CLI_LOCAL"])
+
+    def test_execute_failure_runs_all_cleanup_and_writes_fail_candidate_receipt(self):
+        with tempfile.TemporaryDirectory() as root_dir:
+            root = pathlib.Path(root_dir)
+            checkout = root / "checkout"
+            worktrees = root / "worktrees"
+            receipts = root / "receipts"
+            checkout.mkdir()
+            worktrees.mkdir()
+            receipts.mkdir()
+            env = {
+                "EAS_CHECKOUT": str(checkout),
+                "EAS_WORKTREES": str(worktrees),
+                "EAS_RECEIPT_DIR": str(receipts),
+            }
+            subject = {
+                "repository": "ed3c/enterprise_agent_system",
+                "commit": "1" * 40,
+                "tree": "2" * 40,
+            }
+            clean = {
+                "root_d_worktree_exists": False,
+                "root_d_worktree_registered": False,
+                "temporary_root_d_ref_present": False,
+                "worktree_listing_digest": runner.digest_bytes(b"fixture"),
+                "checkout_dirty_state": "CLEAN",
+            }
+            digest = runner.digest_bytes(b"")
+            main_failure = (7, digest, digest, {"command_id": "FETCH_ROOT_D", "kind": "NONZERO_EXIT", "exit_code": 7})
+            cleanup_ok = (0, digest, digest, None)
+            with (
+                mock.patch.object(runner, "assert_admitted_runner_subject"),
+                mock.patch.object(runner, "git_subject", return_value=subject),
+                mock.patch.object(runner, "dirty_state", return_value="CLEAN"),
+                mock.patch.object(runner, "residue_inventory", side_effect=[clean, clean]),
+                mock.patch.object(runner, "command_result", side_effect=[main_failure, cleanup_ok, cleanup_ok, cleanup_ok]) as command,
+                mock.patch.object(runner, "atomic_write_json") as write,
+            ):
+                receipt, _path = runner.execute_active(
+                    self.queue(),
+                    self.contract(),
+                    self.schema(),
+                    runtime_kind="CODEX_CLI_LOCAL",
+                    admitted_runner_commit="3" * 40,
+                    admitted_runner_tree="4" * 40,
+                    environ=env,
+                )
+            self.assertEqual(receipt["result"], "FAIL")
+            self.assertEqual(receipt["cleanup_result"], "PASS")
+            self.assertEqual(receipt["next_transition"], "BLOCKED_WITH_EXACT_LOCAL_RECEIPT")
+            self.assertEqual(
+                [call.args[0]["command_id"] for call in command.call_args_list],
+                ["FETCH_ROOT_D", "REMOVE_ROOT_D_WORKTREE", "PRUNE_WORKTREES", "DELETE_TEMP_ROOT_D_REF"],
+            )
+            write.assert_called_once()
+
+    def test_execute_preexisting_residue_blocks_before_any_command(self):
+        with tempfile.TemporaryDirectory() as root_dir:
+            root = pathlib.Path(root_dir)
+            checkout = root / "checkout"
+            worktrees = root / "worktrees"
+            receipts = root / "receipts"
+            checkout.mkdir()
+            worktrees.mkdir()
+            receipts.mkdir()
+            env = {
+                "EAS_CHECKOUT": str(checkout),
+                "EAS_WORKTREES": str(worktrees),
+                "EAS_RECEIPT_DIR": str(receipts),
+            }
+            subject = {
+                "repository": "ed3c/enterprise_agent_system",
+                "commit": "1" * 40,
+                "tree": "2" * 40,
+            }
+            residue = {
+                "root_d_worktree_exists": False,
+                "root_d_worktree_registered": False,
+                "temporary_root_d_ref_present": True,
+                "worktree_listing_digest": runner.digest_bytes(b"fixture"),
+                "checkout_dirty_state": "CLEAN",
+            }
+            with (
+                mock.patch.object(runner, "assert_admitted_runner_subject"),
+                mock.patch.object(runner, "git_subject", return_value=subject),
+                mock.patch.object(runner, "dirty_state", return_value="CLEAN"),
+                mock.patch.object(runner, "residue_inventory", return_value=residue),
+                mock.patch.object(runner, "command_result") as command,
+            ):
+                with self.assertRaisesRegex(runner.RunnerError, "PREEXISTING_RUNNER_RESIDUE_BLOCKED"):
+                    runner.execute_active(
+                        self.queue(),
+                        self.contract(),
+                        self.schema(),
+                        runtime_kind="CODEX_CLI_LOCAL",
+                        admitted_runner_commit="3" * 40,
+                        admitted_runner_tree="4" * 40,
+                        environ=env,
+                    )
+            command.assert_not_called()
 
     def test_public_command_record_does_not_resolve_paths(self):
         item = runner.active_item(self.queue())
