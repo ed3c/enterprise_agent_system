@@ -15,6 +15,9 @@ from enterprise_agent_system.convergence import (  # noqa: E402
 )
 
 LEDGER = ROOT / "evidence" / "ledgers" / "cross-repo-closure.json"
+ARCHITECTURE = ROOT / "plans" / "architecture-closure.yaml"
+TASK_DAG = ROOT / "plans" / "task-dag.json"
+STACK = ROOT / "plans" / "molecular-stack-index.json"
 
 
 def snapshot() -> dict:
@@ -105,6 +108,41 @@ class CrossRepoConvergenceTests(unittest.TestCase):
         value = snapshot()
         value["state"] = "COMPLETE"
         must_refuse(self, value, "CONVERGENCE_STATE_PROMOTION")
+
+    def test_architecture_plan_keeps_vertical_canary_plan_only(self) -> None:
+        plan = json.loads(ARCHITECTURE.read_text(encoding="utf-8"))
+        self.assertEqual(plan["atom"], "EAS-X")
+        self.assertEqual(plan["git_parent"]["atom"], "EAS-E")
+        self.assertEqual(plan["selected_vertical_canary"]["state"], "PLAN_ONLY")
+        self.assertFalse(plan["selected_vertical_canary"]["private_data"])
+        self.assertFalse(plan["selected_vertical_canary"]["external_effects"])
+        self.assertEqual(plan["process_dependencies"]["EAS-A"]["state"], "NOT_IMPLEMENTED")
+
+    def test_task_dag_separates_start_completion_and_external_blockers(self) -> None:
+        dag = json.loads(TASK_DAG.read_text(encoding="utf-8"))
+        node_ids = {node["id"] for node in dag["nodes"]}
+        self.assertEqual(len(node_ids), len(dag["nodes"]))
+        for edge_class in ("start_edges", "completion_edges"):
+            for source, target in dag[edge_class]:
+                self.assertIn(source, node_ids)
+                self.assertIn(target, node_ids)
+        self.assertTrue(set(map(tuple, dag["start_edges"])).issubset(set(map(tuple, dag["completion_edges"]))))
+        self.assertEqual(dag["git_ancestry"]["true_parent"], "EAS-E@177ba870c41cc5605532ea79770d54aea124fa0c")
+        self.assertIn("EAS-A", dag["git_ancestry"]["process_dependencies_not_git_parents"])
+        self.assertEqual(len(dag["external_blocked_edges"]), 1)
+
+    def test_molecular_stack_keeps_missing_a_and_planned_d_visible(self) -> None:
+        stack = json.loads(STACK.read_text(encoding="utf-8"))
+        self.assertEqual(stack["required_atoms"], ["C", "K", "A", "E", "X", "D"])
+        atoms = {item["atom"]: item for item in stack["atoms"]}
+        self.assertEqual(set(atoms), {"C", "K", "A", "E", "X", "D"})
+        self.assertEqual(atoms["A"]["state"], "NOT_IMPLEMENTED")
+        self.assertIsNone(atoms["A"]["subject"])
+        self.assertEqual(atoms["X"]["state"], "IN_PROGRESS")
+        self.assertIsNone(atoms["X"]["subject"])
+        self.assertEqual(atoms["X"]["subject_binding"], "PR_HEAD_READBACK_REQUIRED_AFTER_PUBLICATION")
+        self.assertEqual(atoms["D"]["state"], "BLOCKED_BY_EAS_X")
+        self.assertIsNone(atoms["D"]["subject"])
 
 
 if __name__ == "__main__":
