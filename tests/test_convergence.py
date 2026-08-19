@@ -11,6 +11,11 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from enterprise_agent_system.convergence import (  # noqa: E402
     ConvergenceContractError,
+    EAS_A_AUTHORITY,
+    EAS_A_CEILING,
+    EAS_A_SHADOW,
+    EAS_A_SUBJECT,
+    EAS_A_VERIFY,
     validate_convergence_snapshot,
 )
 
@@ -37,6 +42,12 @@ class CrossRepoConvergenceTests(unittest.TestCase):
         self.assertEqual(len(value["owners"]), 7)
         self.assertEqual(value["selected_vertical_canary"]["state"], "PLAN_ONLY")
         self.assertTrue(all(item["state"] != "PASS" for item in value["stronger_lanes"]))
+        eas_a = next(item for item in value["process_dependencies"] if item["atom"] == "EAS-A")
+        self.assertEqual(eas_a["subject"], EAS_A_SUBJECT)
+        self.assertEqual(eas_a["verification_run"], EAS_A_VERIFY)
+        self.assertEqual(eas_a["shadow_review"], EAS_A_SHADOW)
+        self.assertEqual(eas_a["authority"], EAS_A_AUTHORITY)
+        self.assertEqual(eas_a["evidence_ceiling"], EAS_A_CEILING)
 
     def test_missing_owner_cannot_disappear_from_denominator(self) -> None:
         value = snapshot()
@@ -55,15 +66,48 @@ class CrossRepoConvergenceTests(unittest.TestCase):
         owner["subject"]["repository"] = "ed3c/agent-shield-monorepo"
         must_refuse(self, value, "OWNER_REPOSITORY_MISMATCH:A2R_RUNTIME_CONTRACT")
 
-    def test_not_implemented_projection_adapter_cannot_have_fake_subject(self) -> None:
+    def test_eas_a_exact_subject_cannot_drift(self) -> None:
         value = snapshot()
         dep = next(item for item in value["process_dependencies"] if item["atom"] == "EAS-A")
-        dep["subject"] = {
-            "repository": "ed3c/enterprise_agent_system",
-            "commit": "1" * 40,
-            "tree": "2" * 40,
-        }
-        must_refuse(self, value, "NOT_IMPLEMENTED_HAS_SUBJECT:EAS-A")
+        dep["subject"]["commit"] = "1" * 40
+        must_refuse(self, value, "EAS_A_EXACT_SUBJECT_DRIFT")
+
+    def test_eas_a_content_equivalent_old_commit_is_not_current_identity(self) -> None:
+        value = snapshot()
+        dep = next(item for item in value["process_dependencies"] if item["atom"] == "EAS-A")
+        dep["subject"]["commit"] = "dc7c5b57c3d175c861378474eff40e4b3ac9232d"
+        dep["verification_run"] = 32295745774
+        dep["shadow_review"] = 4976203497
+        must_refuse(self, value, "EAS_A_EXACT_SUBJECT_DRIFT")
+
+    def test_eas_a_verification_run_cannot_drift(self) -> None:
+        value = snapshot()
+        dep = next(item for item in value["process_dependencies"] if item["atom"] == "EAS-A")
+        dep["verification_run"] = 32295745774
+        must_refuse(self, value, "EAS_A_VERIFY_DRIFT")
+
+    def test_eas_a_shadow_review_cannot_drift(self) -> None:
+        value = snapshot()
+        dep = next(item for item in value["process_dependencies"] if item["atom"] == "EAS-A")
+        dep["shadow_review"] = 4976203497
+        must_refuse(self, value, "EAS_A_SHADOW_DRIFT")
+
+    def test_eas_a_advisory_authority_cannot_widen(self) -> None:
+        value = snapshot()
+        dep = next(item for item in value["process_dependencies"] if item["atom"] == "EAS-A")
+        dep["authority"] = "CANONICAL_STATE_WRITER"
+        must_refuse(self, value, "EAS_A_AUTHORITY_WIDENING")
+
+    def test_eas_a_evidence_ceiling_cannot_widen(self) -> None:
+        value = snapshot()
+        dep = next(item for item in value["process_dependencies"] if item["atom"] == "EAS-A")
+        dep["evidence_ceiling"] = "GOOGLE_LIVE_VERIFIED"
+        must_refuse(self, value, "EAS_A_EVIDENCE_CEILING_DRIFT")
+
+    def test_eas_a_cannot_become_false_git_parent(self) -> None:
+        value = snapshot()
+        value["git_parent"]["atom"] = "EAS-A"
+        must_refuse(self, value, "FALSE_GIT_PARENT")
 
     def test_process_dependency_cannot_become_false_git_parent(self) -> None:
         value = snapshot()
@@ -121,14 +165,19 @@ class CrossRepoConvergenceTests(unittest.TestCase):
         owner["shadow_receipts"][0]["kind"] = "MODEL_JUDGE"
         must_refuse(self, value, "OWNER_SHADOW_RECEIPT_KIND:A4_PROVENANCE_TELEMETRY")
 
-    def test_architecture_plan_keeps_vertical_canary_plan_only(self) -> None:
+    def test_architecture_plan_keeps_advisory_a_and_vertical_canary_ceiling(self) -> None:
         plan = json.loads(ARCHITECTURE.read_text(encoding="utf-8"))
         self.assertEqual(plan["atom"], "EAS-X")
         self.assertEqual(plan["git_parent"]["atom"], "EAS-E")
         self.assertEqual(plan["selected_vertical_canary"]["state"], "PLAN_ONLY")
         self.assertFalse(plan["selected_vertical_canary"]["private_data"])
         self.assertFalse(plan["selected_vertical_canary"]["external_effects"])
-        self.assertEqual(plan["process_dependencies"]["EAS-A"]["state"], "NOT_IMPLEMENTED")
+        eas_a = plan["process_dependencies"]["EAS-A"]
+        self.assertEqual(eas_a["state"], "DETERMINISTIC_VERIFIED")
+        self.assertEqual(eas_a["commit"], EAS_A_SUBJECT["commit"])
+        self.assertEqual(eas_a["tree"], EAS_A_SUBJECT["tree"])
+        self.assertEqual(eas_a["authority"], "ADVISORY_ONLY")
+        self.assertEqual(plan["evidence_ceiling"]["google_connectivity_or_write"], "NOT_PERFORMED")
 
     def test_task_dag_separates_start_completion_and_external_blockers(self) -> None:
         dag = json.loads(TASK_DAG.read_text(encoding="utf-8"))
@@ -143,17 +192,20 @@ class CrossRepoConvergenceTests(unittest.TestCase):
         self.assertIn("EAS-A", dag["git_ancestry"]["process_dependencies_not_git_parents"])
         self.assertEqual(len(dag["external_blocked_edges"]), 1)
 
-    def test_molecular_stack_keeps_missing_a_and_planned_d_visible(self) -> None:
+    def test_molecular_stack_keeps_advisory_a_and_planned_d_visible(self) -> None:
         stack = json.loads(STACK.read_text(encoding="utf-8"))
         self.assertEqual(stack["required_atoms"], ["C", "K", "A", "E", "X", "D"])
         atoms = {item["atom"]: item for item in stack["atoms"]}
         self.assertEqual(set(atoms), {"C", "K", "A", "E", "X", "D"})
-        self.assertEqual(atoms["A"]["state"], "NOT_IMPLEMENTED")
-        self.assertIsNone(atoms["A"]["subject"])
+        self.assertEqual(atoms["A"]["state"], "DETERMINISTIC_VERIFIED")
+        self.assertEqual(atoms["A"]["pull_request"], 68)
+        self.assertEqual(atoms["A"]["subject"], EAS_A_SUBJECT)
+        self.assertEqual(atoms["A"]["authority"], "ADVISORY_ONLY")
+        self.assertEqual(atoms["A"]["git_relation_to_x"], "PROCESS_DEPENDENCY_NOT_GIT_PARENT")
         self.assertEqual(atoms["X"]["state"], "IN_PROGRESS")
         self.assertIsNone(atoms["X"]["subject"])
         self.assertEqual(atoms["X"]["subject_binding"], "PR_HEAD_READBACK_REQUIRED_AFTER_PUBLICATION")
-        self.assertEqual(atoms["D"]["state"], "BLOCKED_BY_EAS_X")
+        self.assertEqual(atoms["D"]["state"], "BLOCKED_BY_EAS_X_REBIND")
         self.assertIsNone(atoms["D"]["subject"])
 
 
