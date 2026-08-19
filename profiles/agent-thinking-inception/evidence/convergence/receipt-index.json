@@ -1,0 +1,94 @@
+{
+  "schema_version": "enterprise-agent-system/inception-profile-convergence-receipts/v1",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "state": "P5_PROFILE_CONVERGENCE_RECEIPT_INDEX_CANDIDATE",
+  "profile_parent": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 29,
+    "commit": "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e",
+    "tree": "c3851a6953d456d0342a9776eed28561c1af0ca1",
+    "relationship": "TRUE_GIT_PARENT"
+  },
+  "generic_x": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 31,
+    "commit": "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c",
+    "tree": "e1be41234ff336297ce591b564291c9a0cd819ed",
+    "relationship": "PROCESS_EVIDENCE_DEPENDENCY_NOT_GIT_PARENT",
+    "hosted_runs": [32266182513, 32266182521],
+    "shadow_review": 4973461122,
+    "verdict": "ADMIT_FOR_DOWNSTREAM_REVIEW"
+  },
+  "profile_shadow": {
+    "issue": "https://github.com/ed3c/enterprise_agent_system/issues/19",
+    "comment_id": 5343381027,
+    "verdict": "PUBLIC_VERIFICATION_DENOMINATOR_ADMITTED",
+    "aggregate_state": "BLOCKED_FOR_CLOSURE"
+  },
+  "truth_verify": {
+    "repository": "ed3c/truth-verify-loop",
+    "pull_request": 30,
+    "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980",
+    "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547",
+    "hosted_runs": [32260293092, 32260291970],
+    "shadow_review": 4972977716,
+    "evidence_ceiling": "PUBLIC_GIT_OBJECT_AND_DETERMINISTIC_SEMANTIC_FIXTURE"
+  },
+  "local_handoff_contract": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 27,
+    "commit": "9223107163b27984ed490246b4c0899caeb1bdae",
+    "tree": "d462e2a1a69d225bf8161ce01918e5e8bb8d102f",
+    "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14",
+    "state": "DETERMINISTIC_QUEUE_CONTRACT_ONLY",
+    "queue_execution": "NOT_PERFORMED",
+    "human_admission": "NOT_PERFORMED"
+  },
+  "profile_sources": {
+    "source_id": "SRC-PDF-INCEPTION-001",
+    "source_digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da",
+    "source_class": "SOURCE_PROPOSAL",
+    "data_class": "LOCAL_ONLY",
+    "requirements_total": 15,
+    "contradictions_total": 14,
+    "requirement_blobs": {
+      "manifest": "06698be5e2a5d7b583078ec8b282f6c6c1f98198",
+      "control": "160be43c55f7c031e48abb4ebe264dcbd93150fb",
+      "assurance": "ddac27b1ca1b2c5f2fbc57f5c02018f89ed74cfe",
+      "delivery": "565a9227a9ef0d1eda3cc57a90727859bf56f1f5",
+      "contradictions": "ecbb4e5faa0df3b1acf3a0fbf506bb7c44dc76f8"
+    }
+  },
+  "selected_canary": {
+    "path": "profiles/agent-thinking-inception/plans/vertical-canary.json",
+    "contract_digest": "sha256:2146c02c23bbf87b6797900141c491a53f6936714b0b620a23016a2b20eaab79",
+    "state": "PLAN_ONLY",
+    "execution_receipt": null
+  },
+  "profile_closure": {
+    "path": "profiles/agent-thinking-inception/plans/closure-record.json",
+    "state": "PROFILE_CLOSURE_CANDIDATE_BLOCKED_STRONGER_LANES",
+    "requirements_with_exact_owner_subject": 15,
+    "requirements_required_lane_satisfied": 1,
+    "requirements_closure_credit": 0,
+    "contradictions_preserved": 14,
+    "release_state": "NOT_ADMITTED"
+  },
+  "evidence_ceiling": [
+    "exact-subject profile routing and denominator preservation",
+    "public/deterministic owner evidence reconciliation",
+    "content-addressed PLAN_ONLY vertical canary contract",
+    "no physical/multi-host closure",
+    "no provider enrollment or live-provider closure",
+    "no private-evidence closure",
+    "no live external-effect or user-outcome closure",
+    "no Human legal/security/admission closure",
+    "no merge/release/rollback closure"
+  ],
+  "next_authorities": {
+    "profile_shadow_review": "https://github.com/ed3c/enterprise_agent_system/issues/19",
+    "p6_documentation": "https://github.com/ed3c/enterprise_agent_system/issues/13",
+    "local_handoff": "https://github.com/ed3c/enterprise_agent_system/issues/14",
+    "release": "https://github.com/ed3c/bettor-arena/issues/68"
+  }
+}
