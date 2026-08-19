@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable Profile-D target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 4df72175c028966e939ee38307e9ab23d3a8e33b
+          ref: 690154a5f7154d551bef6942fe5d1f34091c2197
           persist-credentials: false
           fetch-depth: 0
 
@@ -25,8 +25,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="4df72175c028966e939ee38307e9ab23d3a8e33b"
-          tree="281002b526652f033e09dab26e7f7eebfbbbdf7c"
+          target="690154a5f7154d551bef6942fe5d1f34091c2197"
+          tree="1a2e02d4c92b882f51f8c8d28f70771648a6a528"
           parent="a27aa552f1c258e09f515b4a5d117ba37f4d6615"
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse HEAD^{tree})" = "$tree"
@@ -74,8 +74,8 @@ jobs:
         run: |
           cat <<'EOF'
           PASS INCEPTION-DV exact documentation verification
-          target=4df72175c028966e939ee38307e9ab23d3a8e33b
-          tree=281002b526652f033e09dab26e7f7eebfbbbdf7c
+          target=690154a5f7154d551bef6942fe5d1f34091c2197
+          tree=1a2e02d4c92b882f51f8c8d28f70771648a6a528
           parent=a27aa552f1c258e09f515b4a5d117ba37f4d6615
           requirements=15
           contradictions=14
