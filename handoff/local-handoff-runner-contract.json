@@ -1,0 +1,64 @@
+{
+  "schema_version": "enterprise-agent-system/local-handoff-runner-contract/v1",
+  "contract_id": "EAS-H2R-P7-ACTIVE-RUNNER-2026-08-20",
+  "state": "RUNNER_IMPLEMENTATION_CANDIDATE",
+  "queue_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 50,
+    "commit": "00b9ae644352485e4779102b1c3c2d18f6a7155c",
+    "tree": "4effe7ce338753ee61972890f676700ad33c3e04",
+    "verification_run": 32282597889,
+    "shadow_review": 4975029921,
+    "relationship": "TRUE_GIT_PARENT"
+  },
+  "consumed_read_only_paths": [
+    "handoff/local-handoff-queue.json",
+    "handoff/local-handoff-receipt.schema.json",
+    "tests/verify_handoff.py"
+  ],
+  "active_item_id": "LH-P7-01-FINAL-P6-LOCAL-READBACK",
+  "default_mode": "plan",
+  "modes": ["plan", "execute"],
+  "allowed_runtime_kinds": ["CODEX_CLI_LOCAL", "CLAUDE_CODE_LOCAL"],
+  "execute_required_environment_names": ["EAS_CHECKOUT", "EAS_WORKTREES", "EAS_RECEIPT_DIR"],
+  "subprocess_contract": {
+    "shell": false,
+    "capture_output": true,
+    "serialized_output": "SHA256_DIGEST_ONLY",
+    "inherit_arbitrary_environment": false,
+    "git_terminal_prompt": false
+  },
+  "path_contract": {
+    "environment_names_only": true,
+    "relative_paths_only": true,
+    "reject_parent_traversal": true,
+    "reject_root_escape": true
+  },
+  "cleanup_contract": {
+    "run_in_finally": true,
+    "expected_command_ids": ["REMOVE_ROOT_D_WORKTREE", "PRUNE_WORKTREES", "DELETE_TEMP_ROOT_D_REF"],
+    "required_absent_residue": ["EAS_WORKTREES/root-d-final", "refs/remotes/origin/p7-root-d"],
+    "dirty_state_must_match_pre_execution": true
+  },
+  "receipt_contract": {
+    "schema": "handoff/local-handoff-receipt.schema.json",
+    "write_mode": "ATOMIC_REPLACE",
+    "secret_values_allowed": false,
+    "resolved_local_paths_serialized": false,
+    "queue_advancement": "CANONICAL_REDUCER_ONLY"
+  },
+  "public_verification": {
+    "real_queue_execute_allowed": false,
+    "plan_allowed": true,
+    "hermetic_subprocess_fixture_allowed": true,
+    "mocked_failure_cleanup_tests_allowed": true
+  },
+  "runner_execution": "NOT_PERFORMED",
+  "queue_execution": "NOT_PERFORMED",
+  "evidence_ceiling": "PUBLIC_LOCAL_RUNNER_IMPLEMENTATION_ONLY",
+  "claims_not_proven": [
+    "A green runner test does not prove the ACTIVE queue item executed.",
+    "The runner does not advance canonical queue state; reducer readback is separate.",
+    "Provider, physical, private, external-effect, user, Human, merge, release and rollback lanes remain unproven until their own receipts exist."
+  ]
+}
