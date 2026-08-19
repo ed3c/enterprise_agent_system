@@ -1,31 +1,41 @@
 {
-  "schema_version": "enterprise-agent-system/local-handoff-queue/v2",
-  "queue_id": "LH-EAS-INCEPTION-P7-2026-08-20",
+  "schema_version": "enterprise-agent-system/local-handoff-queue/v3",
+  "queue_id": "LH-EAS-INCEPTION-P7-V3-2026-08-20",
   "state": "READY_FOR_LOCAL_EXECUTION_PREPARATION",
   "compiled_from": {
     "repository": "ed3c/enterprise_agent_system",
     "issue": 13,
-    "pull_request": 41,
-    "commit": "89e12f5863c9bfd02bddb28de121d9c19cc25d16",
-    "tree": "16e51462b2a0a693c1af92ad344fa3db6bbd4879",
-    "verification_run": 32272986158,
-    "shadow_review": 4974136248,
-    "p6_state": "COMPLETE_AT_DOCS_CEILING"
+    "pull_request": 57,
+    "commit": "68828ec8de5f3ad5aa133a5c772eefb80c775568",
+    "tree": "bf338e0cd959a2b97adee79af7459222bd5211b9",
+    "verification_run": 32284239386,
+    "shadow_review": 4975173485,
+    "p6_state": "ADMIT_FOR_P7_PREPARATION"
   },
-  "supersedes": {
-    "queue_id": "LH-EAS-INCEPTION-2026-08-18",
-    "pull_request": 27,
-    "commit": "9223107163b27984ed490246b4c0899caeb1bdae",
-    "tree": "d462e2a1a69d225bf8161ce01918e5e8bb8d102f",
-    "previous_active_item": "LH-INCEPTION-SOURCE-01",
-    "disposition": "SUPERSEDED_STALE_SUBJECT",
-    "reason": "Old ACTIVE binds PR #21 at 60f994f..., while final P5/P6 exact subjects advanced; issue #14 stale-subject stop condition applies.",
-    "history_record": "handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json"
-  },
+  "superseded_candidates": [
+    {
+      "queue_id": "LH-EAS-INCEPTION-2026-08-18",
+      "pull_request": 27,
+      "commit": "9223107163b27984ed490246b4c0899caeb1bdae",
+      "tree": "d462e2a1a69d225bf8161ce01918e5e8bb8d102f",
+      "disposition": "SUPERSEDED_STALE_SUBJECT",
+      "authority": "NONE",
+      "history_record": "handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json"
+    },
+    {
+      "queue_id": "LH-EAS-INCEPTION-P7-2026-08-20",
+      "pull_request": 50,
+      "commit": "00b9ae644352485e4779102b1c3c2d18f6a7155c",
+      "tree": "4effe7ce338753ee61972890f676700ad33c3e04",
+      "disposition": "SUPERSEDED_STALE_ROOT_D",
+      "authority": "NONE",
+      "reason": "Bound to obsolete Root-D #41 and obsolete Profile-X/Profile-D inputs."
+    }
+  ],
   "p7_prompt": {
     "path": "docs/prompts/P7-local-handoff-compiler.system.md",
     "blob": "6f200e6c4e7a6f4cb6ee68340b3b3f8a4361f55b",
-    "source_commit": "89e12f5863c9bfd02bddb28de121d9c19cc25d16"
+    "source_commit": "68828ec8de5f3ad5aa133a5c772eefb80c775568"
   },
   "closure_projection": {
     "requirements_total": 15,
@@ -33,11 +43,14 @@
     "requirements_closure_credit": 0,
     "contradictions_total": 14,
     "contradictions_preserved": 14,
-    "profile_shadow": "BLOCKED_FOR_CLOSURE",
+    "stronger_no_credit_lanes": 13,
+    "profile_x_hosted_gate": "ABSENT",
+    "full_architecture": "BLOCKED_FOR_CLOSURE",
     "vertical_canary": "PLAN_ONLY",
     "vertical_execution_receipt": null,
     "EAS_A": "NOT_IMPLEMENTED",
-    "profile_release": "NOT_ADMITTED"
+    "profile_release": "NOT_ADMITTED",
+    "human_admission": "NOT_PERFORMED"
   },
   "environment_name_allowlist": [
     "EAS_CHECKOUT",
@@ -50,42 +63,44 @@
   ],
   "secret_values_allowed": false,
   "credential_values_allowed": false,
-  "active_item_id": "LH-P7-01-FINAL-P6-LOCAL-READBACK",
+  "active_item_id": "LH-P7-01-ROOT-D-V2-LOCAL-READBACK",
   "items": [
     {
-      "item_id": "LH-P7-01-FINAL-P6-LOCAL-READBACK",
+      "item_id": "LH-P7-01-ROOT-D-V2-LOCAL-READBACK",
       "state": "ACTIVE",
       "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14",
-      "objective": "Locally read back final P6 Root-D exact bytes and replay admitted public convergence/documentation controls before any stronger action.",
+      "objective": "Locally read back the current Root-D v2 exact bytes and replay admitted public convergence/documentation controls before any stronger action.",
       "required_evidence_lane": "LOCAL_DETERMINISTIC",
       "required_runtime_any_of": ["CODEX_CLI_LOCAL", "CLAUDE_CODE_LOCAL"],
       "required_capabilities": ["git", "python3", "local-filesystem-read", "detached-git-worktree"],
       "subjects": [
-        {"subject_id": "ROOT-D", "repository": "ed3c/enterprise_agent_system", "pull_request": 41, "commit": "89e12f5863c9bfd02bddb28de121d9c19cc25d16", "tree": "16e51462b2a0a693c1af92ad344fa3db6bbd4879"},
-        {"subject_id": "GENERIC-X", "repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c", "tree": "e1be41234ff336297ce591b564291c9a0cd819ed"},
-        {"subject_id": "PROFILE-D", "repository": "ed3c/enterprise_agent_system", "pull_request": 37, "commit": "690154a5f7154d551bef6942fe5d1f34091c2197", "tree": "1a2e02d4c92b882f51f8c8d28f70771648a6a528"}
+        {"subject_id": "ROOT-D", "repository": "ed3c/enterprise_agent_system", "pull_request": 57, "commit": "68828ec8de5f3ad5aa133a5c772eefb80c775568", "tree": "bf338e0cd959a2b97adee79af7459222bd5211b9", "verification_run": 32284239386, "shadow_review": 4975173485},
+        {"subject_id": "GENERIC-X", "repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "8b1bfa38c103e1c064b8ef0aafecfc8f2a2642dc", "tree": "9c8fb0e8e25f357fdb695a94c4ab74fc3dcd4631", "shadow_review": 4973896050},
+        {"subject_id": "PROFILE-X", "repository": "ed3c/enterprise_agent_system", "pull_request": 40, "commit": "fe2748e09a5222f439f09c5d0d71e486e1ade3e8", "tree": "0425916bea831c125702696544ae2848fdf9bd0e", "shadow_review": 4974017388, "hosted_gate": "ABSENT"},
+        {"subject_id": "PROFILE-D", "repository": "ed3c/enterprise_agent_system", "pull_request": 44, "commit": "a7a034ef1db778fcee586fff8d8ff7848bc9a1ab", "tree": "62796ebb2e48e60ab30809470d3b6c02f44009fc", "verification_run": 32282726313, "shadow_review": 4975046170}
       ],
       "commands": [
-        {"command_id": "FETCH_ROOT_D", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "fetch"}, {"literal": "origin"}, {"literal": "agent/eas-d-final-docs-convergence:refs/remotes/origin/p7-root-d"}], "timeout_seconds": 120},
-        {"command_id": "CREATE_ROOT_D_WORKTREE", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "add"}, {"literal": "--detach"}, {"env_path": {"env": "EAS_WORKTREES", "relative": "root-d-final"}}, {"literal": "89e12f5863c9bfd02bddb28de121d9c19cc25d16"}], "timeout_seconds": 60},
-        {"command_id": "ASSERT_ROOT_D_SUBJECT", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-final"}, "argv": [{"literal": "python3"}, {"literal": "-c"}, {"literal": "import subprocess,sys; c=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(); t=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(); print(c,t); sys.exit(0 if c=='89e12f5863c9bfd02bddb28de121d9c19cc25d16' and t=='16e51462b2a0a693c1af92ad344fa3db6bbd4879' else 2)"}], "timeout_seconds": 60},
-        {"command_id": "REPLAY_GENERIC_X", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-final"}, "argv": [{"literal": "python3"}, {"literal": "tests/test_convergence.py"}], "timeout_seconds": 180},
-        {"command_id": "REPLAY_PROFILE_X", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-final"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py"}], "timeout_seconds": 180},
-        {"command_id": "REPLAY_PROFILE_X_MUTATIONS", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-final"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py"}, {"literal": "--selftest"}], "timeout_seconds": 180},
-        {"command_id": "REPLAY_PROFILE_D", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-final"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py"}, {"literal": "--selftest"}], "timeout_seconds": 180},
-        {"command_id": "ASSERT_P7_PROJECTION", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-final"}, "argv": [{"literal": "python3"}, {"literal": "-c"}, {"literal": "from pathlib import Path; s=Path('README.md').read_text()+Path('CONTEXT.md').read_text(); r=['COMPLETE_AT_DOCS_CEILING','READY_FOR_PREPARATION','NOT_PERFORMED','15/15','1/15','BLOCKED_FOR_CLOSURE','PLAN_ONLY','NOT_IMPLEMENTED']; m=[x for x in r if x not in s]; print(m); raise SystemExit(0 if not m else 2)"}], "timeout_seconds": 60}
+        {"command_id": "FETCH_ROOT_D", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "fetch"}, {"literal": "origin"}, {"literal": "agent/eas-d-final-docs-convergence-v2:refs/remotes/origin/p7-root-d-v2"}], "timeout_seconds": 120},
+        {"command_id": "CREATE_ROOT_D_WORKTREE", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "add"}, {"literal": "--detach"}, {"env_path": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}}, {"literal": "68828ec8de5f3ad5aa133a5c772eefb80c775568"}], "timeout_seconds": 60},
+        {"command_id": "ASSERT_ROOT_D_SUBJECT", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}, "argv": [{"literal": "python3"}, {"literal": "-c"}, {"literal": "import subprocess,sys; c=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(); t=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(); print(c,t); sys.exit(0 if c=='68828ec8de5f3ad5aa133a5c772eefb80c775568' and t=='bf338e0cd959a2b97adee79af7459222bd5211b9' else 2)"}], "timeout_seconds": 60},
+        {"command_id": "REPLAY_GENERIC_X", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}, "argv": [{"literal": "python3"}, {"literal": "tests/test_convergence.py"}], "timeout_seconds": 180},
+        {"command_id": "REPLAY_PROFILE_X", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py"}], "timeout_seconds": 180},
+        {"command_id": "REPLAY_PROFILE_X_MUTATIONS", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py"}], "timeout_seconds": 180},
+        {"command_id": "REPLAY_PROFILE_D", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py"}, {"literal": "--skip-git-context"}], "timeout_seconds": 180},
+        {"command_id": "REPLAY_PROFILE_D_MUTATIONS", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py"}, {"literal": "--selftest"}, {"literal": "--skip-git-context"}], "timeout_seconds": 180},
+        {"command_id": "ASSERT_ROOT_D_PROJECTION", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}, "argv": [{"literal": "python3"}, {"literal": "-c"}, {"literal": "from pathlib import Path; s=Path('README.md').read_text()+Path('CONTEXT.md').read_text()+Path('docs/traceability/MOLECULAR_STACK_INDEX.md').read_text(); r=['ROOT_D_V2_CANDIDATE','BLOCKED_PENDING_CURRENT_ROOT_D_RECEIPT','NOT_PERFORMED','BLOCKED_FOR_CLOSURE','PLAN_ONLY','NOT_IMPLEMENTED','ADVISORY_ONLY','authority NONE','32259216877','32282726313','4975046170']; m=[x for x in r if x not in s]; print(m); raise SystemExit(0 if not m else 2)"}], "timeout_seconds": 60}
       ],
       "required_receipt": {
         "schema": "handoff/local-handoff-receipt.schema.json",
-        "path": {"env": "EAS_RECEIPT_DIR", "relative": "LH-P7-01-FINAL-P6-LOCAL-READBACK.json"},
+        "path": {"env": "EAS_RECEIPT_DIR", "relative": "LH-P7-01-ROOT-D-V2-LOCAL-READBACK.json"},
         "required_fields": ["queue_id", "item_id", "started_at", "finished_at", "subject_before", "subject_after", "commands", "exit_codes", "stdout_digests", "stderr_digests", "observed_commit", "observed_tree", "evidence_lane", "result", "dirty_state_before", "dirty_state_after", "residue_inventory", "cleanup_result", "failures", "retries", "claims_not_proven", "next_transition"]
       },
       "cleanup": [
-        {"command_id": "REMOVE_ROOT_D_WORKTREE", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "remove"}, {"literal": "--force"}, {"env_path": {"env": "EAS_WORKTREES", "relative": "root-d-final"}}], "timeout_seconds": 60},
+        {"command_id": "REMOVE_ROOT_D_WORKTREE", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "remove"}, {"literal": "--force"}, {"env_path": {"env": "EAS_WORKTREES", "relative": "root-d-v2"}}], "timeout_seconds": 60},
         {"command_id": "PRUNE_WORKTREES", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "prune"}], "timeout_seconds": 60},
-        {"command_id": "DELETE_TEMP_ROOT_D_REF", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "update-ref"}, {"literal": "-d"}, {"literal": "refs/remotes/origin/p7-root-d"}], "timeout_seconds": 60}
+        {"command_id": "DELETE_TEMP_ROOT_D_REF", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "update-ref"}, {"literal": "-d"}, {"literal": "refs/remotes/origin/p7-root-d-v2"}], "timeout_seconds": 60}
       ],
-      "rollback_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "89e12f5863c9bfd02bddb28de121d9c19cc25d16", "tree": "16e51462b2a0a693c1af92ad344fa3db6bbd4879"},
+      "rollback_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "68828ec8de5f3ad5aa133a5c772eefb80c775568", "tree": "bf338e0cd959a2b97adee79af7459222bd5211b9"},
       "success_transition": "CANDIDATE_RECEIPT_READY_FOR_CANONICAL_REDUCER",
       "failure_transition": "BLOCKED_WITH_EXACT_LOCAL_RECEIPT",
       "claims_not_proven": ["This item does not prove provider, physical, private, external-effect, user, Human, merge, release or rollback lanes.", "A local replay cannot advance the queue until canonical reducer readback and clean cleanup."]
@@ -93,7 +108,7 @@
     {
       "item_id": "LH-P7-02-A2R-CONTEXT-TOKENIZER",
       "state": "BLOCKED_BY_PREDECESSOR",
-      "blocked_by": ["LH-P7-01-FINAL-P6-LOCAL-READBACK"],
+      "blocked_by": ["LH-P7-01-ROOT-D-V2-LOCAL-READBACK"],
       "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/7",
       "objective": "Exercise exact runtime-env contract on an admitted local workload and bind tokenizer/context-limit observation.",
       "required_evidence_lane": "LOCAL_DETERMINISTIC",
@@ -160,7 +175,7 @@
       "subject": {"repository": "ed3c/bettor-arena", "commit": "81f02f4148273ffe5f5571c8605e1ee0afc59866", "tree": "f9612314e47ced69796db00703dd5d34ab592e36"},
       "resolver": {"requires": ["BETTOR_ARENA_CHECKOUT", "exact external candidate revision/terms", "matched benchmark runtime"], "human_if": ["dependency activation or admission"]},
       "next_transition": "BENCHMARK_RECEIPT_THEN_HUMAN_ADMISSION",
-      "claims_not_proven": ["Matched sealed fixture evidence does not prove external superiority, legal usability or admission."]
+      "claims_not_proven": ["Matched public fixture evidence does not prove external superiority, legal usability or admission."]
     },
     {
       "item_id": "LH-P7-08-A6-PROVIDER-EFFECT",
@@ -182,7 +197,7 @@
       "objective": "Execute the content-addressed vertical canary only after all predecessor lanes have admitted receipts.",
       "required_evidence_lane": "MULTI_LANE_VERTICAL",
       "resolver": {"requires": ["all predecessor exact receipts", "clean residue", "same canary digest"], "human_if": ["authority widening beyond contract"]},
-      "canary": {"contract_digest": "sha256:2146c02c23bbf87b6797900141c491a53f6936714b0b620a23016a2b20eaab79", "current_state": "PLAN_ONLY", "execution_receipt": null},
+      "canary": {"contract_digest": "sha256:7a881bbe4b2b9605d56838f5f1e9a3c76dbf45ebc1b0aa7a973fd1329f88efbb", "current_state": "PLAN_ONLY", "execution_receipt": null},
       "next_transition": "VERTICAL_EXECUTION_RECEIPT_THEN_TRUTH_VERIFY",
       "claims_not_proven": ["The canary remains PLAN_ONLY until an execution receipt exists."]
     },
