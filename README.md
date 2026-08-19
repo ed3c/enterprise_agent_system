@@ -1,210 +1,187 @@
 # enterprise_agent_system
 
-Cross-repository **management, routing, traceability, and closure control plane** for enterprise Agent programs. It binds source proposals to immutable Git subjects, compiles Tech Lead DAGs and fresh-session prompt packets, reconciles independent Shadow findings, projects Molecular Stack status, and routes blocked work to Local Handoff without becoming a second runtime, workflow engine, VFS, effect ledger, verifier, provider adapter, Human authority, or release authority.
+Cross-repository **management, routing, traceability, and closure control plane** for enterprise Agent programs. EAS binds proposals to immutable subjects, compiles Tech Lead DAGs and fresh-session packets, reconciles read-only Shadow findings, projects Molecular Stack state, and routes stronger work to Local Handoff. It is not a second runtime, durable workflow/VFS/effect ledger, provider adapter, independent verifier, Human authority, or release authority.
 
-## Current verdict
+## Current literal verdict
 
 ```text
-P0-P5 generic/profile control-plane candidates   COMPLETE_AT_DECLARED_PUBLIC_EVIDENCE_CEILING
-P6 profile documentation candidate               COMPLETE / PR #37
-P6 root documentation candidate                  COMPLETE_AT_DOCS_CEILING / PR #41
-P7 Local Handoff                                 READY_FOR_PREPARATION / execution NOT_PERFORMED
-requirements                                     15/15 exact owner subjects
-required evidence lanes satisfied                 1/15
-requirement closure credit                        0
-contradictions                                   14/14 preserved
-contradictions resolved                           0
-profile Shadow                                   BLOCKED_FOR_CLOSURE
-vertical canary                                  PLAN_ONLY / execution_receipt=null
-EAS-A projection adapters                        NOT_IMPLEMENTED / subject=null / credit=0
-physical/provider/private/user/Human/release     OPEN
-profile release                                  NOT_ADMITTED
+P0-P5 control/profile candidates        COMPLETE_AT_DECLARED_PUBLIC_EVIDENCE_CEILING
+P6 Profile-D                            ADMIT_FOR_ROOT_EAS_D / PR #44
+P6 Root-D v2                            ROOT_D_CANDIDATE / external verification required
+P7 Local Handoff                        BLOCKED_PENDING_CURRENT_ROOT_D_RECEIPT
+requirements                            15
+contradictions                          14
+stronger no-credit lanes                13
+source-required lanes satisfied         1
+requirement closure credit              0
+Profile-X hosted Gate                   ABSENT
+vertical canary                         PLAN_ONLY / execution_receipt=null
+EAS-A projection adapters               NOT_IMPLEMENTED / subject=null / credit=0
+full architecture                       BLOCKED_FOR_CLOSURE
+profile release                         NOT_ADMITTED
+Human admission                         NOT_PERFORMED
+merge / release / rollback              NOT_PERFORMED
 ```
 
 Documentation completeness is not operational closure.
 
-## Exact convergence inputs
+## Exact current P5/P6 inputs
 
 ```text
-Generic EAS-X
-  PR       #31
-  commit   3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c
-  tree     e1be41234ff336297ce591b564291c9a0cd819ed
-  Shadow   4973461122 = ADMIT_FOR_DOWNSTREAM_REVIEW
+Generic EAS-X PR #31
+  commit 8b1bfa38c103e1c064b8ef0aafecfc8f2a2642dc
+  tree   9c8fb0e8e25f357fdb695a94c4ab74fc3dcd4631
+  Shadow 4973896050 = ADMIT_FOR_PROFILE_X_REBIND
 
-Profile-X
-  PR       #33
-  commit   a27aa552f1c258e09f515b4a5d117ba37f4d6615
-  tree     71eaa3f4acafd0b004ccdff16e4aa14bc2599649
-  XV run   32268112684 PASS
-  Shadow   4973663047 = ADMIT_FOR_P6_REVIEW
+Profile-E PR #32
+  commit 9f25b94ca891faf0d926b0fc22b67be88925aa81
+  tree   1452d1b9931c70ef70ed3b7dec78cedc51d6db35
+  Shadow 4973593318 = ADMIT_FOR_PROFILE_CONVERGENCE
 
-Profile-D
-  PR       #37
-  commit   690154a5f7154d551bef6942fe5d1f34091c2197
-  tree     1a2e02d4c92b882f51f8c8d28f70771648a6a528
-  DV run   32270454491 PASS
-  Shadow   4973885537 = ADMIT_FOR_ROOT_EAS_D_REVIEW
+Profile-X v3 PR #40
+  commit fe2748e09a5222f439f09c5d0d71e486e1ade3e8
+  tree   0425916bea831c125702696544ae2848fdf9bd0e
+  Shadow 4974017388 = ADMIT_FOR_P6_DOCUMENTATION_PREPARATION
+  hosted Profile-X Gate ABSENT
+
+Profile-D v4 PR #44
+  commit a7a034ef1db778fcee586fff8d8ff7848bc9a1ab
+  tree   62796ebb2e48e60ab30809470d3b6c02f44009fc
+  hosted verification 32282726313 PASS
+  Shadow 4975046170 = ADMIT_FOR_ROOT_EAS_D
 ```
 
-Root EAS-D starts from a real multi-parent convergence commit that contains both Generic-X and Profile-D bytes. Historical docs PR #26 is a documentation blueprint only and is not final P6 evidence. The final root-D commit/tree and external exact-target verification/Shadow receipt live outside the reviewed branch to avoid a self-referential receipt loop.
+Root-D v2 is a **direct Git child of Profile-D v4**. A second Generic-X + Profile-D merge is unnecessary because current Profile-X v3 already has Generic-X + Profile-E as true multi-parent ancestry. Historical PR #41 used an obsolete multi-parent base and is no longer current authority.
 
-## Why this repository exists
+Current A1 hosted receipt is `32259216877`. The stale value `32259476821` is forbidden in current machine authority and is retained only in explicit historical/failure records.
 
-The Agent Thinking Inception source proposes compaction, VFS persistence, dynamic steering, parallel sub-agents, deterministic gates, citation repair, Code/Model/Data/Trace screening, continuous repository convergence, issue-triggered execution, sandboxing, telemetry, and writeback. The production architecture is stricter:
+## Closure ladder
 
 ```text
 SOURCE_PROPOSAL
--> OWNER_AND_CONTRACT_BOUND
--> MECHANISM_IMPLEMENTED
--> DETERMINISTIC_EVIDENCE_VERIFIED
--> LIVE_OR_PHYSICAL_EVIDENCE_VERIFIED
--> USER_OUTCOME_VERIFIED
--> HUMAN_ADMITTED
--> RELEASED
--> OPERATED_WITH_ROLLBACK
+→ OWNER_AND_CONTRACT_BOUND
+→ MECHANISM_IMPLEMENTED
+→ DETERMINISTIC_EVIDENCE_VERIFIED
+→ LIVE_OR_PHYSICAL_EVIDENCE_VERIFIED
+→ USER_OUTCOME_VERIFIED
+→ HUMAN_ADMITTED
+→ RELEASED
+→ OPERATED_WITH_ROLLBACK
 ```
 
-Every transition needs its own exact-subject receipt. Markdown, issue state, green CI, model agreement, local fixtures, API acknowledgements, or provider self-report cannot proxy a later lane.
+Every transition requires its own lane-literal exact-subject receipt. CI, PR state, issue state, model agreement, API acknowledgement, local fixture, or documentation cannot proxy a stronger lane.
 
 ## Canonical repository roles
 
 | Plane | Canonical repository | Owns | Does not own |
 |---|---|---|---|
 | Control / closure | `enterprise_agent_system` | source/requirement graph, contracts, Tech Lead routing, convergence, docs projection, Local Handoff contract | runtime execution, durable business workflow/effects, independent truth, Human release |
-| Portable method | `skills-shared` | Tech Lead/Shadow/Stack/Local-Handoff methodology | repo-specific state |
+| Portable method | `skills-shared` | Tech Lead/Shadow/Stack/Local-Handoff methodology | repo-specific operational state |
 | Runtime contract | `runtime-env` | workload/capability/policy/environment contracts | provider secrets, workflow/effect state |
 | Workflow/effect | `bettor-arena` | durable Domain State, compaction/recovery, ingress/effect identity, retries/reconciliation | provider-specific runtime adapters |
-| Provider/runtime adapter | `agent-shield-monorepo` | sandbox, steering, provider/runtime/telemetry adapter behavior | EAS canonical closure or Human release |
+| Provider/runtime | `agent-shield-monorepo` | sandbox, steering, provider/runtime/telemetry adapters | EAS closure or Human release |
 | Independent verification | `truth-verify-loop` | exact source/code/effect/user-result verification and disagreement receipts | implementation mutation or canonical reduction |
-| Source anchoring | `openwiki-source-anchoring` | exact lexical path/span anchors | semantic or release authority |
+| Source anchoring | `openwiki-source-anchoring` | lexical/path/span anchors | semantic or release authority |
 
 One interface or canonical state has one owner.
 
 ## Eight phases
 
-| Phase | Role | Output | Current profile state |
-|---|---|---|---|
-| P0 | Source & Authority Auditor | source digest, 15 requirements, 14 contradictions | deterministic candidate |
-| P1 | Contract Lock Worker | strict generic/profile contracts | deterministic candidate |
-| P2 | Tech Lead Controller | task DAG, leases, 10 worker packets | deterministic candidate |
-| P3 | Parallel Owner Wave | A1-A6 owner implementations/receipts | public/deterministic partial evidence |
-| P4 | Shadow Architect | independent mutation/evidence-ceiling review | public denominator admitted; full closure blocked |
-| P5 | Convergence Owner | exact cross-repo/profile closure candidate | complete at routing ceiling |
-| P6 | Docs / Stack Convergence | Agent-readable routes, State Machines, data flow, prompts, Stack | profile + root candidates complete at docs ceiling |
-| P7 | Local Handoff Compiler | concrete local/provider/physical execution queue | ready for preparation; execution not performed |
+| Phase | Role | Current profile state |
+|---|---|---|
+| P0 | Source & Authority Auditor | source denominator frozen |
+| P1 | Contract Lock Worker | deterministic contracts |
+| P2 | Tech Lead Controller | deterministic DAG/packets |
+| P3 | Parallel Owner Wave | public/deterministic partial evidence |
+| P4 | Shadow Architect | admitted for convergence; stronger lanes open |
+| P5 | Convergence Owner | Profile-X v3 admitted for P6 preparation |
+| P6 | Docs / Stack Convergence | Profile-D v4 admitted; Root-D v2 candidate |
+| P7 | Local Handoff Compiler | blocked until current Root-D external receipt |
 
-## Molecular Stack
-
-Generic control plane:
+## Current Molecular Stack
 
 ```text
-C -> K -> E -> X -> D
-     A = sibling projection adapter atom; currently NOT_IMPLEMENTED
+C0 → C1 → K
+            ├─ A1
+            ├─ A2R → A2
+            ├─ A3
+            ├─ A4
+            ├─ A5
+            └─ A6
+                 ↓ evidence
+              Profile-E
+Generic EAS-X ──┬── true multi-parent input
+Profile-E ──────┘
+                 ↓
+          Profile-X v3 PR #40
+                 ↓ true child
+          Profile-D v4 PR #44
+                 ↓ true child
+          Root-D v2 candidate
+                 ↓ external verification + Shadow only
+          P7 Local Handoff preparation
 ```
 
-Profile program:
-
-```text
-C0 -> C1 -> K
-             +-> A1 durable state/compaction/recovery
-             +-> A2R runtime contract -> A2 sandbox/steering
-             +-> A3 exact evidence
-             +-> A4 provenance/telemetry policy evidence
-             +-> A5 discovery/admission
-             +-> A6 ingress/effects
-             -> E read-only Shadow
-             -> X exact-subject convergence
-             -> D profile docs
-             -> root EAS-D
-```
-
-Process ordering is not automatically Git ancestry. Exact parent relations and immutable subjects are documented in `docs/traceability/MOLECULAR_STACK_INDEX.md` and the profile machine index under `profiles/agent-thinking-inception/plans/`.
+Process/evidence order is not automatically Git ancestry. See `docs/traceability/MOLECULAR_STACK_INDEX.md`.
 
 ## Repository map
 
 ```text
 enterprise_agent_system/
-├── README.md
-├── AGENTS.md
-├── ARCHITECTURE.md
-├── CONTEXT.md
-├── contracts/control-plane/             # generic C
-├── src/enterprise_agent_system/          # generic K/E/X primitives
-├── plans/                                # generic X DAG/Stack candidates
-├── evidence/                             # exact public/Shadow/convergence receipts
+├── README.md / AGENTS.md / ARCHITECTURE.md / CONTEXT.md
+├── contracts/control-plane/
+├── src/enterprise_agent_system/
+├── plans/ + evidence/
 ├── profiles/agent-thinking-inception/
-│   ├── source/                           # P0
-│   ├── requirements/                     # 15 + 14 denominator
-│   ├── contracts/                        # P1
-│   ├── orchestration/                    # P2 K
-│   ├── shadow/                           # profile E
-│   ├── evidence/convergence/             # profile X receipts
-│   ├── plans/                            # X/D machine indexes
-│   ├── prompts/                          # content-addressed prompt catalogue
-│   ├── docs/                             # profile D route
-│   └── tests/                            # deterministic semantic controls
-├── docs/
-│   ├── INDEX.md
-│   ├── architecture/
-│   ├── prompts/
-│   └── traceability/
+│   ├── source/ requirements/ contracts/ orchestration/
+│   ├── shadow/ evidence/convergence/
+│   ├── plans/ prompts/ docs/ tests/
+├── docs/architecture/ prompts/ traceability/
 ├── prompts/README.md
-└── handoff/                              # canonical P7 queue contract
+└── handoff/
 ```
 
-Directory presence never proves execution. See `docs/architecture/STATE_MACHINES.md` for directory → owner → State Machine → Gate → evidence-ceiling routing.
-
-## Process/evidence flow
-
-```text
-local-only source digest
--> requirement/contradiction graph
--> strict contracts
--> Tech Lead DAG + zero-context packets
--> canonical owner implementations
--> exact public/deterministic receipts
--> independent Shadow + Truth Verify
--> profile and generic convergence
--> documentation projection
-+-> Local Handoff for stronger lanes
--> Human-owned irreversible transitions
-```
-
-Detailed guards and forbidden flows are in `docs/architecture/DATA_FLOW.md` and `profiles/agent-thinking-inception/plans/data-flow.json`.
-
-## Prompt contract
-
-P0-P7 prompts are indexed under `docs/prompts/` and `prompts/README.md`. Every fresh session must receive exact repository/commit/tree inputs, objective/non-goals/invariants/unknowns, one role/owner, writable/read-only/forbidden paths, start/completion dependencies, inputs/outputs, positive and mutation controls, runtime/capability requirements, evidence ceiling, timeout/retry/cleanup/rollback, required receipt, claims-not-proven, stop conditions, and next authority. Hidden prior chat memory is never required.
+Directory presence is not execution evidence.
 
 ## GitHub / Google authority
 
-- **GitHub** is canonical publication metadata: issues, PRs, exact commits/trees, code review, Actions receipts.
-- **Google Docs** may be an advisory narrative/review copy.
-- **Google Sheets** may be an advisory dashboard/matrix.
-- Docs/Sheets are `ADVISORY_ONLY`; URL existence or wording cannot write task/workflow/effect/Human/release state.
-- EAS-A #10 owns future GitHub/Google projection adapters and remains `NOT_IMPLEMENTED` until an exact implementation subject exists.
+- GitHub exact commits/trees plus typed Actions/review receipts are canonical publication metadata.
+- Google Docs and Google Sheets are `ADVISORY_ONLY` projections.
+- Google wording or URL existence cannot mutate task/workflow/effect/Human/release state.
+- EAS-A #10 remains `NOT_IMPLEMENTED` until an exact projection-adapter subject exists.
 
-## Open evidence lanes
+## Historical/no-authority denominator
 
 ```text
-physical power-loss / multi-host durability        NOT_EXERCISED
-network / gVisor isolation                         NOT_EXERCISED
-provider capability / enrollment                   NOT_EXERCISED
-external independent semantic verification         NOT_EXERCISED
-private evidence                                    NOT_EXERCISED
-exact external Model/Data/Trace terms              PARTIAL_OR_UNBOUND
-live telemetry export/store/delete                 NOT_EXERCISED
-external candidate benchmark                       NOT_EXERCISED
-real external effect / remote readback             NOT_PERFORMED
-compensation                                        NOT_EXERCISED
-business/user outcome                               NOT_VERIFIED
-Human legal/security/admission                      HUMAN_ADMIT_REQUIRED
+old Profile-X PR #33                         authority NONE
+Profile-X v2 PR #36                          authority NONE
+old Profile-D PR #37                         authority NONE
+old Profile-D verifier PR #39                authority NONE
+old Root-D PR #41 / verifier #43             authority NONE for current P6
+old P7 PR #50 / verifier #51                 authority NONE for current P7 until rebound
+historical EAS-D blueprint PR #26             blueprint only
+```
+
+No force rewrite hides these paths.
+
+## Open stronger lanes
+
+```text
+physical power-loss / multi-host durability       NOT_EXERCISED
+network / gVisor isolation                        NOT_EXERCISED
+provider capability / enrollment                  NOT_EXERCISED
+external independent semantic verification        NOT_EXERCISED
+private evidence                                   NOT_EXERCISED
+exact external Model/Data/Trace terms              UNBOUND
+live telemetry export/store/delete                NOT_EXERCISED
+external candidate benchmark                      NOT_EXERCISED
+real external effect / remote readback            NOT_PERFORMED
+compensation                                       NOT_EXERCISED
+business/user outcome                              NOT_VERIFIED
+Human legal/security/admission                     HUMAN_ADMIT_REQUIRED
 merge / release / rollback                         NOT_PERFORMED
 ```
 
-A docs/CI PASS cannot promote these states.
-
 ## Next authority
 
-P7 consumes an external exact-head EAS-D verification and Shadow receipt; that receipt is intentionally not written back into the branch it reviews. Stronger execution remains under Local Handoff #14 and canonical owner issues. P7 execution is `NOT_PERFORMED` until the queue/runtime/capability/receipt contract admits a concrete epoch. No root documentation state authorizes merge, provider activation, private-data egress, Human admission, release, or rollback.
+Root-D v2 must receive an **external immutable-target hosted verification** and a fresh read-only Shadow review. Only that external receipt may authorize P7 preparation. P7 execution, provider/private/physical work, external effects, Human admission, merge, release, and rollback remain separate authorities.
