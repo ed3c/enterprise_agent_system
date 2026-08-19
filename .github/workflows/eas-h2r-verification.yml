@@ -21,6 +21,14 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/eas-h2r-exact-c29e0344
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
       - name: Bind exact queue parent and four-path writer lease
         shell: bash
         run: |
@@ -68,7 +76,19 @@ jobs:
           assert p['cleanup_ids']==['REMOVE_ROOT_D_WORKTREE','PRUNE_WORKTREES','DELETE_TEMP_ROOT_D_REF']
           assert p['required_environment_names']==['EAS_CHECKOUT','EAS_RECEIPT_DIR','EAS_WORKTREES']
           PY
-          ! grep -q -- '--mode execute' .github/workflows/eas-h2r-verification.yml
+
+      - name: Prove verifier never invokes execute mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=".verifier/.github/workflows/eas-h2r-verification.yml"
+          test -f "$definition"
+          forbidden="--mode"" execute"
+          if grep -Fq -- "$forbidden" "$definition"; then
+            echo "REAL_QUEUE_EXECUTE_TOKEN_FOUND"
+            exit 2
+          fi
+          echo "PASS verifier-definition-present execute-mode-invocation-absent"
 
       - name: Compile parse and patch hygiene
         run: |
@@ -86,6 +106,8 @@ jobs:
           writer_paths=4
           runner_tests=13
           queue_refusals=18
+          verifier_definition_present=true
+          execute_mode_invocation_absent=true
           real_runner_mode=plan_only
           runner_execution=NOT_PERFORMED
           queue_execution=NOT_PERFORMED
