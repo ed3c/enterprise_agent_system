@@ -1,12 +1,12 @@
 {
-  "schema_version": "enterprise-agent-system/inception-profile-closure/v2",
+  "schema_version": "enterprise-agent-system/inception-profile-closure/v3",
   "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
   "state": "PROFILE_CLOSURE_CANDIDATE_BLOCKED_STRONGER_LANES",
   "source_subject": {"id": "SRC-PDF-INCEPTION-001", "digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da", "class": "SOURCE_PROPOSAL"},
   "multi_parent_input": {
-    "commit": "45c0adeb153e0b029a3c2948d0d960f134baa396",
+    "commit": "718a17820779809f070ca324ce62695114b9d3dc",
     "parents": [
-      {"repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c", "tree": "e1be41234ff336297ce591b564291c9a0cd819ed", "shadow_review": 4973461122},
+      {"repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "8b1bfa38c103e1c064b8ef0aafecfc8f2a2642dc", "tree": "9c8fb0e8e25f357fdb695a94c4ab74fc3dcd4631", "shadow_review": 4973896050},
       {"repository": "ed3c/enterprise_agent_system", "pull_request": 32, "commit": "9f25b94ca891faf0d926b0fc22b67be88925aa81", "tree": "1452d1b9931c70ef70ed3b7dec78cedc51d6db35", "shadow_review": 4973593318}
     ]
   },
@@ -148,7 +148,7 @@
     {"lane": "HUMAN_LEGAL_SECURITY_ADMISSION", "state": "HUMAN_ADMIT_REQUIRED"},
     {"lane": "MERGE_RELEASE_ROLLBACK", "state": "NOT_PERFORMED"}
   ],
-  "selected_vertical_canary": {"path": "profiles/agent-thinking-inception/plans/vertical-canary.json", "contract_digest": "sha256:aeef053aaaced7d84cd7f76c0cd9c9809146d841a583a80d4ee99fb614991cb4", "state": "PLAN_ONLY", "execution_receipt": null},
+  "selected_vertical_canary": {"path": "profiles/agent-thinking-inception/plans/vertical-canary.json", "contract_digest": "sha256:7a881bbe4b2b9605d56838f5f1e9a3c76dbf45ebc1b0aa7a973fd1329f88efbb", "state": "PLAN_ONLY", "execution_receipt": null},
   "closure_summary": {
     "requirements_total": 15,
     "requirements_required_lane_satisfied": 1,
@@ -156,7 +156,7 @@
     "contradictions_total": 14,
     "contradictions_preserved": 14,
     "profile_shadow": "ADMIT_FOR_PROFILE_CONVERGENCE",
-    "generic_x": "ADMIT_FOR_DOWNSTREAM_REVIEW",
+    "generic_x": "ADMIT_FOR_PROFILE_X_REBIND",
     "vertical_canary": "PLAN_ONLY",
     "highest_state": "DETERMINISTIC_EVIDENCE_VERIFIED",
     "full_architecture": "BLOCKED_FOR_CLOSURE",
