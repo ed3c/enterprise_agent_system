@@ -1,0 +1,136 @@
+name: EAS-A exact advisory projection verification
+
+on:
+  push:
+    branches: [verify/eas-a-exact-dc7c5b57]
+  pull_request:
+    paths:
+      - .github/workflows/eas-a-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-eas-a-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout immutable EAS-A target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: dc7c5b57c3d175c861378474eff40e4b3ac9232d
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact target and eight-file writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="dc7c5b57c3d175c861378474eff40e4b3ac9232d"
+          tree="fbf6a75b6e89e906f227110dc5a61e4355b8a891"
+          base="5dda08e6d3376da98ed93fd3ef1c4211d89d6890"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          git merge-base --is-ancestor "$base" HEAD
+          python3 - <<'PY'
+          import subprocess
+          base = "5dda08e6d3376da98ed93fd3ef1c4211d89d6890"
+          expected = {
+              "config/document-sources.example.yaml",
+              "integrations/github/README.md",
+              "integrations/github/adapter.py",
+              "integrations/github/advisory_projection.py",
+              "integrations/github/verify_eas_a.py",
+              "integrations/google-drive/README.md",
+              "integrations/google-drive/adapter.py",
+              "prompts/02-source-ingest-worker.system.md",
+          }
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only", f"{base}...HEAD"], text=True
+          ).splitlines())
+          assert changed == expected, f"EAS_A_PATH_LEASE:{sorted(changed ^ expected)}"
+          print(f"PASS exact target and EAS-A writer lease files={len(changed)}")
+          PY
+
+      - name: Run EAS-A positive and planted refusal controls
+        run: |
+          python3 integrations/github/verify_eas_a.py
+          python3 integrations/github/verify_eas_a.py --selftest
+
+      - name: Compile and verify closed public adapter surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            integrations/github/advisory_projection.py \
+            integrations/github/adapter.py \
+            integrations/google-drive/adapter.py \
+            integrations/github/verify_eas_a.py
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = [
+              Path("integrations/github/advisory_projection.py"),
+              Path("integrations/github/adapter.py"),
+              Path("integrations/google-drive/adapter.py"),
+              Path("integrations/github/verify_eas_a.py"),
+              Path("config/document-sources.example.yaml"),
+              Path("prompts/02-source-ingest-worker.system.md"),
+          ]
+          corpus = "\n".join(p.read_text(encoding="utf-8") for p in paths)
+          for token in (
+              "ADVISORY_ONLY", "canonical_state_mutation", "CURRENT", "STALE",
+              "REFUSED", "ABSENT", "claims_not_proven",
+              "WRITE_REQUIRES_SEPARATE_EXPLICIT_AUTHORITY",
+          ):
+              assert token in corpus, token
+          forbidden_imports = (
+              "import requests", "from requests", "googleapiclient", "google.auth",
+              "urllib.request", "import socket", "import subprocess",
+          )
+          google = Path("integrations/google-drive/adapter.py").read_text(encoding="utf-8")
+          assert not [x for x in forbidden_imports if x in google], "GOOGLE_NETWORK_OR_PROCESS_CLIENT_PRESENT"
+          assert "def request_write" in google and "WRITE_REQUIRES_SEPARATE_EXPLICIT_AUTHORITY" in google
+          assert "write_action_available\": False" in google
+          print("PASS closed adapter surface: Google connector is read-only/no-network/no-write")
+          PY
+
+      - name: Check portable and secret-free surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          files = [
+              Path("config/document-sources.example.yaml"),
+              *Path("integrations/github").glob("*"),
+              *Path("integrations/google-drive").glob("*"),
+              Path("prompts/02-source-ingest-worker.system.md"),
+          ]
+          text = "\n".join(p.read_text(encoding="utf-8") for p in files if p.is_file())
+          forbidden = [
+              "/"+"Users"+"/", "/"+"home"+"/", "/mnt/"+"data/",
+              "BEGIN "+"PRIVATE KEY", "Authorization: Bearer ",
+          ]
+          assert not [x for x in forbidden if x in text], "NON_PORTABLE_OR_SECRET_SURFACE"
+          assert "canonical_state_mutation: true" not in text.lower()
+          print("PASS portable/secret-free projection surface")
+          PY
+
+      - name: Check patch hygiene
+        run: git diff --check 5dda08e6d3376da98ed93fd3ef1c4211d89d6890...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-AV exact advisory projection verification
+          target=dc7c5b57c3d175c861378474eff40e4b3ac9232d
+          tree=fbf6a75b6e89e906f227110dc5a61e4355b8a891
+          writer_paths=8
+          positive_fixtures=3
+          planted_refusals=18
+          projection_authority=ADVISORY_ONLY
+          google_network_access=NOT_PERFORMED
+          google_write=NOT_PERFORMED
+          canonical_state_mutation=FORBIDDEN
+          evidence_ceiling=ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY
+          EOF
