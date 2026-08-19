@@ -255,7 +255,7 @@ Prose is a projection of these machine facts, not the source of operational stat
 - The Profile-D hosted verification workflow belongs to issue #38 and is an external sibling, not a Git parent.
 - Root/shared README/AGENTS/architecture indexes belong to EAS-D #13.
 - Local Handoff queue mutation belongs to #14 and remains unexecuted.
-- Google Docs/Sheets, if projected later, are advisory only.
+- Google Docs/Sheets, if projected later, are `ADVISORY_ONLY`.
 
 ## Evidence gaps that must remain visible
 
