@@ -1,0 +1,195 @@
+name: EAS-D v2 exact root documentation verification
+
+on:
+  push:
+    branches: [verify/eas-d-v2-exact-68828ec8]
+  pull_request:
+    paths:
+      - .github/workflows/eas-d-final-verification-v2.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-root-d-v2-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable Root-D v2 target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 68828ec8de5f3ad5aa133a5c772eefb80c775568
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact target parent and 18-path writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="68828ec8de5f3ad5aa133a5c772eefb80c775568"
+          tree="bf338e0cd959a2b97adee79af7459222bd5211b9"
+          parent="a7a034ef1db778fcee586fff8d8ff7848bc9a1ab"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          python3 - <<'PY'
+          import subprocess
+          parent = "a7a034ef1db778fcee586fff8d8ff7848bc9a1ab"
+          expected = {
+              "README.md", "AGENTS.md", "ARCHITECTURE.md", "CONTEXT.md",
+              "docs/INDEX.md", "docs/architecture/DATA_FLOW.md",
+              "docs/architecture/STATE_MACHINES.md",
+              "docs/prompts/P0-source-authority-auditor.system.md",
+              "docs/prompts/P1-contract-lock-worker.system.md",
+              "docs/prompts/P2-tech-lead-controller.system.md",
+              "docs/prompts/P3-owner-wave-worker.system.md",
+              "docs/prompts/P4-shadow-architect.system.md",
+              "docs/prompts/P5-convergence-owner.system.md",
+              "docs/prompts/P6-docs-stack-convergence.system.md",
+              "docs/prompts/P7-local-handoff-compiler.system.md",
+              "docs/traceability/MOLECULAR_STACK_INDEX.md",
+              "handoff/README.md", "prompts/README.md",
+          }
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
+          ).splitlines())
+          assert changed == expected, f"ROOT_D_PATH_LEASE:{sorted(changed ^ expected)}"
+          print(f"PASS direct-parent ancestry and root writer lease files={len(changed)}")
+          PY
+
+      - name: Execute inherited current Profile-X and Profile-D semantic controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Verify root documentation freshness and prompt completeness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path.cwd()
+          required = [
+              "README.md", "AGENTS.md", "ARCHITECTURE.md", "CONTEXT.md",
+              "docs/INDEX.md", "docs/architecture/STATE_MACHINES.md",
+              "docs/architecture/DATA_FLOW.md",
+              "docs/traceability/MOLECULAR_STACK_INDEX.md",
+              "prompts/README.md", "handoff/README.md",
+          ]
+          corpus = "\n".join((root / p).read_text(encoding="utf-8") for p in required)
+          for token in (
+              "15", "14", "13", "1", "requirement closure credit",
+              "BLOCKED_FOR_CLOSURE", "PLAN_ONLY", "NOT_IMPLEMENTED",
+              "ADVISORY_ONLY", "authority NONE", "32259216877",
+              "32282726313", "4975046170",
+              "8b1bfa38c103e1c064b8ef0aafecfc8f2a2642dc",
+              "fe2748e09a5222f439f09c5d0d71e486e1ade3e8",
+              "a7a034ef1db778fcee586fff8d8ff7848bc9a1ab",
+              "ROOT_D_V2_CANDIDATE", "BLOCKED_PENDING_CURRENT_ROOT_D_RECEIPT",
+              "NOT_PERFORMED",
+          ):
+              assert token in corpus, f"ROOT_DOC_TOKEN_MISSING:{token}"
+
+          stale_current_inputs = [
+              "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c",
+              "a27aa552f1c258e09f515b4a5d117ba37f4d6615",
+              "690154a5f7154d551bef6942fe5d1f34091c2197",
+              "2146c02c23bbf87b6797900141c491a53f6936714b0b620a23016a2b20eaab79",
+              "32268112684", "32270454491", "4973663047", "4973885537",
+          ]
+          assert not [x for x in stale_current_inputs if x in corpus], "STALE_ROOT_CURRENT_INPUT"
+
+          readme = (root / "README.md").read_text(encoding="utf-8")
+          context = (root / "CONTEXT.md").read_text(encoding="utf-8")
+          assert "P6 Root-D v2" in readme and "ROOT_D_CANDIDATE" in readme
+          assert "P7 execution" in readme and "NOT_PERFORMED" in readme
+          assert "state          ROOT_D_V2_CANDIDATE" in context
+          assert "P7 execution   NOT_PERFORMED" in context
+          assert "COMPLETE_AT_DOCS_CEILING" not in context
+
+          prompt_dir = root / "docs/prompts"
+          prompts = sorted(prompt_dir.glob("P*-*.system.md"))
+          assert len(prompts) == 8, [p.name for p in prompts]
+          assert {p.name.split("-")[0] for p in prompts} == {f"P{i}" for i in range(8)}
+          prompt_corpus = "\n".join(p.read_text(encoding="utf-8") for p in prompts)
+          assert "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c" not in prompt_corpus
+          assert "a27aa552f1c258e09f515b4a5d117ba37f4d6615" not in prompt_corpus
+          assert "690154a5f7154d551bef6942fe5d1f34091c2197" not in prompt_corpus
+          for prompt in prompts:
+              text = prompt.read_text(encoding="utf-8")
+              for marker in ("Objective", "Evidence ceiling", "Required receipt", "Stop conditions", "Handoff"):
+                  assert marker in text, (prompt.name, marker)
+              assert any(k in text for k in ("Writer lease", "Writable lease", "## Lease", "## Authority")), prompt.name
+              assert "prior chat" in text.lower() or "chat memory" in text.lower() or "fresh-session" in text.lower(), prompt.name
+
+          stack = (root / "docs/traceability/MOLECULAR_STACK_INDEX.md").read_text(encoding="utf-8")
+          assert "Profile-D v4 -> Root-D v2" in stack or "Profile-D v4 -> Root-D v2" in stack.replace("  ", " ")
+          assert "subject=null" in stack and "NOT_IMPLEMENTED" in stack
+          assert "Profile-X hosted Gate" in stack and "ABSENT" in stack
+
+          state = (root / "docs/architecture/STATE_MACHINES.md").read_text(encoding="utf-8")
+          for marker in ("State Machine", "Canonical owner", "Gate", "Evidence ceiling", "next owner"):
+              assert marker.lower() in state.lower(), marker
+          assert "BLOCKED_PENDING_CURRENT_ROOT_D_RECEIPT" in state
+
+          flow = (root / "docs/architecture/DATA_FLOW.md").read_text(encoding="utf-8")
+          for marker in ("Forbidden flows", "UNKNOWN_EFFECT", "Human admission", "PLAN_ONLY"):
+              assert marker in flow, marker
+
+          print("PASS root docs current-subject routes=10 prompts=8")
+          PY
+
+      - name: Parse compile freshness and portable surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            src/enterprise_agent_system/convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py \
+            profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 -m json.tool evidence/ledgers/cross-repo-closure.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/closure-record.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/vertical-canary.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/molecular-stack-index.json >/dev/null
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = [
+              Path("README.md"), Path("AGENTS.md"), Path("ARCHITECTURE.md"), Path("CONTEXT.md"),
+              Path("docs/INDEX.md"), Path("docs/architecture/DATA_FLOW.md"),
+              Path("docs/architecture/STATE_MACHINES.md"), Path("docs/traceability/MOLECULAR_STACK_INDEX.md"),
+              Path("prompts/README.md"), Path("handoff/README.md"),
+          ] + sorted(Path("docs/prompts").glob("P*-*.system.md"))
+          corpus = "\n".join(p.read_text(encoding="utf-8") for p in paths)
+          forbidden = ["/"+"Users"+"/", "/"+"home"+"/", "/mnt/"+"data/", "BEGIN "+"PRIVATE KEY", "gemini."+"google.com"]
+          assert not [x for x in forbidden if x in corpus], "NON_PORTABLE_OR_PRIVATE_SURFACE"
+          print("PASS portable root documentation surface")
+          PY
+          git diff --check a7a034ef1db778fcee586fff8d8ff7848bc9a1ab...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-DV v2 exact root documentation verification
+          target=68828ec8de5f3ad5aa133a5c772eefb80c775568
+          tree=bf338e0cd959a2b97adee79af7459222bd5211b9
+          parent_profile_d=a7a034ef1db778fcee586fff8d8ff7848bc9a1ab
+          root_doc_paths=18
+          fresh_session_prompts=8
+          requirements=15
+          contradictions=14
+          stronger_lanes=13
+          required_lanes_satisfied=1
+          requirement_closure_credit=0
+          profile_x_hosted_gate=ABSENT
+          vertical_canary=PLAN_ONLY
+          full_architecture=BLOCKED_FOR_CLOSURE
+          P7=BLOCKED_PENDING_CURRENT_ROOT_D_RECEIPT
+          P7_execution=NOT_PERFORMED
+          Human_admission=NOT_PERFORMED
+          release_rollback=NOT_PERFORMED
+          EOF
