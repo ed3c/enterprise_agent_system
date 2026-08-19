@@ -1,0 +1,149 @@
+name: EAS-X exact EAS-A rebind verification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/eas-x-rebind-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-eas-x-rebind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable EAS-X target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 0e07d52507b6657e0b75d664deb882408b52ca83
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact target ancestry and X writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="0e07d52507b6657e0b75d664deb882408b52ca83"
+          tree="3662c0b44ca8afea1e08fe800d6f34d055344f39"
+          parent="177ba870c41cc5605532ea79770d54aea124fa0c"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse HEAD^{tree})" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          python3 - <<'PY'
+          import subprocess
+          parent='177ba870c41cc5605532ea79770d54aea124fa0c'
+          expected={
+            'docs/integration/cross-repo-convergence.md',
+            'evidence/ledgers/cross-repo-closure.json',
+            'plans/architecture-closure.yaml',
+            'plans/molecular-stack-index.json',
+            'plans/task-dag.json',
+            'prompts/04-cross-repo-convergence.system.md',
+            'src/enterprise_agent_system/README.md',
+            'src/enterprise_agent_system/__init__.py',
+            'src/enterprise_agent_system/convergence.py',
+            'tests/test_convergence.py',
+          }
+          changed=set(subprocess.check_output(['git','diff','--name-only',f'{parent}...HEAD'],text=True).splitlines())
+          assert changed == expected, f'X_PATH_LEASE:{sorted(changed ^ expected)}'
+          print(f'PASS X writer lease files={len(changed)}')
+          PY
+
+      - name: Execute X positive and semantic mutation tests
+        run: python3 -m unittest tests.test_convergence -v
+
+      - name: Verify exact EAS-A rebind and no authority widening
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          commit='250717db1cad584d50890c0d851153fa2cd755e8'
+          tree='fbf6a75b6e89e906f227110dc5a61e4355b8a891'
+          verify=32295871632
+          shadow=4976213414
+          ledger=json.loads(Path('evidence/ledgers/cross-repo-closure.json').read_text())
+          dep=next(x for x in ledger['process_dependencies'] if x['atom']=='EAS-A')
+          assert dep['state']=='DETERMINISTIC_VERIFIED'
+          assert dep['subject']=={'repository':'ed3c/enterprise_agent_system','commit':commit,'tree':tree}
+          assert dep['verification_run']==verify
+          assert dep['shadow_review']==shadow
+          assert dep['authority']=='ADVISORY_ONLY'
+          assert dep['evidence_ceiling']=='ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY'
+          assert len(ledger['owners'])==7
+          assert len(ledger['stronger_lanes'])==13
+          assert ledger['selected_vertical_canary']['state']=='PLAN_ONLY'
+          assert all(x['state']!='PASS' for x in ledger['stronger_lanes'])
+          plan=json.loads(Path('plans/architecture-closure.yaml').read_text())
+          a=plan['process_dependencies']['EAS-A']
+          assert a['commit']==commit and a['tree']==tree and a['authority']=='ADVISORY_ONLY'
+          assert plan['evidence_ceiling']['google_connectivity_or_write']=='NOT_PERFORMED'
+          stack=json.loads(Path('plans/molecular-stack-index.json').read_text())
+          atom=next(x for x in stack['atoms'] if x['atom']=='A')
+          assert atom['state']=='DETERMINISTIC_VERIFIED'
+          assert atom['subject']['commit']==commit
+          assert atom['authority']=='ADVISORY_ONLY'
+          assert atom['git_relation_to_x']=='PROCESS_DEPENDENCY_NOT_GIT_PARENT'
+          assert next(x for x in stack['atoms'] if x['atom']=='D')['state']=='BLOCKED_BY_EAS_X_REBIND'
+          print('PASS exact EAS-A process dependency / ADVISORY_ONLY / zero stronger-lane promotion')
+          PY
+
+      - name: Verify stale absence projection is gone from current routes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          current='\n'.join([
+            Path('docs/integration/cross-repo-convergence.md').read_text(),
+            Path('prompts/04-cross-repo-convergence.system.md').read_text(),
+            Path('src/enterprise_agent_system/README.md').read_text(),
+          ])
+          forbidden=[
+            'EAS-A remains `NOT_IMPLEMENTED`',
+            'Missing EAS-A is part of the denominator',
+            'state NOT_IMPLEMENTED\n  subject null',
+            'EAS-A absence is hidden',
+          ]
+          assert not [x for x in forbidden if x in current], 'STALE_EAS_A_ABSENCE_PROJECTION'
+          for required in (
+            '250717db1cad584d50890c0d851153fa2cd755e8',
+            '32295871632',
+            '4976213414',
+            'ADVISORY_ONLY',
+            'ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY',
+          ):
+            assert required in current, required
+          print('PASS current docs/prompt routes use admitted EAS-A subject')
+          PY
+
+      - name: Compile parse and patch hygiene
+        run: |
+          python3 -m py_compile src/enterprise_agent_system/convergence.py tests/test_convergence.py
+          python3 -m json.tool evidence/ledgers/cross-repo-closure.json >/dev/null
+          python3 -m json.tool plans/architecture-closure.yaml >/dev/null
+          python3 -m json.tool plans/molecular-stack-index.json >/dev/null
+          python3 -m json.tool plans/task-dag.json >/dev/null
+          git diff --check 177ba870c41cc5605532ea79770d54aea124fa0c...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-X exact EAS-A rebind verification
+          target=0e07d52507b6657e0b75d664deb882408b52ca83
+          tree=3662c0b44ca8afea1e08fe800d6f34d055344f39
+          git_parent=177ba870c41cc5605532ea79770d54aea124fa0c
+          EAS_A_commit=250717db1cad584d50890c0d851153fa2cd755e8
+          EAS_A_tree=fbf6a75b6e89e906f227110dc5a61e4355b8a891
+          EAS_A_verify=32295871632
+          EAS_A_Shadow=4976213414
+          EAS_A_authority=ADVISORY_ONLY
+          owner_interfaces=7
+          stronger_no_credit_lanes=13
+          vertical_canary=PLAN_ONLY
+          downstream_profile_x=REBIND_REQUIRED
+          downstream_p6=REBIND_REQUIRED
+          downstream_p7=EXECUTION_AUTHORITY_SUSPENDED_PENDING_REBIND
+          Google_network_write=NOT_PERFORMED
+          Human_merge_release_rollback=NOT_PERFORMED
+          EOF
