@@ -1,6 +1,6 @@
 """Fail-closed cross-repository convergence for exact public owner subjects.
 
-EAS-X is an aggregate control-plane view.  It never becomes a second runtime,
+EAS-X is an aggregate control-plane view. It never becomes a second runtime,
 workflow reducer, effect ledger, provider adapter, verifier, Human authority, or
 release authority.
 """
@@ -26,6 +26,7 @@ REQUIRED_INTERFACES = {
 }
 
 ALLOWED_OWNER_EVIDENCE = {"DETERMINISTIC_VERIFIED", "PUBLIC_VERIFIED"}
+ALLOWED_SHADOW_RECEIPT_KINDS = {"PR_REVIEW", "ISSUE_COMMENT"}
 NO_CREDIT_STATES = {
     "ABSENT",
     "NOT_IMPLEMENTED",
@@ -113,6 +114,26 @@ def _unique_strings(value: Any, reason: str, *, nonempty: bool = True) -> list[s
     return value
 
 
+def _validate_shadow_receipts(value: Any, *, interface: str) -> None:
+    _require(isinstance(value, list) and value, f"OWNER_SHADOW_RECEIPTS:{interface}")
+    identities: set[tuple[str, int]] = set()
+    for item in value:
+        receipt = _strict_mapping(
+            item,
+            required={"kind", "id", "scope"},
+            name="OWNER_SHADOW_RECEIPT",
+        )
+        kind = _nonempty_string(receipt["kind"], f"OWNER_SHADOW_RECEIPT_KIND:{interface}")
+        _require(kind in ALLOWED_SHADOW_RECEIPT_KINDS, f"OWNER_SHADOW_RECEIPT_KIND:{interface}")
+        receipt_id = receipt["id"]
+        _require(isinstance(receipt_id, int) and receipt_id > 0, f"OWNER_SHADOW_RECEIPT_ID:{interface}")
+        scope = _nonempty_string(receipt["scope"], f"OWNER_SHADOW_RECEIPT_SCOPE:{interface}")
+        _require(scope in {"EXACT_SUBJECT", "PROFILE_PUBLIC_DENOMINATOR"}, f"OWNER_SHADOW_RECEIPT_SCOPE:{interface}")
+        identity = (kind, receipt_id)
+        _require(identity not in identities, f"OWNER_SHADOW_RECEIPT_DUPLICATE:{interface}")
+        identities.add(identity)
+
+
 def validate_owner_record(value: Mapping[str, Any]) -> None:
     record = _strict_mapping(
         value,
@@ -123,7 +144,7 @@ def validate_owner_record(value: Mapping[str, Any]) -> None:
             "subject",
             "evidence_state",
             "hosted_runs",
-            "shadow_review",
+            "shadow_receipts",
             "lane",
             "next_transition",
         },
@@ -141,7 +162,7 @@ def validate_owner_record(value: Mapping[str, Any]) -> None:
     _require(isinstance(runs, list) and runs, f"OWNER_HOSTED_RUNS:{interface}")
     _require(all(isinstance(item, int) and item > 0 for item in runs), f"OWNER_HOSTED_RUN_ID:{interface}")
     _require(len(runs) == len(set(runs)), f"OWNER_HOSTED_RUN_DUPLICATE:{interface}")
-    _require(isinstance(record["shadow_review"], int) and record["shadow_review"] > 0, f"OWNER_SHADOW_REVIEW:{interface}")
+    _validate_shadow_receipts(record["shadow_receipts"], interface=interface)
     _nonempty_string(record["lane"], f"OWNER_LANE:{interface}")
     _nonempty_string(record["next_transition"], f"OWNER_NEXT_TRANSITION:{interface}")
 
