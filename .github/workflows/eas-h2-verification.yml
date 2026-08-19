@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable P7 target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 4cff97f5ea0333fa9be07b342b686ffe5ae5f39e
+          ref: 5ad8f5310f764c46ce02e38c39de9332a3a7cb2b
           persist-credentials: false
           fetch-depth: 0
 
@@ -25,8 +25,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="4cff97f5ea0333fa9be07b342b686ffe5ae5f39e"
-          tree="00ae65b1cb6ad7eebd458b7705f2a51e47763c1d"
+          target="5ad8f5310f764c46ce02e38c39de9332a3a7cb2b"
+          tree="4effe7ce338753ee61972890f676700ad33c3e04"
           parent="89e12f5863c9bfd02bddb28de121d9c19cc25d16"
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse HEAD^{tree})" = "$tree"
@@ -67,13 +67,15 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-H2 exact queue-v2 verification
-          target=4cff97f5ea0333fa9be07b342b686ffe5ae5f39e
-          tree=00ae65b1cb6ad7eebd458b7705f2a51e47763c1d
+          target=5ad8f5310f764c46ce02e38c39de9332a3a7cb2b
+          tree=4effe7ce338753ee61972890f676700ad33c3e04
           parent=89e12f5863c9bfd02bddb28de121d9c19cc25d16
           queue_items=11
           active_items=1
           blocked_successors=9
           human_terminal=1
+          cleanup_commands=3
+          temporary_fetch_ref_cleanup=REQUIRED
           planted_refusals=18
           vertical_canary=PLAN_ONLY
           queue_execution=NOT_PERFORMED
