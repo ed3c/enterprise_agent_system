@@ -1,0 +1,94 @@
+{
+  "schema_version": "enterprise-agent-system/local-handoff-runner-contract/v2",
+  "contract_id": "EAS-H3R-P7-QUEUE-V3-RUNNER-2026-08-20",
+  "state": "RUNNER_IMPLEMENTATION_CANDIDATE",
+  "queue_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 59,
+    "commit": "a6dbbc52fba70c9732a1bf664f52a072cd83d608",
+    "tree": "7b54d0c56d088bf7edcf7b4c8984366a89ee9e36",
+    "verification_run": 32286101504,
+    "shadow_review": 4975366131,
+    "relationship": "TRUE_GIT_PARENT"
+  },
+  "superseded_authority": [
+    {
+      "kind": "queue",
+      "pull_request": 50,
+      "commit": "00b9ae644352485e4779102b1c3c2d18f6a7155c",
+      "authority": "NONE"
+    },
+    {
+      "kind": "runner",
+      "pull_request": 55,
+      "commit": "521a8028ea66a137a7649a8292222ac408b87d25",
+      "tree": "40e307283d50e92822677d0170fffb06d4b80dc9",
+      "authority": "NONE"
+    }
+  ],
+  "consumed_read_only_paths": [
+    "handoff/local-handoff-queue.json",
+    "handoff/local-handoff-receipt.schema.json",
+    "tests/verify_handoff.py"
+  ],
+  "active_item_id": "LH-P7-01-ROOT-D-V2-LOCAL-READBACK",
+  "default_mode": "plan",
+  "modes": ["plan", "execute"],
+  "allowed_runtime_kinds": ["CODEX_CLI_LOCAL", "CLAUDE_CODE_LOCAL"],
+  "execute_requires_external_runner_admission": true,
+  "execute_required_admission_fields": ["runner_commit", "runner_tree"],
+  "execute_required_environment_names": ["EAS_CHECKOUT", "EAS_WORKTREES", "EAS_RECEIPT_DIR"],
+  "subprocess_contract": {
+    "shell": false,
+    "capture_output": true,
+    "serialized_output": "SHA256_DIGEST_ONLY",
+    "inherit_arbitrary_environment": false,
+    "git_terminal_prompt": false
+  },
+  "path_contract": {
+    "environment_names_only": true,
+    "relative_paths_only": true,
+    "reject_parent_traversal": true,
+    "reject_root_escape": true,
+    "execution_roots_pairwise_disjoint": true,
+    "receipt_root_outside_checkout": true
+  },
+  "preflight_contract": {
+    "checkout_must_be_clean": true,
+    "root_d_worktree_relative": "root-d-v2",
+    "root_d_worktree_must_be_absent": true,
+    "root_d_worktree_registration_must_be_absent": true,
+    "temporary_root_d_ref": "refs/remotes/origin/p7-root-d-v2",
+    "temporary_root_d_ref_must_be_absent": true
+  },
+  "cleanup_contract": {
+    "run_in_finally": true,
+    "expected_command_ids": ["REMOVE_ROOT_D_WORKTREE", "PRUNE_WORKTREES", "DELETE_TEMP_ROOT_D_REF"],
+    "required_absent_residue": ["EAS_WORKTREES/root-d-v2", "registered worktree EAS_WORKTREES/root-d-v2", "refs/remotes/origin/p7-root-d-v2"],
+    "dirty_state_must_match_pre_execution": true
+  },
+  "receipt_contract": {
+    "schema": "handoff/local-handoff-receipt.schema.json",
+    "schema_version": "enterprise-agent-system/local-handoff-receipt/v2",
+    "write_mode": "ATOMIC_REPLACE",
+    "validate_before_write": true,
+    "secret_values_allowed": false,
+    "resolved_local_paths_serialized": false,
+    "queue_advancement": "CANONICAL_REDUCER_ONLY"
+  },
+  "public_verification": {
+    "real_queue_execute_allowed": false,
+    "plan_allowed": true,
+    "hermetic_subprocess_fixture_allowed": true,
+    "mocked_failure_cleanup_tests_allowed": true
+  },
+  "runner_execution": "NOT_PERFORMED",
+  "queue_execution": "NOT_PERFORMED",
+  "evidence_ceiling": "PUBLIC_QUEUE_V3_RUNNER_IMPLEMENTATION_ONLY",
+  "claims_not_proven": [
+    "A green runner test does not prove the ACTIVE queue item executed.",
+    "The runner does not advance canonical queue state; reducer readback is separate.",
+    "Old queue-v2 and runner-v2 subjects remain historical only and carry no current execution authority.",
+    "Provider, physical, private, external-effect, user, Human, merge, release and rollback lanes remain unproven until their own receipts exist."
+  ]
+}
