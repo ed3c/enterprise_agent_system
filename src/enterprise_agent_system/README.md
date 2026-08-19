@@ -1,8 +1,8 @@
-# Tech Lead orchestration core
+# Enterprise Agent System control-plane primitives
 
 This package implements deterministic, provider-neutral control-plane primitives. It consumes the EAS-C orchestration vocabulary; it does not implement transport, provider execution, workflow/effect state or Human/release authority.
 
-## State machine
+## Tech Lead orchestration state machine
 
 ```text
 REQUEST_BOUND
@@ -28,9 +28,27 @@ REQUEST_BOUND
 | `compile_prompt_packet` | content-addressed zero-context Worker packet | missing objective/invariants/Gates or invalid run |
 | `validate_prompt_packet` | persisted packet digest/lease/authority verdict | silent packet edits, read/write collisions, missing Local/Human handoff, authority widening |
 | `reduce_candidate` | one candidate admitted for convergence or a blocked verdict | stale subject, wrong task/lane, missing Gates, multiple winners, critical Shadow finding, Human/release promotion |
+| `validate_convergence_snapshot` | exact-owner/evidence P5 convergence candidate | owner substitution, missing denominator lanes, false Git ancestry, stronger-lane credit, false vertical-canary execution |
+| `validate_owner_record` | one immutable owner binding | repository/interface mismatch, mutable subject, absent hosted/Shadow receipt |
 
 A candidate admitted for convergence is not `COMPLETE`, `HUMAN_ADMITTED`, `MERGED` or `RELEASED`.
 
 ## Independent Shadow plane
 
 `shadow.py` evaluates the same immutable public subject through a separate, read-only path. It detects source-to-fact promotion, stale subjects, evidence-lane substitution, false closure credit, missing receipt subjects, shared-projection authority, denominator loss, terminal-state promotion and open critical findings without owner issues. Its strongest automated terminal state is `ADMIT_FOR_REVIEW`; open critical findings force `BLOCKED_FOR_CLOSURE`.
+
+## EAS-X cross-repository convergence
+
+`convergence.py` is an aggregate-only P5 validator. Its current machine input is `evidence/ledgers/cross-repo-closure.json` and its human route is `docs/integration/cross-repo-convergence.md`.
+
+```text
+P4 exact owner subjects
+→ one-interface / one-owner validation
+→ exact commit/tree + hosted receipt binding
+→ stronger-lane denominator preservation
+→ public no-effect vertical-canary PLAN_ONLY
+→ independent Shadow review
+→ profile X #22 / P6 #13 / Local Handoff #14
+```
+
+EAS-X deliberately keeps `A2R_RUNTIME_CONTRACT` (`runtime-env`) separate from `A2_SANDBOX_STEERING` (`agent-shield-monorepo`). It also keeps EAS-A issue #10 visible as `NOT_IMPLEMENTED` while no exact adapter subject exists. Neither absence nor a public fixture may be normalized into a stronger PASS.
