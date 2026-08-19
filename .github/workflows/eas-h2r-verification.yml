@@ -1,0 +1,97 @@
+name: EAS-H2R exact local runner verification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/eas-h2r-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-local-runner-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable runner target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: c29e0344b3bbf8abf7453457947f1754db74b95f
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact queue parent and four-path writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="c29e0344b3bbf8abf7453457947f1754db74b95f"
+          tree="e8dab354c93466bb6c6e7158bd0e0f5967e9b96a"
+          parent="00b9ae644352485e4779102b1c3c2d18f6a7155c"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse HEAD^{tree})" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          unexpected="$(git diff --name-only "$parent"...HEAD | grep -Ev '^handoff/local-handoff-runner-contract\.json$|^handoff/run_active\.py$|^handoff/RUNBOOK\.md$|^tests/test_handoff_runner\.py$' || true)"
+          test -z "$unexpected" || { printf 'P7_RUNNER_PATH_LEASE_VIOLATION:\n%s\n' "$unexpected"; exit 2; }
+          test "$(git diff --name-only "$parent"...HEAD | wc -l)" -eq 4
+          git diff --quiet "$parent"..HEAD -- \
+            handoff/local-handoff-queue.json \
+            handoff/local-handoff-receipt.schema.json \
+            tests/verify_handoff.py \
+            README.md AGENTS.md ARCHITECTURE.md CONTEXT.md \
+            profiles src contracts plans evidence docs/prompts \
+            .github
+          printf 'PASS target=%s tree=%s parent=%s changed=4\n' "$target" "$tree" "$parent"
+
+      - name: Replay inherited queue-v2 controls
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+
+      - name: Execute hermetic runner tests
+        run: python3 tests/test_handoff_runner.py -v
+
+      - name: Execute real runner plan mode only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 handoff/run_active.py --mode plan > /tmp/eas-h2r-plan.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/eas-h2r-plan.json'))
+          assert p['mode']=='plan'
+          assert p['active_item_id']=='LH-P7-01-FINAL-P6-LOCAL-READBACK'
+          assert p['queue_execution']=='NOT_PERFORMED'
+          assert p['queue_parent']['commit']=='00b9ae644352485e4779102b1c3c2d18f6a7155c'
+          assert p['queue_parent']['tree']=='4effe7ce338753ee61972890f676700ad33c3e04'
+          assert p['cleanup_ids']==['REMOVE_ROOT_D_WORKTREE','PRUNE_WORKTREES','DELETE_TEMP_ROOT_D_REF']
+          assert p['required_environment_names']==['EAS_CHECKOUT','EAS_RECEIPT_DIR','EAS_WORKTREES']
+          PY
+          ! grep -q -- '--mode execute' .github/workflows/eas-h2r-verification.yml
+
+      - name: Compile parse and patch hygiene
+        run: |
+          python3 -m json.tool handoff/local-handoff-runner-contract.json >/dev/null
+          python3 -m py_compile handoff/run_active.py tests/test_handoff_runner.py
+          git diff --check 00b9ae644352485e4779102b1c3c2d18f6a7155c...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-H2RV exact local runner verification
+          target=c29e0344b3bbf8abf7453457947f1754db74b95f
+          tree=e8dab354c93466bb6c6e7158bd0e0f5967e9b96a
+          parent=00b9ae644352485e4779102b1c3c2d18f6a7155c
+          writer_paths=4
+          runner_tests=13
+          queue_refusals=18
+          real_runner_mode=plan_only
+          runner_execution=NOT_PERFORMED
+          queue_execution=NOT_PERFORMED
+          ACTIVE_local_execution=NOT_PERFORMED
+          provider_physical_private=NOT_EXERCISED
+          vertical_canary=PLAN_ONLY
+          Human_admission=NOT_PERFORMED
+          merge_release_rollback=NOT_PERFORMED
+          EOF
