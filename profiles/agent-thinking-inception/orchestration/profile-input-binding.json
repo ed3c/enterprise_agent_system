@@ -1,0 +1,59 @@
+{
+  "schema_version": "enterprise-agent-system/inception-profile-input-binding/v1",
+  "binding_id": "INPUT-INCEPTION-K-2026-08-18",
+  "inputs": {
+    "eas_c": {
+      "repository": "ed3c/enterprise_agent_system",
+      "commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
+      "tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598",
+      "state": "ADMIT_FOR_REVIEW"
+    },
+    "eas_k": {
+      "repository": "ed3c/enterprise_agent_system",
+      "commit": "b1362f48b6edc0b4cd6d301da2a5d0e94d970f8c",
+      "tree": "19353937e8d642a0bd731e20b3f61ffa3af2b913",
+      "state": "ADMIT_FOR_REVIEW"
+    },
+    "profile_c0": {
+      "repository": "ed3c/enterprise_agent_system",
+      "commit": "1f0d196c19b7fa4505894ff1fb8b27cd33c5fb9f",
+      "tree": "924967e5fb51dad8ad09e321109063d4f7b2ec70",
+      "source_digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da",
+      "requirements": 15,
+      "contradictions": 14,
+      "state": "SOURCE_GRAPH_CANDIDATE"
+    },
+    "profile_c1": {
+      "repository": "ed3c/enterprise_agent_system",
+      "commit": "1977c015cd2b85eb350deae6d39018ba5437a482",
+      "tree": "7bed929490035f7431547fe22eb8201cd71dae50",
+      "bundle_digest": "sha256:f19249d8e40fbf0c6db6f71ed943192cfc4debe097cd7b517164a159c0c040bf",
+      "record_count": 11,
+      "state": "CONTRACT_CANDIDATE"
+    },
+    "profile_k_base": {
+      "repository": "ed3c/enterprise_agent_system",
+      "commit": "1474882226fff6078afe467731db5adec9a09a50",
+      "tree": "3aadb4377d9596823b070f996a5f94ccb8f05220",
+      "parents": [
+        "1977c015cd2b85eb350deae6d39018ba5437a482",
+        "b1362f48b6edc0b4cd6d301da2a5d0e94d970f8c"
+      ],
+      "state": "MULTI_PARENT_INPUT_BOUND"
+    },
+    "shadow_preflight": {
+      "repository": "ed3c/enterprise_agent_system",
+      "commit": "177ba870c41cc5605532ea79770d54aea124fa0c",
+      "tree": "20073aa3b719f30c95a6cbf449f0d6a2144f71c3",
+      "verdict": "ADMIT_FOR_REVIEW",
+      "full_architecture_verdict": "BLOCKED_FOR_CLOSURE"
+    }
+  },
+  "output_state": "PROFILE_K_INPUTS_BOUND",
+  "evidence_ceiling": "EXACT_INPUT_BINDING_ONLY",
+  "claims_not_proven": [
+    "No A1-A6 owner implementation has executed.",
+    "The Shadow preflight does not close the full architecture.",
+    "Local, provider, effect, user, Human, release and rollback lanes remain open."
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "schema_version": "enterprise-agent-system/inception-profile-shadow/v1",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "source_subject": {
+    "id": "SRC-PDF-INCEPTION-001",
+    "digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da",
+    "class": "SOURCE_PROPOSAL",
+    "claims_current_fact": false
+  },
+  "profile_k_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e",
+    "tree": "c3851a6953d456d0342a9776eed28561c1af0ca1"
+  },
+  "generic_shadow_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "177ba870c41cc5605532ea79770d54aea124fa0c",
+    "tree": "20073aa3b719f30c95a6cbf449f0d6a2144f71c3"
+  },
+  "profile_shadow_base": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "aff3fb339f7c0ddcfbe12f1d5c5cd1b72b582478",
+    "parents": [
+      "177ba870c41cc5605532ea79770d54aea124fa0c",
+      "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e"
+    ]
+  },
+  "shadow": {
+    "read_only": true,
+    "separate_evaluation_path": true,
+    "may_commit": []
+  },
+  "public_denominator_receipt": {
+    "kind": "ISSUE_COMMENT",
+    "issue": "https://github.com/ed3c/enterprise_agent_system/issues/19",
+    "comment_id": 5343381027,
+    "receipt_class": "PROFILE_PUBLIC_DENOMINATOR",
+    "state": "PUBLIC_VERIFICATION_DENOMINATOR_ADMITTED"
+  },
+  "owners": [
+    {
+      "atom": "A1",
+      "interface": "inception/domain-state-compaction",
+      "repository": "ed3c/bettor-arena",
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/191",
+      "pull_request": 194,
+      "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328",
+      "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d",
+      "hosted_runs": [32259216877],
+      "public_evidence": ["DETERMINISTIC_PASS", "TARGETED_PUBLIC_CRASH_CANARY"],
+      "no_credit": ["LIVE_CONTEXT_RECONSTRUCTION", "PROVIDER_TOKENIZER", "MULTI_HOST_PRODUCTION_RECOVERY"]
+    },
+    {
+      "atom": "A2R",
+      "interface": "inception/runtime-capability-contract",
+      "repository": "ed3c/runtime-env",
+      "owner_issue": "https://github.com/ed3c/runtime-env/issues/67",
+      "pull_request": 68,
+      "commit": "2ff4efe7bee3d12fb3063fed93631f8d323cd64a",
+      "tree": "273c6873e7075d90a7f11275c5d39e746dd075dc",
+      "hosted_runs": [32249588945, 32249588946],
+      "public_evidence": ["DETERMINISTIC_PASS"],
+      "no_credit": ["LOCAL_WORKLOAD_EXECUTION", "PROVIDER_OBSERVATION"]
+    },
+    {
+      "atom": "A2",
+      "interface": "inception/runtime-sandbox-steering",
+      "repository": "ed3c/agent-shield-monorepo",
+      "owner_issue": "https://github.com/ed3c/agent-shield-monorepo/issues/153",
+      "pull_request": 154,
+      "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2",
+      "tree": "51adf9791485d597849c026a3828ded0088b3805",
+      "hosted_runs": [32262032532, 32262032583, 32262032553],
+      "public_evidence": ["DETERMINISTIC_PASS", "TARGETED_PUBLIC_LOCAL_PROCESS_CANARY"],
+      "no_credit": ["NETWORK_ISOLATION", "PROVIDER_OBSERVATION", "HARDENED_CONTAINER_ISOLATION"]
+    },
+    {
+      "atom": "A3",
+      "interface": "inception/code-source-citation-evidence",
+      "repository": "ed3c/truth-verify-loop",
+      "owner_issue": "https://github.com/ed3c/truth-verify-loop/issues/23",
+      "pull_request": 30,
+      "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980",
+      "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547",
+      "hosted_runs": [32260293092, 32260291970],
+      "public_evidence": ["DETERMINISTIC_PASS", "TARGETED_PUBLIC_GIT_BLOB_CANARY", "TARGETED_DUAL_METHOD_SEMANTIC_FIXTURE"],
+      "no_credit": ["EXTERNAL_INDEPENDENT_SEMANTIC", "PRIVATE_EVIDENCE", "BUSINESS_CLAIM_CLOSURE"]
+    },
+    {
+      "atom": "A4",
+      "interface": "inception/four-tier-provenance",
+      "repository": "ed3c/enterprise_agent_system",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/16",
+      "pull_request": 30,
+      "commit": "bf976c7c33e315d1743733a79c15521e645ff6dc",
+      "tree": "c09bef2457ad507433f253c8a5fd211147fae247",
+      "hosted_runs": [32261864341],
+      "public_evidence": ["DETERMINISTIC_PASS", "TARGETED_SYNTHETIC_LEAK_CANARY"],
+      "no_credit": ["EXACT_EXTERNAL_TERMS", "LIVE_TELEMETRY", "INDEPENDENT_SECURITY_REVIEW", "HUMAN_LEGAL_DISPOSITION"]
+    },
+    {
+      "atom": "A5",
+      "interface": "inception/discovery-admission",
+      "repository": "ed3c/bettor-arena",
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/192",
+      "pull_request": 195,
+      "commit": "81f02f4148273ffe5f5571c8605e1ee0afc59866",
+      "tree": "f9612314e47ced69796db00703dd5d34ab592e36",
+      "hosted_runs": [32260835956],
+      "public_evidence": ["DETERMINISTIC_PASS", "TARGETED_MATCHED_FIXTURE_BENCHMARK"],
+      "no_credit": ["EXTERNAL_SOURCE_INGESTION", "EXTERNAL_CANDIDATE_BENCHMARK", "EXTERNAL_INDEPENDENT_SHADOW", "HUMAN_ADMISSION"]
+    },
+    {
+      "atom": "A6",
+      "interface": "inception/ingress-effect-writeback",
+      "repository": "ed3c/bettor-arena",
+      "owner_issue": "https://github.com/ed3c/bettor-arena/issues/193",
+      "pull_request": 196,
+      "commit": "c2613432736c65756ed13d871feb2df486c69118",
+      "tree": "53680d47048f88b9402c6320355121b7ec2f7244",
+      "hosted_runs": [32262080676],
+      "public_evidence": ["DETERMINISTIC_PASS", "TARGETED_PUBLIC_RESTART_RECONCILIATION"],
+      "no_credit": ["REAL_EXTERNAL_WRITE", "REAL_REMOTE_RECONCILIATION", "COMPENSATION", "PRODUCTION_CREDENTIALS"]
+    }
+  ],
+  "requirements": [
+    {"requirement_id": "REQ-PDF-INCEPTION-STATE-001", "owner_atom": "A1", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-DAG-001", "owner_atom": "K", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-CONTEXT-001", "owner_atom": "A2R", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-CONTEXT-002", "owner_atom": "A1", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-CONTEXT-003", "owner_atom": "A1", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-STEERING-001", "owner_atom": "A2", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-SANDBOX-001", "owner_atom": "A2", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-EVIDENCE-001", "owner_atom": "A3", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-EVIDENCE-002", "owner_atom": "A3", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-COMPLIANCE-001", "owner_atom": "A4", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-TELEMETRY-001", "owner_atom": "A4", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-CONVERGE-001", "owner_atom": "A5", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-INGRESS-001", "owner_atom": "A6", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-INGRESS-002", "owner_atom": "A6", "state": "PUBLIC_EVIDENCE_RECONCILED"},
+    {"requirement_id": "REQ-PDF-INCEPTION-HITL-001", "owner_atom": "H", "state": "BLOCKED_BY_HUMAN_LANE"}
+  ],
+  "contradictions": [
+    {"id": "UNK-INCEPTION-001", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A1/A2R"},
+    {"id": "UNK-INCEPTION-002", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A2R"},
+    {"id": "UNK-INCEPTION-003", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A1"},
+    {"id": "UNK-INCEPTION-004", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A1"},
+    {"id": "UNK-INCEPTION-005", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A2"},
+    {"id": "UNK-INCEPTION-006", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A3"},
+    {"id": "UNK-INCEPTION-007", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A4"},
+    {"id": "UNK-INCEPTION-008", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A5"},
+    {"id": "UNK-INCEPTION-009", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A4"},
+    {"id": "UNK-INCEPTION-010", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A6"},
+    {"id": "UNK-INCEPTION-011", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A6"},
+    {"id": "UNK-INCEPTION-012", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A3"},
+    {"id": "UNK-INCEPTION-013", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "A2"},
+    {"id": "UNK-INCEPTION-014", "state": "PUBLIC_CONTROL_PRESENT", "owner_route": "E/H/A6"}
+  ],
+  "attempts": [
+    {"id": "A1-current", "atom": "A1", "state": "PASS", "subject": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328"},
+    {"id": "A2-type-surface-red", "atom": "A2", "state": "FAIL", "reason": "Node/Bun ambient types widened product TypeScript surface"},
+    {"id": "A2-path-red", "atom": "A2", "state": "FAIL", "reason": "child launch depended on omitted PATH"},
+    {"id": "A2-current", "atom": "A2", "state": "PASS", "subject": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2"},
+    {"id": "A3-baseline-stale", "atom": "A3", "state": "BLOCKED", "reason": "freshness-sensitive fixtures used wall clock"},
+    {"id": "A3-current", "atom": "A3", "state": "PASS", "subject": "5ea4dd42d2ee5bbd22537f5426cd276f10222980"},
+    {"id": "A4-whitespace-red", "atom": "A4", "state": "FAIL", "reason": "git diff --check trailing whitespace"},
+    {"id": "A4-current", "atom": "A4", "state": "PASS", "subject": "bf976c7c33e315d1743733a79c15521e645ff6dc"},
+    {"id": "A5-stage-drift-red", "atom": "A5", "state": "FAIL", "reason": "verification manifest stage drift"},
+    {"id": "A5-current", "atom": "A5", "state": "PASS", "subject": "81f02f4148273ffe5f5571c8605e1ee0afc59866"},
+    {"id": "A6-current", "atom": "A6", "state": "PASS", "subject": "c2613432736c65756ed13d871feb2df486c69118"}
+  ],
+  "attempt_denominator": 11,
+  "stronger_lanes": [
+    {"lane": "PHYSICAL_MULTI_HOST_DURABILITY", "state": "NOT_EXERCISED"},
+    {"lane": "NETWORK_GVISOR_ISOLATION", "state": "NOT_EXERCISED"},
+    {"lane": "PROVIDER_CAPABILITY_ENROLLMENT", "state": "NOT_EXERCISED"},
+    {"lane": "EXTERNAL_INDEPENDENT_SEMANTIC", "state": "NOT_EXERCISED"},
+    {"lane": "PRIVATE_EVIDENCE", "state": "NOT_EXERCISED"},
+    {"lane": "EXACT_EXTERNAL_MODEL_DATA_TRACE_TERMS", "state": "UNBOUND"},
+    {"lane": "LIVE_TELEMETRY", "state": "NOT_EXERCISED"},
+    {"lane": "EXTERNAL_CANDIDATE_BENCHMARK", "state": "NOT_EXERCISED"},
+    {"lane": "REAL_EXTERNAL_EFFECT_READBACK", "state": "NOT_PERFORMED"},
+    {"lane": "COMPENSATION", "state": "NOT_EXERCISED"},
+    {"lane": "BUSINESS_USER_OUTCOME", "state": "NOT_VERIFIED"},
+    {"lane": "HUMAN_LEGAL_SECURITY_ADMISSION", "state": "HUMAN_ADMIT_REQUIRED"},
+    {"lane": "MERGE_RELEASE_ROLLBACK", "state": "NOT_PERFORMED"}
+  ],
+  "closure": {
+    "highest_state": "DETERMINISTIC_EVIDENCE_VERIFIED",
+    "profile_verdict": "ADMIT_FOR_PROFILE_CONVERGENCE",
+    "full_architecture_verdict": "BLOCKED_FOR_CLOSURE"
+  },
+  "claims_not_proven": [
+    "Public canaries do not prove provider, private, physical, user, Human, release or rollback lanes.",
+    "Profile Shadow does not authorize merge, provider enrollment, external effects or Human admission.",
+    "The source PDF remains SOURCE_PROPOSAL rather than runtime truth."
+  ],
+  "snapshot_digest": "sha256:4e104feaea71db7690b701e9e88b8971f605812489f3c520e26bb92411aaf67d"
+}
