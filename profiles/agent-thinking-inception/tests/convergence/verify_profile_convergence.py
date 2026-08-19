@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed verifier for INCEPTION-X profile convergence."""
+"""Fail-closed verifier for INCEPTION-X v3 profile convergence."""
 
 from __future__ import annotations
 
@@ -18,13 +18,13 @@ RECEIPTS = ROOT / "evidence" / "convergence" / "receipt-index.json"
 
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
-EXPECTED_PARENT_COMMIT = "45c0adeb153e0b029a3c2948d0d960f134baa396"
+EXPECTED_PARENT_COMMIT = "718a17820779809f070ca324ce62695114b9d3dc"
 EXPECTED_GENERIC_X = {
     "repository": "ed3c/enterprise_agent_system",
     "pull_request": 31,
-    "commit": "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c",
-    "tree": "e1be41234ff336297ce591b564291c9a0cd819ed",
-    "shadow_review": 4973461122,
+    "commit": "8b1bfa38c103e1c064b8ef0aafecfc8f2a2642dc",
+    "tree": "9c8fb0e8e25f357fdb695a94c4ab74fc3dcd4631",
+    "shadow_review": 4973896050,
 }
 EXPECTED_PROFILE_E = {
     "repository": "ed3c/enterprise_agent_system",
@@ -75,7 +75,7 @@ def load(path: Path) -> dict[str, Any]:
     return value
 
 
-def subject(value: Any, reason: str) -> None:
+def exact_subject(value: Any, reason: str) -> None:
     require(isinstance(value, dict), f"{reason}:NOT_OBJECT")
     require(set(value) == {"repository", "commit", "tree"}, f"{reason}:FIELDS")
     require(isinstance(value["repository"], str) and "/" in value["repository"], f"{reason}:REPOSITORY")
@@ -100,7 +100,7 @@ def source_denominator() -> tuple[dict[str, dict[str, Any]], set[str]]:
     return requirements, ids
 
 
-def canary_digest(canary: dict[str, Any]) -> str:
+def canonical_canary_digest(canary: dict[str, Any]) -> str:
     payload = json.dumps(canary["contract"], sort_keys=True, separators=(",", ":")).encode()
     return "sha256:" + hashlib.sha256(payload).hexdigest()
 
@@ -112,7 +112,7 @@ def validate_canary(canary: dict[str, Any]) -> None:
     require(canary.get("state") == "PLAN_ONLY", "CANARY_FALSE_EXECUTION")
     require(canary.get("execution_receipt") is None, "CANARY_FALSE_RECEIPT")
     require(DIGEST.fullmatch(str(canary.get("contract_digest", ""))) is not None, "CANARY_DIGEST")
-    require(canary_digest(canary) == canary["contract_digest"], "CANARY_DIGEST_MISMATCH")
+    require(canonical_canary_digest(canary) == canary["contract_digest"], "CANARY_DIGEST_MISMATCH")
     contract = canary["contract"]
     require(contract["generic_x"] == EXPECTED_GENERIC_X, "CANARY_GENERIC_X_DRIFT")
     require(contract["profile_shadow"] == EXPECTED_PROFILE_E, "CANARY_PROFILE_E_DRIFT")
@@ -136,23 +136,23 @@ def validate_canary(canary: dict[str, Any]) -> None:
 
 
 def validate_receipts(receipts: dict[str, Any], canary: dict[str, Any]) -> None:
-    require(receipts.get("schema_version") == "enterprise-agent-system/inception-profile-convergence-receipts/v2", "RECEIPT_SCHEMA")
+    require(receipts.get("schema_version") == "enterprise-agent-system/inception-profile-convergence-receipts/v3", "RECEIPT_SCHEMA")
     require(receipts.get("state") == "P5_PROFILE_CONVERGENCE_CANDIDATE", "RECEIPT_STATE")
     multi = receipts["multi_parent_input"]
     require(multi["commit"] == EXPECTED_PARENT_COMMIT, "MULTI_PARENT_COMMIT")
     parents = multi["parents"]
-    require(len(parents) == 2, "MULTI_PARENT_DENOMINATOR")
-    require({p["atom"] for p in parents} == {"EAS-X", "INCEPTION-E"}, "MULTI_PARENT_ATOMS")
+    require(len(parents) == 2 and {p["atom"] for p in parents} == {"EAS-X", "INCEPTION-E"}, "MULTI_PARENT_DENOMINATOR")
     gx = next(p for p in parents if p["atom"] == "EAS-X")
     pe = next(p for p in parents if p["atom"] == "INCEPTION-E")
-    require({k: gx[k] for k in EXPECTED_GENERIC_X} == EXPECTED_GENERIC_X, "GENERIC_X_RECEIPT_DRIFT")
-    require(gx["review"] == EXPECTED_GENERIC_X["shadow_review"] and gx["verdict"] == "ADMIT_FOR_DOWNSTREAM_REVIEW", "GENERIC_X_REVIEW")
-    require({k: pe[k] for k in EXPECTED_PROFILE_E} == EXPECTED_PROFILE_E, "PROFILE_E_RECEIPT_DRIFT")
+    for key, value in EXPECTED_GENERIC_X.items():
+        require(gx.get(key) == value, f"GENERIC_X_RECEIPT_DRIFT:{key}")
+    require(gx["review"] == EXPECTED_GENERIC_X["shadow_review"] and gx["verdict"] == "ADMIT_FOR_PROFILE_X_REBIND", "GENERIC_X_REVIEW")
+    for key, value in EXPECTED_PROFILE_E.items():
+        require(pe.get(key) == value, f"PROFILE_E_RECEIPT_DRIFT:{key}")
     require(pe["review"] == EXPECTED_PROFILE_E["shadow_review"] and pe["verdict"] == "ADMIT_FOR_PROFILE_CONVERGENCE", "PROFILE_E_REVIEW")
 
     owners = receipts["owners"]
-    require(len(owners) == 7, "RECEIPT_OWNER_DENOMINATOR")
-    require([owner["atom"] for owner in owners] == list(EXPECTED_OWNERS), "RECEIPT_OWNER_ORDER")
+    require(len(owners) == 7 and [owner["atom"] for owner in owners] == list(EXPECTED_OWNERS), "RECEIPT_OWNER_DENOMINATOR")
     for owner in owners:
         expected = EXPECTED_OWNERS[owner["atom"]]
         require((owner["repository"], owner["commit"], owner["tree"], tuple(owner["hosted_runs"])) == expected, f"RECEIPT_OWNER:{owner['atom']}")
@@ -163,17 +163,20 @@ def validate_receipts(receipts: dict[str, Any], canary: dict[str, Any]) -> None:
     require(handoff["state"] == "DETERMINISTIC_QUEUE_CONTRACT_ONLY", "HANDOFF_STATE")
     require(handoff["queue_execution"] == "NOT_PERFORMED", "HANDOFF_FALSE_EXECUTION")
     require(receipts["source"] == {"id": "SRC-PDF-INCEPTION-001", "digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da", "class": "SOURCE_PROPOSAL", "requirements": 15, "contradictions": 14}, "SOURCE_PROMOTION_OR_DENOMINATOR")
-    require(receipts["vertical_canary"]["digest"] == canary["contract_digest"], "RECEIPT_CANARY_DIGEST")
-    require(receipts["vertical_canary"]["state"] == "PLAN_ONLY" and receipts["vertical_canary"]["execution_receipt"] is None, "RECEIPT_CANARY_FALSE_EXECUTION")
+    require(receipts["vertical_canary"] == {"path": "profiles/agent-thinking-inception/plans/vertical-canary.json", "digest": canary["contract_digest"], "state": "PLAN_ONLY", "execution_receipt": None}, "RECEIPT_CANARY")
     require(receipts["closure"]["highest_state"] == "DETERMINISTIC_EVIDENCE_VERIFIED", "RECEIPT_FALSE_CLOSURE")
     require(receipts["closure"]["full_architecture"] == "BLOCKED_FOR_CLOSURE" and receipts["closure"]["closure_credit"] == 0, "RECEIPT_FULL_CLOSURE_PROMOTION")
-    require(receipts["residue"]["superseded_branch"] == "agent/inception-x-profile-convergence", "RESIDUE_BRANCH")
-    require(receipts["residue"]["authority"] == "NONE", "RESIDUE_AUTHORITY")
+    residues = receipts["residue"]["superseded_branches"]
+    require(len(residues) == 2, "RESIDUE_DENOMINATOR")
+    require({x["branch"] for x in residues} == {"agent/inception-x-profile-convergence", "agent/inception-x-profile-convergence-v2"}, "RESIDUE_BRANCHES")
+    require(all(x["authority"] == "NONE" for x in residues), "RESIDUE_AUTHORITY")
+    v2 = next(x for x in residues if x["branch"].endswith("-v2"))
+    require(v2.get("pull_request") == 36 and v2["relationship"] == "SUPERSEDED_BY_EAS_X_PARENT_REBIND", "RESIDUE_V2_TRACE")
 
 
 def validate_closure(closure: dict[str, Any], canary: dict[str, Any]) -> None:
     source, contradiction_ids = source_denominator()
-    require(closure.get("schema_version") == "enterprise-agent-system/inception-profile-closure/v2", "CLOSURE_SCHEMA")
+    require(closure.get("schema_version") == "enterprise-agent-system/inception-profile-closure/v3", "CLOSURE_SCHEMA")
     require(closure.get("profile_id") == "PROFILE-AGENT-THINKING-INCEPTION-001", "CLOSURE_PROFILE")
     require(closure.get("state") == "PROFILE_CLOSURE_CANDIDATE_BLOCKED_STRONGER_LANES", "CLOSURE_STATE")
     require(closure["source_subject"] == {"id": "SRC-PDF-INCEPTION-001", "digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da", "class": "SOURCE_PROPOSAL"}, "CLOSURE_SOURCE_PROMOTION")
@@ -191,8 +194,8 @@ def validate_closure(closure: dict[str, Any], canary: dict[str, Any]) -> None:
         require(row["canonical_owner_repository"] == src["owner"]["repository"], f"OWNER_SUBSTITUTION:{rid}")
         require(row["owner_issue"] == src["owner"]["issue"], f"OWNER_ISSUE:{rid}")
         require(row["required_evidence_lane"] == src["required_evidence_lane"], f"REQUIRED_LANE_DRIFT:{rid}")
-        subject(row["owner_subject"], f"OWNER_SUBJECT:{rid}")
-        subject(row["evidence_subject"], f"EVIDENCE_SUBJECT:{rid}")
+        exact_subject(row["owner_subject"], f"OWNER_SUBJECT:{rid}")
+        exact_subject(row["evidence_subject"], f"EVIDENCE_SUBJECT:{rid}")
         require(row["owner_subject"]["repository"] == row["canonical_owner_repository"], f"OWNER_SUBJECT_REPOSITORY:{rid}")
         require(row["closure_credit"] == 0, f"FALSE_CLOSURE_CREDIT:{rid}")
         require(isinstance(row["blockers"], list) and row["blockers"], f"BLOCKER_MISSING:{rid}")
@@ -201,8 +204,7 @@ def validate_closure(closure: dict[str, Any], canary: dict[str, Any]) -> None:
     require(all(not row["required_lane_satisfied"] for rid, row in indexed.items() if rid != "REQ-PDF-INCEPTION-DAG-001"), "FALSE_REQUIRED_LANE_PROMOTION")
 
     contradictions = closure["contradictions"]
-    require(len(contradictions) == 14, "CONTRADICTION_DENOMINATOR")
-    require({item["id"] for item in contradictions} == contradiction_ids, "CONTRADICTION_IDS")
+    require(len(contradictions) == 14 and {item["id"] for item in contradictions} == contradiction_ids, "CONTRADICTION_DENOMINATOR")
     for item in contradictions:
         require(item["state"] == "PRESERVED_WITH_PARTIAL_CONTROL", f"CONTRADICTION_FALSE_RESOLUTION:{item['id']}")
         require(item["control_atom"] and item["remaining_blocker"], f"CONTRADICTION_CONTROL:{item['id']}")
@@ -219,7 +221,7 @@ def validate_closure(closure: dict[str, Any], canary: dict[str, Any]) -> None:
         "contradictions_total": 14,
         "contradictions_preserved": 14,
         "profile_shadow": "ADMIT_FOR_PROFILE_CONVERGENCE",
-        "generic_x": "ADMIT_FOR_DOWNSTREAM_REVIEW",
+        "generic_x": "ADMIT_FOR_PROFILE_X_REBIND",
         "vertical_canary": "PLAN_ONLY",
         "highest_state": "DETERMINISTIC_EVIDENCE_VERIFIED",
         "full_architecture": "BLOCKED_FOR_CLOSURE",
@@ -238,17 +240,7 @@ def validate_all() -> dict[str, Any]:
     validate_canary(canary)
     validate_receipts(receipts, canary)
     validate_closure(closure, canary)
-    return {
-        "owners": 7,
-        "requirements": 15,
-        "contradictions": 14,
-        "stronger_lanes": 13,
-        "required_lanes_satisfied": 1,
-        "closure_credit": 0,
-        "canary": "PLAN_ONLY",
-        "highest_state": "DETERMINISTIC_EVIDENCE_VERIFIED",
-        "full_architecture": "BLOCKED_FOR_CLOSURE"
-    }
+    return {"owners": 7, "requirements": 15, "contradictions": 14, "stronger_lanes": 13, "required_lanes_satisfied": 1, "closure_credit": 0, "canary": "PLAN_ONLY", "highest_state": "DETERMINISTIC_EVIDENCE_VERIFIED", "full_architecture": "BLOCKED_FOR_CLOSURE"}
 
 
 def main() -> int:
