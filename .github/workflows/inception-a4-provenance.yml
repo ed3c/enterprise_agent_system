@@ -1,4 +1,4 @@
-name: Inception A4 provenance-policy implementation
+name: Inception A4 public verification
 
 on:
   push:
@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  deterministic-policy:
+  telemetry-leak-canary:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Validate exact A4 implementation manifest and lease
+      - name: Validate exact A4 verification manifest and lease
         shell: bash
         run: |
           set -euo pipefail
@@ -43,8 +43,8 @@ jobs:
           exact = {
               "schema_version": "inception-owner-preflight/v1",
               "atom_id": "INCEPTION-A4",
-              "stage": "OWNER_IMPLEMENTATION",
-              "state": "DETERMINISTIC_POLICY_CANDIDATE",
+              "stage": "OWNER_PUBLIC_VERIFICATION",
+              "state": "TELEMETRY_LEAK_CANARY_CANDIDATE",
               "repository": "ed3c/enterprise_agent_system",
               "branch": "agent/inception-a4-provenance-policy",
           }
@@ -70,7 +70,7 @@ jobs:
           assert not set(manifest["writable_paths"]) & set(manifest["read_only_paths"])
           assert manifest["cleanup_contract"]["required"] is True
           assert manifest["cleanup_contract"]["rollback_subject"] == base["commit"]
-          assert manifest["next_transition"] == "BIND_EXACT_TERMS_SUBJECTS_AND_RUN_TELEMETRY_LEAK_CANARY"
+          assert manifest["next_transition"] == "BIND_EXACT_EXTERNAL_TERMS_AND_RUN_SCOPED_LIVE_TELEMETRY_CANARY"
 
           changed = subprocess.check_output(
               ["git", "diff", "--name-only", f"{base['commit']}...HEAD"], text=True
@@ -95,7 +95,17 @@ jobs:
       - name: Execute policy and telemetry disagreement controls
         run: |
           python3 profiles/agent-thinking-inception/owners/compliance/verify_policy.py
-          python3 -m py_compile profiles/agent-thinking-inception/owners/compliance/verify_policy.py
+
+      - name: Execute sanitize-before-export synthetic leak canary
+        run: |
+          python3 profiles/agent-thinking-inception/owners/compliance/test_telemetry_canary.py -v
+
+      - name: Compile and parse exact subjects
+        run: |
+          python3 -m py_compile \
+            profiles/agent-thinking-inception/owners/compliance/verify_policy.py \
+            profiles/agent-thinking-inception/owners/compliance/telemetry_canary.py \
+            profiles/agent-thinking-inception/owners/compliance/test_telemetry_canary.py
           python3 -m json.tool profiles/agent-thinking-inception/policies/provenance/four-tier-policy-candidate.schema.json >/dev/null
           python3 -m json.tool profiles/agent-thinking-inception/policies/provenance/telemetry-flow.schema.json >/dev/null
 
