@@ -1,15 +1,12 @@
-# Inception A4 — Code, Model, Data and Trace provenance preflight
+# Inception A4 — Code, Model, Data and Trace provenance
 
-Status: **OWNER IMPLEMENTATION PREPARATION ONLY**  
+Status: **FIRST PUBLIC IMPLEMENTATION CANDIDATE**  
 Upstream profile issue: `ed3c/enterprise_agent_system#16`  
 True parent: `agent/inception-k-profile-dag@6e0a916fd06dd8635d77c9a8c4d1b475185ea13e`
 
-This leaf prepares four separately attributable provenance and policy records,
-telemetry data-flow controls, expiry/review triggers and Human legal/security
-routes. It does not produce legal advice, commercial clearance, provider
-activation, telemetry deployment, merge, release or rollback.
+This leaf implements a bounded, deterministic policy-candidate surface for four separately attributable provenance dimensions plus a sanitize-before-export telemetry-flow contract. It does not produce legal advice, commercial clearance, provider activation, telemetry deployment, Human admission, merge, release or rollback.
 
-## Exact preparation subject
+## Exact lineage
 
 ```text
 repository        ed3c/enterprise_agent_system
@@ -22,23 +19,29 @@ packet bundle     sha256:dc4473b3195a738e55eb49c43661b6e1f4ea7f95c66749454776f20
 source digest     sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da
 ```
 
-## Four-tier record law
-
-Every dimension keeps its own exact subject, version, content digest, terms
-digest, obligations, blockers, expiry trigger, policy state, review identity and
-claims not proven.
+## Implementation subjects
 
 ```text
-Code  repository + commit + tree + dependency/SBOM/notice lineage
-Model provider/model/version + weight or API terms + data-use/distillation terms
-Data  dataset/snapshot/version + origin/consent/attribution/deletion lineage
-Trace schema/exporter/storage/version + classification/retention/training-use route
+policies/provenance/four-tier-policy-candidate.schema.json
+policies/provenance/telemetry-flow.schema.json
+evidence/compliance/four-tier-policy.example.json
+evidence/compliance/telemetry-flow.example.json
+owners/compliance/verify_policy.py
 ```
 
-A permissive-looking label, SPDX whitelist, AST rewrite, vendor statement or
-model agreement cannot self-promote `POLICY_ADMITTED`.
+Every Code, Model, Data and Trace dimension retains its own subject, explicit version, content digest, terms digest, obligations, blockers, expiry trigger, policy state and optional Human review subject. Allowed automated states are only:
 
-## Target State Machine
+```text
+CANDIDATE
+BLOCKED
+UNKNOWN
+HUMAN_REVIEW_REQUIRED
+EXPIRED
+```
+
+The deterministic verifier refuses missing dimensions, mutable/missing terms digests, missing obligations, automated `COMMERCIALLY_SAFE` / `ADMITTED` outcomes and telemetry flows in which sanitization and negative leak controls occur after export.
+
+## State Machine
 
 ```text
 FOUR_TIER_SUBJECTS_DECLARED
@@ -51,21 +54,22 @@ FOUR_TIER_SUBJECTS_DECLARED
 → ADMITTED | BLOCKED | UNKNOWN | EXPIRED
 ```
 
+The current implementation covers the deterministic candidate portion through `AUTOMATED_POLICY_CANDIDATE_EMITTED`. Independent security and Human legal disposition remain separate lanes.
+
 ## Telemetry data flow
 
 ```text
-local runtime event
-→ classify data and authority
-→ redact secrets, PII, proprietary prompts/code and disallowed payloads
-→ negative leak controls
-→ allowlisted local collector/exporter route
-→ retention/RBAC/deletion policy
-→ exact telemetry receipt
+runtime event
+→ CLASSIFY
+→ SANITIZE
+→ NEGATIVE_LEAK_CONTROLS
+→ EXPORT to an allowlisted destination
+→ STORE under explicit retention/training-use policy
 ```
 
-`local deployment` and `self-hosted` do not by themselves prove zero leakage.
+A local or self-hosted route does not by itself prove zero leakage.
 
-## Exact lease
+## Writer lease
 
 ```text
 profiles/agent-thinking-inception/owners/compliance/**
@@ -75,26 +79,25 @@ profiles/agent-thinking-inception/prompts/07-provenance-owner.system.md
 .github/workflows/inception-a4-provenance.yml
 ```
 
-Profile source, requirements, contracts, orchestration, tests, generic Shadow,
-root docs, aggregate closure and Local Handoff queue remain read-only.
+Profile source, requirements, orchestration, generic Shadow, root docs, aggregate closure and Local Handoff remain read-only.
 
-## First implementation commit admission
+## Next transition
 
-The next commit must add strict four-tier policy-candidate and telemetry-flow
-schemas plus a hollow or failing control for missing exact version, terms digest,
-obligation, expiry, sanitize-before-export or Human review. No fixture may use
-`ADMITTED`, `COMMERCIALLY_SAFE` or `ZERO_LEAKAGE` as an automated conclusion.
+`BIND_EXACT_TERMS_SUBJECTS_AND_RUN_TELEMETRY_LEAK_CANARY`
+
+The next atom must bind real external terms/version subjects and run an isolated leak-control canary. Automated checks still cannot make the Human legal/security disposition.
 
 ## Evidence ceiling
 
 ```text
-OWNER_PREPARATION_READY
-policy/schema code       NOT_STARTED
-terms subjects           UNBOUND
-telemetry canary         NOT_EXERCISED
-independent security     NOT_EXERCISED
-Human legal disposition HUMAN_ADMIT_REQUIRED
-merge/release/rollback  NOT_PERFORMED
+four-tier policy schema      DETERMINISTIC_CANDIDATE
+telemetry-flow schema        DETERMINISTIC_CANDIDATE
+mutation controls            DETERMINISTIC_CANDIDATE
+exact external terms         UNBOUND
+live telemetry canary        NOT_EXERCISED
+independent security review  NOT_EXERCISED
+Human legal disposition      HUMAN_ADMIT_REQUIRED
+merge / release / rollback   NOT_PERFORMED
 ```
 
 Machine authority: [`preflight.json`](preflight.json).
