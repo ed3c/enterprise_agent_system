@@ -18,7 +18,7 @@ jobs:
       - name: Checkout immutable Profile-D v4 target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: fd0b2fd947cf06b271a37721cbd99c42ce9cdf50
+          ref: a7a034ef1db778fcee586fff8d8ff7848bc9a1ab
           persist-credentials: false
           fetch-depth: 0
 
@@ -26,8 +26,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "fd0b2fd947cf06b271a37721cbd99c42ce9cdf50"
-          test "$(git rev-parse 'HEAD^{tree}')" = "2f30b0edd7359146e359c0b3ab875780efc0e085"
+          test "$(git rev-parse HEAD)" = "a7a034ef1db778fcee586fff8d8ff7848bc9a1ab"
+          test "$(git rev-parse 'HEAD^{tree}')" = "62796ebb2e48e60ab30809470d3b6c02f44009fc"
           git merge-base --is-ancestor fe2748e09a5222f439f09c5d0d71e486e1ade3e8 HEAD
           python3 - <<'PY'
           import subprocess
