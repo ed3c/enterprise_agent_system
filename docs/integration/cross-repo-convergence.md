@@ -21,7 +21,7 @@ A consumer sandbox PASS must not back-prove that a provider/runtime capability w
 
 | Interface | Canonical owner | Exact subject | Hosted evidence | Shadow receipt |
 |---|---|---|---|---|
-| A1 compaction/recovery | `ed3c/bettor-arena` | `21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328` / `31ea6bec01899a4c9e4f994998ea6041116db49d` | `32259476821 PASS` | exact PR review `4972750319`; profile denominator `5343381027` |
+| A1 compaction/recovery | `ed3c/bettor-arena` | `21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328` / `31ea6bec01899a4c9e4f994998ea6041116db49d` | `32259216877 PASS` | exact PR review `4972750319`; profile denominator `5343381027` |
 | A2R runtime contract | `ed3c/runtime-env` | owner head `2ff4efe7bee3d12fb3063fed93631f8d323cd64a` / `273c6873e7075d90a7f11275c5d39e746dd075dc` | `32249588945`, `32249588946 PASS` | exact PR review `4972041442` |
 | A2 sandbox/steering | `ed3c/agent-shield-monorepo` | `8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2` / `51adf9791485d597849c026a3828ded0088b3805` | `32262032532`, `32262032583`, `32262032553 PASS` | profile denominator `5343381027` |
 | A3 exact evidence | `ed3c/truth-verify-loop` | `5ea4dd42d2ee5bbd22537f5426cd276f10222980` / `fc6486b9ab6a48752e32a536a847c6e5635f8547` | `32260293092`, `32260291970 PASS` | exact PR review `4972977716`; profile denominator `5343381027` |
