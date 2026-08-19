@@ -31,6 +31,7 @@
   "reducer_laws": {
     "missing_receipt": "BLOCKED_BY_MISSING_REAL_LOCAL_RECEIPT",
     "synthetic_fixture_receives_real_local_credit": false,
+    "real_local_credit_requires_external_authority": true,
     "trust_receipt_result_without_readback": false,
     "require_exact_runner_subject": true,
     "require_exact_root_d_observation_for_pass": true,
@@ -52,12 +53,14 @@
   "public_verification": {
     "synthetic_receipt_fixtures_allowed": true,
     "real_canonical_receipt_creation_allowed": false,
+    "real_local_credit_grant_allowed": false,
     "active_execution_allowed": false,
     "queue_write_allowed": false
   },
   "evidence_ceiling": "PUBLIC_RECEIPT_REDUCER_SEMANTICS_ONLY",
   "claims_not_proven": [
     "A synthetic PASS fixture does not prove a real local receipt exists.",
+    "The reducer can admit receipt semantics but cannot self-grant real local evidence credit; that credit requires external execution/reducer authority.",
     "A valid local PASS receipt only permits a next-epoch candidate after reducer readback; it does not itself mutate the queue.",
     "LOCAL_DETERMINISTIC evidence grants no provider, physical, private, external-effect, user, Human, merge, release or rollback credit."
   ]
