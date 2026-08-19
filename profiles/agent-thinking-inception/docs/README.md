@@ -1,7 +1,7 @@
 # Agent Thinking Inception — P6 documentation convergence
 
-Status: **P6 PROFILE DOCUMENTATION CANDIDATE**  
-Owner: `ed3c/enterprise_agent_system#23`  
+Status: **P6 PROFILE DOCUMENTATION CANDIDATE**
+Owner: `ed3c/enterprise_agent_system#23`
 True Git parent: Profile-X PR #33 at `a27aa552f1c258e09f515b4a5d117ba37f4d6615` / tree `71eaa3f4acafd0b004ccdff16e4aa14bc2599649`.
 
 This is a documentation projection for root EAS-D #13. It cannot mutate runtime, workflow/effect, verifier, Human or release state.
