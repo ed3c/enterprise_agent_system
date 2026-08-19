@@ -7,7 +7,8 @@ Cross-repository **management, routing, traceability, and closure control plane*
 ```text
 P0-P5 generic/profile control-plane candidates   COMPLETE_AT_DECLARED_PUBLIC_EVIDENCE_CEILING
 P6 profile documentation candidate               COMPLETE / PR #37
-P6 root documentation candidate                  IN_PROGRESS / issue #13
+P6 root documentation candidate                  COMPLETE_AT_DOCS_CEILING / PR #41
+P7 Local Handoff                                 READY_FOR_PREPARATION / execution NOT_PERFORMED
 requirements                                     15/15 exact owner subjects
 required evidence lanes satisfied                 1/15
 requirement closure credit                        0
@@ -46,7 +47,7 @@ Profile-D
   Shadow   4973885537 = ADMIT_FOR_ROOT_EAS_D_REVIEW
 ```
 
-Root EAS-D starts from a real multi-parent convergence commit that contains both Generic-X and Profile-D bytes. Historical docs PR #26 is a documentation blueprint only and is not final P6 evidence.
+Root EAS-D starts from a real multi-parent convergence commit that contains both Generic-X and Profile-D bytes. Historical docs PR #26 is a documentation blueprint only and is not final P6 evidence. The final root-D commit/tree and external exact-target verification/Shadow receipt live outside the reviewed branch to avoid a self-referential receipt loop.
 
 ## Why this repository exists
 
@@ -90,8 +91,8 @@ One interface or canonical state has one owner.
 | P3 | Parallel Owner Wave | A1-A6 owner implementations/receipts | public/deterministic partial evidence |
 | P4 | Shadow Architect | independent mutation/evidence-ceiling review | public denominator admitted; full closure blocked |
 | P5 | Convergence Owner | exact cross-repo/profile closure candidate | complete at routing ceiling |
-| P6 | Docs / Stack Convergence | Agent-readable routes, State Machines, data flow, prompts, Stack | profile complete; root in progress |
-| P7 | Local Handoff Compiler | concrete local/provider/physical execution queue | stronger successors blocked; ACTIVE queue unchanged |
+| P6 | Docs / Stack Convergence | Agent-readable routes, State Machines, data flow, prompts, Stack | profile + root candidates complete at docs ceiling |
+| P7 | Local Handoff Compiler | concrete local/provider/physical execution queue | ready for preparation; execution not performed |
 
 ## Molecular Stack
 
@@ -206,4 +207,4 @@ A docs/CI PASS cannot promote these states.
 
 ## Next authority
 
-P6 root documentation must pass exact-target verification and independent Shadow review. After that, stronger execution remains under Local Handoff #14 and canonical owner issues. No root documentation state authorizes merge, provider activation, private-data egress, Human admission, release, or rollback.
+P7 consumes an external exact-head EAS-D verification and Shadow receipt; that receipt is intentionally not written back into the branch it reviews. Stronger execution remains under Local Handoff #14 and canonical owner issues. P7 execution is `NOT_PERFORMED` until the queue/runtime/capability/receipt contract admits a concrete epoch. No root documentation state authorizes merge, provider activation, private-data egress, Human admission, release, or rollback.
