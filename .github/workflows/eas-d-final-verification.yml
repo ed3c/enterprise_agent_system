@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable root EAS-D target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: e812e63640ae0e5d85a67b8963983af74cd66cab
+          ref: 89e12f5863c9bfd02bddb28de121d9c19cc25d16
           persist-credentials: false
           fetch-depth: 0
 
@@ -25,8 +25,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="e812e63640ae0e5d85a67b8963983af74cd66cab"
-          tree="551ff9a381a5a9c8581985ab6e46f68764009f48"
+          target="89e12f5863c9bfd02bddb28de121d9c19cc25d16"
+          tree="16e51462b2a0a693c1af92ad344fa3db6bbd4879"
           base="aa10bc13f2cfd4d33f0ffdf67f3e4923cb352c2f"
           gx="3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c"
           pd="690154a5f7154d551bef6942fe5d1f34091c2197"
@@ -78,13 +78,24 @@ jobs:
           literal = [
               "15/15", "1/15", "requirement closure credit", "14/14",
               "BLOCKED_FOR_CLOSURE", "PLAN_ONLY", "NOT_IMPLEMENTED", "ADVISORY_ONLY",
+              "COMPLETE_AT_DOCS_CEILING", "READY_FOR_PREPARATION", "execution NOT_PERFORMED",
               "32268112684", "32270454491", "4973663047", "4973885537",
-              "32267670154", "32270129840",
+              "32267670154", "32270129840", "32271993913",
               "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c",
               "690154a5f7154d551bef6942fe5d1f34091c2197",
           ]
           for token in literal:
               assert token in corpus, token
+
+          readme = (root / "README.md").read_text(encoding="utf-8")
+          context = (root / "CONTEXT.md").read_text(encoding="utf-8")
+          assert "P6 root documentation candidate                  COMPLETE_AT_DOCS_CEILING / PR #41" in readme
+          assert "P6 root documentation candidate                  IN_PROGRESS" not in readme
+          assert "P7 Local Handoff                                 READY_FOR_PREPARATION / execution NOT_PERFORMED" in readme
+          assert "state          P6_ROOT_DOCUMENTATION_CANDIDATE_COMPLETE" in context
+          assert "P7 execution   NOT_PERFORMED" in context
+          assert "state          IN_PROGRESS" not in context
+          assert "external receipts" in context
 
           prompt_dir = root / "docs/prompts"
           prompts = sorted(prompt_dir.glob("P*-*.system.md"))
@@ -112,7 +123,7 @@ jobs:
           for marker in ("Forbidden flows", "UNKNOWN_EFFECT", "Human admission", "PLAN_ONLY"):
               assert marker in flow, marker
 
-          print("PASS root docs routes=10 prompts=8 requirements=15 contradictions=14 canary=PLAN_ONLY")
+          print("PASS root docs routes=10 prompts=8 requirements=15 contradictions=14 p6=COMPLETE_AT_DOCS_CEILING p7=READY_NOT_EXECUTED")
           PY
 
       - name: Compile parse and patch hygiene
@@ -131,8 +142,8 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-DV exact root documentation verification
-          target=e812e63640ae0e5d85a67b8963983af74cd66cab
-          tree=551ff9a381a5a9c8581985ab6e46f68764009f48
+          target=89e12f5863c9bfd02bddb28de121d9c19cc25d16
+          tree=16e51462b2a0a693c1af92ad344fa3db6bbd4879
           base=aa10bc13f2cfd4d33f0ffdf67f3e4923cb352c2f
           root_doc_paths=18
           fresh_session_prompts=8
@@ -143,6 +154,8 @@ jobs:
           profile_shadow=BLOCKED_FOR_CLOSURE
           vertical_canary=PLAN_ONLY
           EAS_A=NOT_IMPLEMENTED
+          P6=COMPLETE_AT_DOCS_CEILING
+          P7=READY_FOR_PREPARATION_EXECUTION_NOT_PERFORMED
           Human_admission=NOT_PERFORMED
           release_rollback=NOT_PERFORMED
           EOF
