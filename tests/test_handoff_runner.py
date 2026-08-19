@@ -25,6 +25,45 @@ class HandoffRunnerTests(unittest.TestCase):
     def contract(self):
         return runner.load_json(runner.CONTRACT_PATH)
 
+    def schema(self):
+        return runner.load_json(runner.SCHEMA_PATH)
+
+    def valid_receipt(self):
+        digest = runner.digest_bytes(b"fixture")
+        subject = {
+            "repository": "ed3c/enterprise_agent_system",
+            "commit": "1" * 40,
+            "tree": "2" * 40,
+        }
+        return {
+            "schema_version": "enterprise-agent-system/local-handoff-receipt/v2",
+            "queue_id": "fixture-queue",
+            "item_id": runner.ACTIVE_ID,
+            "started_at": "2026-08-20T00:00:00Z",
+            "finished_at": "2026-08-20T00:00:01Z",
+            "subject_before": subject,
+            "subject_after": subject.copy(),
+            "commands": [{"command_id": "FIXTURE"}],
+            "exit_codes": [0],
+            "stdout_digests": [digest],
+            "stderr_digests": [digest],
+            "observed_commit": "1" * 40,
+            "observed_tree": "2" * 40,
+            "evidence_lane": "LOCAL_DETERMINISTIC",
+            "result": "PASS",
+            "dirty_state_before": "CLEAN",
+            "dirty_state_after": "CLEAN",
+            "residue_inventory": {},
+            "cleanup_result": "PASS",
+            "failures": [],
+            "retries": [],
+            "effect_state": "NOT_APPLICABLE",
+            "readback_state": "MATCH",
+            "compensation_state": "NOT_APPLICABLE",
+            "claims_not_proven": ["fixture only"],
+            "next_transition": "CANDIDATE_RECEIPT_READY_FOR_CANONICAL_REDUCER",
+        }
+
     def test_contract_and_plan_bind_exact_queue_without_execution(self):
         contract = self.contract()
         queue = self.queue()
@@ -34,6 +73,7 @@ class HandoffRunnerTests(unittest.TestCase):
         self.assertEqual(plan["queue_parent"]["commit"], runner.QUEUE_PARENT_COMMIT)
         self.assertEqual(plan["queue_parent"]["tree"], runner.QUEUE_PARENT_TREE)
         self.assertEqual(plan["active_item_id"], runner.ACTIVE_ID)
+        self.assertTrue(plan["execute_requires_external_runner_admission"])
         self.assertEqual(plan["queue_execution"], "NOT_PERFORMED")
         self.assertEqual(
             plan["cleanup_ids"],
@@ -76,6 +116,28 @@ class HandoffRunnerTests(unittest.TestCase):
                 {"EAS_WORKTREES": "relative-root"},
                 {"EAS_WORKTREES"},
             )
+
+    def test_execution_roots_must_be_pairwise_disjoint(self):
+        with tempfile.TemporaryDirectory() as root_dir:
+            root = pathlib.Path(root_dir)
+            checkout = root / "checkout"
+            worktrees = root / "worktrees"
+            receipts = root / "receipts"
+            checkout.mkdir()
+            worktrees.mkdir()
+            receipts.mkdir()
+            env = {
+                "EAS_CHECKOUT": str(checkout),
+                "EAS_WORKTREES": str(worktrees),
+                "EAS_RECEIPT_DIR": str(receipts),
+            }
+            resolved = runner.resolve_execution_roots(env, set(env))
+            self.assertEqual(resolved["EAS_CHECKOUT"], checkout.resolve())
+            nested = checkout / "worktrees"
+            nested.mkdir()
+            env["EAS_WORKTREES"] = str(nested)
+            with self.assertRaisesRegex(runner.RunnerError, "EXECUTION_ROOTS_OVERLAP"):
+                runner.resolve_execution_roots(env, set(env))
 
     def test_sanitized_environment_drops_unrelated_secret_names(self):
         source = {
@@ -151,41 +213,77 @@ class HandoffRunnerTests(unittest.TestCase):
             self.assertEqual(failure["kind"], "NONZERO_EXIT")
             self.assertEqual(failure["exit_code"], 7)
 
-    def test_clean_residue_requires_no_worktree_no_ref_and_same_dirty_state(self):
+    def test_clean_residue_requires_no_worktree_registration_ref_and_same_dirty_state(self):
         before = "CLEAN"
-        self.assertTrue(
-            runner.clean_residue(
-                {
-                    "root_d_worktree_exists": False,
-                    "temporary_root_d_ref_present": False,
-                    "checkout_dirty_state": "CLEAN",
-                },
-                before,
-            )
-        )
-        for mutation in (
-            {"root_d_worktree_exists": True, "temporary_root_d_ref_present": False, "checkout_dirty_state": "CLEAN"},
-            {"root_d_worktree_exists": False, "temporary_root_d_ref_present": True, "checkout_dirty_state": "CLEAN"},
-            {"root_d_worktree_exists": False, "temporary_root_d_ref_present": False, "checkout_dirty_state": "DIRTY:x"},
-        ):
+        clean = {
+            "root_d_worktree_exists": False,
+            "root_d_worktree_registered": False,
+            "temporary_root_d_ref_present": False,
+            "checkout_dirty_state": "CLEAN",
+        }
+        self.assertTrue(runner.clean_residue(clean, before))
+        for field in ("root_d_worktree_exists", "root_d_worktree_registered", "temporary_root_d_ref_present"):
+            mutation = dict(clean)
+            mutation[field] = True
             self.assertFalse(runner.clean_residue(mutation, before))
+        mutation = dict(clean)
+        mutation["checkout_dirty_state"] = "DIRTY:x"
+        self.assertFalse(runner.clean_residue(mutation, before))
+
+    def test_preexisting_residue_is_refused_before_execution(self):
+        for field in ("root_d_worktree_exists", "root_d_worktree_registered", "temporary_root_d_ref_present"):
+            inventory = {
+                "root_d_worktree_exists": False,
+                "root_d_worktree_registered": False,
+                "temporary_root_d_ref_present": False,
+            }
+            inventory[field] = True
+            with self.assertRaisesRegex(runner.RunnerError, "PREEXISTING_RUNNER_RESIDUE_BLOCKED"):
+                runner.assert_clean_preflight_residue(inventory)
 
     def test_atomic_write_json_replaces_complete_document(self):
         with tempfile.TemporaryDirectory() as root_dir:
             path = pathlib.Path(root_dir) / "receipt.json"
             runner.atomic_write_json(path, {"a": 1, "state": "candidate"})
-            first = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(first, {"a": 1, "state": "candidate"})
+            self.assertEqual(json.loads(path.read_text(encoding="utf-8")), {"a": 1, "state": "candidate"})
             runner.atomic_write_json(path, {"a": 2, "state": "replaced"})
-            second = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(second, {"a": 2, "state": "replaced"})
+            self.assertEqual(json.loads(path.read_text(encoding="utf-8")), {"a": 2, "state": "replaced"})
             self.assertEqual(list(path.parent.glob("receipt.json.*.tmp")), [])
 
+    def test_receipt_validation_accepts_declared_shape_and_refuses_drift(self):
+        schema = self.schema()
+        receipt = self.valid_receipt()
+        runner.validate_receipt_against_schema(receipt, schema)
+        extra = dict(receipt)
+        extra["local_path"] = "/private/path"
+        with self.assertRaisesRegex(runner.RunnerError, "RECEIPT_ADDITIONAL_PROPERTIES"):
+            runner.validate_receipt_against_schema(extra, schema)
+        bad_digest = dict(receipt)
+        bad_digest["stdout_digests"] = ["not-a-digest"]
+        with self.assertRaisesRegex(runner.RunnerError, "RECEIPT_DIGEST"):
+            runner.validate_receipt_against_schema(bad_digest, schema)
+
+    def test_admitted_runner_subject_must_match_exact_head(self):
+        observed = runner.git_subject(ROOT)
+        runner.assert_admitted_runner_subject(ROOT, observed["commit"], observed["tree"])
+        with self.assertRaisesRegex(runner.RunnerError, "RUNNER_SUBJECT_NOT_ADMITTED"):
+            runner.assert_admitted_runner_subject(ROOT, "0" * 40, "1" * 40)
+
     def test_execute_requires_explicit_admitted_runtime(self):
-        queue = self.queue()
-        contract = self.contract()
         with self.assertRaisesRegex(runner.RunnerError, "RUNTIME_NOT_ADMITTED"):
-            runner.execute_active(queue, contract, runtime_kind="UNADMITTED", environ={})
+            runner.execute_active(
+                self.queue(),
+                self.contract(),
+                self.schema(),
+                runtime_kind="UNADMITTED",
+                admitted_runner_commit="0" * 40,
+                admitted_runner_tree="1" * 40,
+                environ={},
+            )
+
+    def test_execute_cli_requires_external_runner_subject_before_environment(self):
+        with self.assertRaisesRegex(runner.RunnerError, "EXECUTE_REQUIRES_ADMITTED_RUNNER_SUBJECT"):
+            runner.main(["--mode", "execute", "--runtime-kind", "CODEX_CLI_LOCAL"])
 
     def test_public_command_record_does_not_resolve_paths(self):
         item = runner.active_item(self.queue())
