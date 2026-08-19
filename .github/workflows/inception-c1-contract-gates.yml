@@ -1,0 +1,81 @@
+name: Agent Thinking Inception C1 contract gates
+
+on:
+  push:
+    branches:
+      - agent/inception-c1-detailed-contracts
+  pull_request:
+    paths:
+      - ".github/workflows/inception-c1-contract-gates.yml"
+      - "contracts/control-plane/**"
+      - "profiles/agent-thinking-inception/contracts/**"
+      - "profiles/agent-thinking-inception/examples/inception-contract-bundle.example.json"
+      - "profiles/agent-thinking-inception/source/**"
+      - "profiles/agent-thinking-inception/requirements/**"
+      - "profiles/agent-thinking-inception/tests/verify_profile.py"
+      - "profiles/agent-thinking-inception/tests/contracts/**"
+      - "profiles/agent-thinking-inception/prompts/01-profile-contract-worker.system.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-contract-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact workflow subject
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'commit=%s\n' "$(git rev-parse HEAD)"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+
+      - name: Verify exact parents and path lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor ac0a7645392f689ae488328a53e7b6f3bb6ad02d HEAD
+          git merge-base --is-ancestor 1f0d196c19b7fa4505894ff1fb8b27cd33c5fb9f HEAD
+          unexpected="$(git diff --name-only 1f0d196c19b7fa4505894ff1fb8b27cd33c5fb9f..HEAD | grep -Ev '^profiles/agent-thinking-inception/(contracts/|examples/|tests/contracts/|prompts/01-profile-contract-worker\.system\.md$)|^\.github/workflows/inception-c1-contract-gates\.yml$' || true)"
+          test -z "$unexpected" || { printf 'unexpected paths:\n%s\n' "$unexpected"; exit 2; }
+
+      - name: Validate inherited EAS-C contracts
+        run: >-
+          python3 contracts/control-plane/verify.py
+          contracts/control-plane/examples/source-subject.example.json
+          contracts/control-plane/examples/cross-repo-binding.example.json
+          contracts/control-plane/examples/closure-record.example.json
+          contracts/control-plane/examples/orchestration-run.example.json
+
+      - name: Replay inherited EAS-C refusals
+        run: >-
+          python3 contracts/control-plane/verify.py
+          --selftest contracts/control-plane/examples
+
+      - name: Validate P0 source and requirement denominator
+        run: python3 profiles/agent-thinking-inception/tests/verify_profile.py
+
+      - name: Replay P0 source and requirement refusals
+        run: python3 profiles/agent-thinking-inception/tests/verify_profile.py --selftest
+
+      - name: Validate detailed P1 contract bundle
+        run: python3 profiles/agent-thinking-inception/tests/contracts/verify_contracts.py
+
+      - name: Replay detailed P1 contract refusals
+        run: python3 profiles/agent-thinking-inception/tests/contracts/verify_contracts.py --selftest
+
+      - name: Compile deterministic gates
+        run: >-
+          python3 -m py_compile
+          contracts/control-plane/verify.py
+          profiles/agent-thinking-inception/tests/verify_profile.py
+          profiles/agent-thinking-inception/tests/contracts/verify_contracts.py
