@@ -1,0 +1,177 @@
+{
+  "schema_version": "enterprise-agent-system/cross-repo-convergence/v1",
+  "atom_id": "EAS-X",
+  "state": "P5_CROSS_REPO_CONVERGENCE_CANDIDATE",
+  "git_parent": {
+    "repository": "ed3c/enterprise_agent_system",
+    "commit": "177ba870c41cc5605532ea79770d54aea124fa0c",
+    "tree": "20073aa3b719f30c95a6cbf449f0d6a2144f71c3",
+    "pull_request": 25,
+    "atom": "EAS-E"
+  },
+  "process_dependencies": [
+    {
+      "atom": "EAS-K",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/9",
+      "state": "DETERMINISTIC_VERIFIED",
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "b1362f48b6edc0b4cd6d301da2a5d0e94d970f8c",
+        "tree": "19353937e8d642a0bd731e20b3f61ffa3af2b913"
+      }
+    },
+    {
+      "atom": "EAS-A",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/10",
+      "state": "NOT_IMPLEMENTED",
+      "subject": null
+    }
+  ],
+  "owners": [
+    {
+      "interface": "A1_COMPACTION_RECOVERY",
+      "repository": "ed3c/bettor-arena",
+      "issue": "https://github.com/ed3c/bettor-arena/issues/191",
+      "subject": {
+        "repository": "ed3c/bettor-arena",
+        "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328",
+        "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"
+      },
+      "evidence_state": "PUBLIC_VERIFIED",
+      "hosted_runs": [32259216877],
+      "shadow_review": 4972750319,
+      "lane": "PROCESS_CRASH_SQLITE_READBACK",
+      "next_transition": "RUN_PUBLIC_CONTEXT_RECONSTRUCTION_FIXTURE_AND_SHADOW_READBACK"
+    },
+    {
+      "interface": "A2R_RUNTIME_CONTRACT",
+      "repository": "ed3c/runtime-env",
+      "issue": "https://github.com/ed3c/runtime-env/issues/67",
+      "subject": {
+        "repository": "ed3c/runtime-env",
+        "commit": "cdfe74ac993cb0b4795fa80df237e8bb542409d2",
+        "tree": "0b2db695cdd812f81924b82689d96e3557b80158"
+      },
+      "evidence_state": "DETERMINISTIC_VERIFIED",
+      "hosted_runs": [32248796959, 32248796967],
+      "shadow_review": 4972041442,
+      "lane": "RUNTIME_CONTRACT",
+      "next_transition": "ADD_FIXED_WORKLOAD_PROFILE_POLICY_FIXTURES_AND_CONSUMER_READBACK"
+    },
+    {
+      "interface": "A2_SANDBOX_STEERING",
+      "repository": "ed3c/agent-shield-monorepo",
+      "issue": "https://github.com/ed3c/agent-shield-monorepo/issues/153",
+      "subject": {
+        "repository": "ed3c/agent-shield-monorepo",
+        "commit": "a611d9a4fd0122977539074b2d9009e422379c3f",
+        "tree": "597393c94fdd7733ac3fe0c4311c7f3c7dce18a3"
+      },
+      "evidence_state": "PUBLIC_VERIFIED",
+      "hosted_runs": [32260646631, 32260646656, 32260647342],
+      "shadow_review": 4972970293,
+      "lane": "REVERSIBLE_LOCAL_PROCESS_CLEANUP",
+      "next_transition": "RUN_NETWORK_ISOLATION_AND_PROVIDER_CAPABILITY_CANARIES"
+    },
+    {
+      "interface": "A3_EXACT_EVIDENCE",
+      "repository": "ed3c/truth-verify-loop",
+      "issue": "https://github.com/ed3c/truth-verify-loop/issues/23",
+      "subject": {
+        "repository": "ed3c/truth-verify-loop",
+        "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980",
+        "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547"
+      },
+      "evidence_state": "PUBLIC_VERIFIED",
+      "hosted_runs": [32260293092, 32260291970],
+      "shadow_review": 4972977716,
+      "lane": "PUBLIC_GIT_OBJECT_READBACK",
+      "next_transition": "RUN_PUBLIC_SOURCE_CAPTURE_WITH_EXTERNAL_INDEPENDENT_SEMANTIC_REVIEW"
+    },
+    {
+      "interface": "A4_PROVENANCE_TELEMETRY",
+      "repository": "ed3c/enterprise_agent_system",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/16",
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "ee4602423424b716f12fea7797372a7dc4f3e288",
+        "tree": "f81c41b1e725517f610b671fb00d28af3af4dfbb"
+      },
+      "evidence_state": "PUBLIC_VERIFIED",
+      "hosted_runs": [32260074361],
+      "shadow_review": 4972960995,
+      "lane": "SYNTHETIC_TELEMETRY_LEAK_CANARY",
+      "next_transition": "BIND_EXACT_EXTERNAL_TERMS_AND_RUN_SCOPED_LIVE_TELEMETRY_CANARY"
+    },
+    {
+      "interface": "A5_DISCOVERY_ADMISSION",
+      "repository": "ed3c/bettor-arena",
+      "issue": "https://github.com/ed3c/bettor-arena/issues/192",
+      "subject": {
+        "repository": "ed3c/bettor-arena",
+        "commit": "81f02f4148273ffe5f5571c8605e1ee0afc59866",
+        "tree": "f9612314e47ced69796db00703dd5d34ab592e36"
+      },
+      "evidence_state": "PUBLIC_VERIFIED",
+      "hosted_runs": [32260835956],
+      "shadow_review": 4972939122,
+      "lane": "MATCHED_SEALED_FIXTURE_BENCHMARK",
+      "next_transition": "BIND_EXTERNAL_PUBLIC_CANDIDATE_TERMS_AND_RUN_MATCHED_BENCHMARK"
+    },
+    {
+      "interface": "A6_INGRESS_EFFECTS",
+      "repository": "ed3c/bettor-arena",
+      "issue": "https://github.com/ed3c/bettor-arena/issues/193",
+      "subject": {
+        "repository": "ed3c/bettor-arena",
+        "commit": "8cd4aea59ff203a6620cb834e6a0df82b5e8ecaa",
+        "tree": "b95b5abe6bcc28df38f9758da790356ade990a59"
+      },
+      "evidence_state": "PUBLIC_VERIFIED",
+      "hosted_runs": [32261120485],
+      "shadow_review": 4972945200,
+      "lane": "UNKNOWN_EFFECT_RESTART_RECONCILIATION",
+      "next_transition": "RUN_REVERSIBLE_COMPENSATION_FIXTURE_THEN_PROVIDER_ADAPTER_CANARY"
+    }
+  ],
+  "stronger_lanes": [
+    {"lane": "PHYSICAL_POWER_LOSS_MULTI_HOST", "state": "NOT_EXERCISED", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14"},
+    {"lane": "NETWORK_GVISOR_ISOLATION", "state": "NOT_EXERCISED", "owner_issue": "https://github.com/ed3c/agent-shield-monorepo/issues/147"},
+    {"lane": "PROVIDER_CAPABILITY_ENROLLMENT", "state": "NOT_EXERCISED", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14"},
+    {"lane": "EXTERNAL_INDEPENDENT_SEMANTIC", "state": "NOT_EXERCISED", "owner_issue": "https://github.com/ed3c/truth-verify-loop/issues/22"},
+    {"lane": "PRIVATE_EVIDENCE", "state": "NOT_EXERCISED", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14"},
+    {"lane": "EXACT_EXTERNAL_MODEL_DATA_TRACE_TERMS", "state": "PARTIAL_OR_UNBOUND", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/16"},
+    {"lane": "LIVE_TELEMETRY_EXPORT_STORE_DELETE", "state": "NOT_EXERCISED", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/16"},
+    {"lane": "EXTERNAL_CANDIDATE_BENCHMARK", "state": "NOT_EXERCISED", "owner_issue": "https://github.com/ed3c/bettor-arena/issues/192"},
+    {"lane": "REAL_EXTERNAL_EFFECT_REMOTE_READBACK", "state": "NOT_PERFORMED", "owner_issue": "https://github.com/ed3c/bettor-arena/issues/193"},
+    {"lane": "COMPENSATION", "state": "NOT_EXERCISED", "owner_issue": "https://github.com/ed3c/bettor-arena/issues/193"},
+    {"lane": "BUSINESS_USER_OUTCOME", "state": "NOT_VERIFIED", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14"},
+    {"lane": "HUMAN_LEGAL_SECURITY_ADMISSION", "state": "HUMAN_ADMIT_REQUIRED", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14"},
+    {"lane": "MERGE_RELEASE_ROLLBACK", "state": "NOT_PERFORMED", "owner_issue": "https://github.com/ed3c/bettor-arena/issues/68"}
+  ],
+  "selected_vertical_canary": {
+    "id": "INCEPTION-P5-PUBLIC-REVERSIBLE-CHAIN",
+    "state": "PLAN_ONLY",
+    "interfaces": [
+      "A1_COMPACTION_RECOVERY",
+      "A2R_RUNTIME_CONTRACT",
+      "A2_SANDBOX_STEERING",
+      "A3_EXACT_EVIDENCE",
+      "A4_PROVENANCE_TELEMETRY",
+      "A5_DISCOVERY_ADMISSION",
+      "A6_INGRESS_EFFECTS"
+    ],
+    "private_data": false,
+    "external_effects": false,
+    "human_operation": false,
+    "purpose": "compose exact public owner receipts into a no-effect vertical canary plan without proxying stronger lanes"
+  },
+  "release_owner": "https://github.com/ed3c/bettor-arena/issues/68",
+  "claims_not_proven": [
+    "Cross-repository convergence proves owner/subject/evidence consistency only.",
+    "No physical local-to-cloud-to-local canary was executed by EAS-X.",
+    "No provider or private-evidence lane was advanced by EAS-X.",
+    "No external effect or user outcome was advanced by EAS-X.",
+    "No Human admission, merge, release or rollback was performed by EAS-X."
+  ]
+}
