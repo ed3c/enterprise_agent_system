@@ -5,8 +5,8 @@
   "multi_parent_input": {
     "commit": "45c0adeb153e0b029a3c2948d0d960f134baa396",
     "parents": [
-      {"atom": "EAS-X", "repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c", "tree": "e1be41234ff336297ce591b564291c9a0cd819ed", "review": 4973461122, "verdict": "ADMIT_FOR_DOWNSTREAM_REVIEW"},
-      {"atom": "INCEPTION-E", "repository": "ed3c/enterprise_agent_system", "pull_request": 32, "commit": "9f25b94ca891faf0d926b0fc22b67be88925aa81", "tree": "1452d1b9931c70ef70ed3b7dec78cedc51d6db35", "review": 4973593318, "verdict": "ADMIT_FOR_PROFILE_CONVERGENCE"}
+      {"atom": "EAS-X", "repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "3f8af3d75b28ca1904fe07b8ea9ee0d291f5989c", "tree": "e1be41234ff336297ce591b564291c9a0cd819ed", "shadow_review": 4973461122, "review": 4973461122, "verdict": "ADMIT_FOR_DOWNSTREAM_REVIEW"},
+      {"atom": "INCEPTION-E", "repository": "ed3c/enterprise_agent_system", "pull_request": 32, "commit": "9f25b94ca891faf0d926b0fc22b67be88925aa81", "tree": "1452d1b9931c70ef70ed3b7dec78cedc51d6db35", "shadow_review": 4973593318, "review": 4973593318, "verdict": "ADMIT_FOR_PROFILE_CONVERGENCE"}
     ]
   },
   "owners": [
