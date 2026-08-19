@@ -48,25 +48,45 @@ EAS_WORKTREES
 EAS_RECEIPT_DIR
 ```
 
-Then invoke:
+These three roots must be absolute, pairwise disjoint and non-nested. In particular, the receipt directory and worktree root must not live inside `EAS_CHECKOUT`.
+
+Execution additionally consumes the immutable runner commit/tree from the final external #54 Shadow receipt. Pass those exact values at runtime; they are intentionally not self-written into the branch they review:
 
 ```text
-python3 handoff/run_active.py --mode execute --runtime-kind CODEX_CLI_LOCAL
+python3 handoff/run_active.py \
+  --mode execute \
+  --runtime-kind CODEX_CLI_LOCAL \
+  --admitted-runner-commit <FINAL_SHADOW_ADMITTED_RUNNER_COMMIT> \
+  --admitted-runner-tree <FINAL_SHADOW_ADMITTED_RUNNER_TREE>
 ```
 
-or the equivalent `CLAUDE_CODE_LOCAL` runtime kind.
+or use `CLAUDE_CODE_LOCAL` with the same exact-subject arguments.
 
 Execution mode is not authorized by CI. Public GitHub verification must use `--mode plan` only.
 
 ## Environment and path law
 
 - environment roots must be absolute local paths;
+- `EAS_CHECKOUT`, `EAS_WORKTREES`, and `EAS_RECEIPT_DIR` must be pairwise disjoint/non-nested;
 - queue paths must be relative to their declared root;
 - absolute queue-relative paths and `..` traversal are refused;
 - only names present in the queue environment allowlist can be resolved;
 - secret/credential values are never serialized to Git, plan output or portable receipts;
 - subprocesses receive only a bounded host environment plus the environment names needed by the ACTIVE item;
 - `GIT_TERMINAL_PROMPT=0` is forced to prevent an unattended command from opening a credential prompt.
+
+## Preflight residue law
+
+Before the first queue command, the runner requires:
+
+```text
+EAS_CHECKOUT dirty state                         CLEAN
+${EAS_WORKTREES}/root-d-final directory          absent
+root-d-final Git worktree registration           absent
+refs/remotes/origin/p7-root-d                    absent
+```
+
+Pre-existing residue is a blocker, not something this run is allowed to clean up. This prevents a new attempt from deleting a worktree or ref owned by an earlier/other attempt.
 
 ## Command execution law
 
@@ -98,9 +118,10 @@ DELETE_TEMP_ROOT_D_REF
 The final residue gate requires:
 
 ```text
-${EAS_WORKTREES}/root-d-final             absent
-refs/remotes/origin/p7-root-d             absent
-EAS_CHECKOUT dirty state                  equal to pre-execution state
+${EAS_WORKTREES}/root-d-final directory          absent
+root-d-final Git worktree registration           absent
+refs/remotes/origin/p7-root-d                    absent
+EAS_CHECKOUT dirty state                         equal to pre-execution state
 ```
 
 A cleanup command failure or residue mismatch forces `cleanup_result=FAIL` and the item result to `FAIL`.
@@ -119,7 +140,9 @@ It must validate against:
 handoff/local-handoff-receipt.schema.json
 ```
 
-The runner writes by temporary file + flush/fsync + atomic replace. The receipt contains exact before/after subjects, observed Root-D subject, command outcomes, digest-only outputs, evidence lane, dirty state, residue inventory, cleanup state, failures/retries, claims-not-proven and next transition.
+The runner validates the final receipt shape/enums/subjects/digests against that immutable schema **before** writing it. It then writes by temporary file + flush/fsync + atomic replace.
+
+The receipt contains exact before/after subjects, observed Root-D subject, command outcomes, digest-only outputs, evidence lane, dirty state, residue inventory, cleanup state, failures/retries, claims-not-proven and next transition. Resolved local path values are not serialized.
 
 The runner does **not** edit `handoff/local-handoff-queue.json`.
 
@@ -141,11 +164,12 @@ Command exit code, receipt existence, GitHub Issue state, CI PASS or Shadow agre
 
 Do not execute when any of these are true:
 
-- runner subject is not the admitted exact head;
+- runner commit/tree differs from the final external Shadow-admitted subject;
 - queue parent/receipt schema/queue verifier bytes drifted;
 - required runtime kind is not admitted;
-- an environment root is missing, non-absolute or escapes confinement;
+- an environment root is missing, non-absolute, overlapping/nested or escapes confinement;
 - `EAS_CHECKOUT` is dirty before execution;
+- Root-D worktree directory/registration or temporary fetch ref already exists;
 - a command would require interactive credential enrollment;
 - private data or a secret value would enter a portable artifact;
 - external/provider/Human authority would be widened;
@@ -157,12 +181,13 @@ A public runner implementation and CI can prove only:
 
 ```text
 runner contract and plan path              VERIFIED where declared
-hermetic process / failure / cleanup logic VERIFIED where declared
-real ACTIVE local execution                NOT_PERFORMED
-canonical queue advancement                NOT_PERFORMED
-provider / physical / private              NOT_EXERCISED
-vertical canary                            PLAN_ONLY
-Human / merge / release / rollback         NOT_PERFORMED
+hermetic process / failure / validation     VERIFIED where declared
+preflight / cleanup / residue logic         VERIFIED where declared
+real ACTIVE local execution                 NOT_PERFORMED
+canonical queue advancement                 NOT_PERFORMED
+provider / physical / private               NOT_EXERCISED
+vertical canary                             PLAN_ONLY
+Human / merge / release / rollback          NOT_PERFORMED
 ```
 
 Only an admitted local execution can create the first real `LOCAL_DETERMINISTIC` receipt for the ACTIVE item.
