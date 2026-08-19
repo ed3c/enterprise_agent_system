@@ -23,8 +23,16 @@
     {
       "atom": "EAS-A",
       "issue": "https://github.com/ed3c/enterprise_agent_system/issues/10",
-      "state": "NOT_IMPLEMENTED",
-      "subject": null
+      "state": "DETERMINISTIC_VERIFIED",
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+        "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891"
+      },
+      "verification_run": 32295871632,
+      "shadow_review": 4976213414,
+      "authority": "ADVISORY_ONLY",
+      "evidence_ceiling": "ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY"
     }
   ],
   "owners": [
@@ -186,6 +194,7 @@
   "release_owner": "https://github.com/ed3c/bettor-arena/issues/68",
   "claims_not_proven": [
     "Cross-repository convergence proves owner/subject/evidence consistency only.",
+    "EAS-A proves advisory projection semantics only; Google connectivity/write/source correctness remain unproven.",
     "No physical local-to-cloud-to-local canary was executed by EAS-X.",
     "No provider or private-evidence lane was advanced by EAS-X.",
     "No external effect or user outcome was advanced by EAS-X.",
