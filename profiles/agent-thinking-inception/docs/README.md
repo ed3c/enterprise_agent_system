@@ -217,7 +217,7 @@ Root EAS-D #13
 P7 Local Handoff #14
 ```
 
-The following remain visible with **no authority**:
+The following remain visible with **`authority NONE`**:
 
 ```text
 Profile-X old PR #33 / agent/inception-x-profile-convergence
