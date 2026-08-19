@@ -1,7 +1,7 @@
 # Inception A4 — Code, Model, Data and Trace provenance
 
-Status: **PUBLIC SYNTHETIC TELEMETRY LEAK CANARY — DETERMINISTIC PASS CANDIDATE**  
-Upstream profile issue: `ed3c/enterprise_agent_system#16`  
+Status: **PUBLIC SYNTHETIC TELEMETRY LEAK CANARY — DETERMINISTIC PASS CANDIDATE**
+Upstream profile issue: `ed3c/enterprise_agent_system#16`
 True parent: `agent/inception-k-profile-dag@6e0a916fd06dd8635d77c9a8c4d1b475185ea13e`
 
 This leaf implements a bounded policy-candidate surface for four separately attributable provenance dimensions and an explicit sanitize-before-export telemetry-flow contract. It now also exercises that flow against a synthetic local-sink leak canary. It does not produce legal advice, commercial clearance, provider activation, live telemetry deployment, a zero-leakage claim, Human admission, merge, release or rollback.
