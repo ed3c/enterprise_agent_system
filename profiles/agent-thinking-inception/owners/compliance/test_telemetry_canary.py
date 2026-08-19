@@ -3,9 +3,14 @@ from __future__ import annotations
 from copy import deepcopy
 import json
 from pathlib import Path
+import sys
 import unittest
 
-from telemetry_canary import (
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+
+from telemetry_canary import (  # noqa: E402
     TelemetryCanaryError,
     assert_no_planted_leak,
     run_telemetry_leak_canary,
