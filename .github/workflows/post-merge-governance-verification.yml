@@ -1,0 +1,213 @@
+name: Post-merge governance exact verification
+
+on:
+  push:
+    branches: [verify/post-merge-governance-1fb13ca6]
+  pull_request:
+    paths:
+      - .github/workflows/post-merge-governance-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-governance-docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable governance target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 1fb13ca67d7e723a7c3eeab917294debcec64e09
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/post-merge-governance-1fb13ca6
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind exact base and four-file writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=85ad1210ee27d105773ae20aaaac7a1a17dfe446
+          target=1fb13ca67d7e723a7c3eeab917294debcec64e09
+          base_tree=96c666c2c1e803573944b923838d72c36d47609a
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse "$base^{tree}")" = "$base_tree"
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git merge-base "$base" HEAD)" = "$base"
+          mapfile -t changed < <(git diff --name-only "$base"...HEAD | sort)
+          expected=(
+            AGENTS.md
+            CONTEXT.md
+            README.md
+            docs/traceability/PUBLIC_MAIN_CLOSURE.md
+          )
+          test "${#changed[@]}" = "${#expected[@]}"
+          for i in "${!expected[@]}"; do
+            test "${changed[$i]}" = "${expected[$i]}"
+          done
+          echo 'PASS exact main base and four-file governance lease'
+
+      - name: Replay generic deterministic controls
+        run: |
+          python3 contracts/control-plane/verify.py \
+            contracts/control-plane/examples/source-subject.example.json \
+            contracts/control-plane/examples/cross-repo-binding.example.json \
+            contracts/control-plane/examples/closure-record.example.json \
+            contracts/control-plane/examples/orchestration-run.example.json
+          python3 contracts/control-plane/verify.py --selftest contracts/control-plane/examples
+          python3 tests/test_orchestration.py
+          python3 tests/test_parent_binding.py
+          python3 tests/test_shadow.py
+          python3 tests/test_shadow_snapshots.py
+          python3 tests/test_convergence.py
+          python3 integrations/github/verify_eas_a.py
+          python3 integrations/github/verify_eas_a.py --selftest
+
+      - name: Replay current profile controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Replay current P7 controls without ACTIVE execution
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+          python3 tests/test_handoff_runner.py
+          python3 tests/test_receipt_reducer.py
+          python3 tests/test_receipt_reducer_v4.py
+          python3 handoff/run_active.py --mode plan >/tmp/governance-runner-plan.json
+          python3 handoff/reduce_receipt.py --mode plan >/tmp/governance-reducer-plan.json
+          set +e
+          python3 handoff/reduce_receipt.py --mode inspect --receipt /tmp/definitely-absent-governance-receipt.json >/tmp/governance-missing.json
+          rc=$?
+          set -e
+          test "$rc" = 4
+
+      - name: Verify post-merge Agent-readable authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          readme = Path('README.md').read_text()
+          agents = Path('AGENTS.md').read_text()
+          context = Path('CONTEXT.md').read_text()
+          closure = Path('docs/traceability/PUBLIC_MAIN_CLOSURE.md').read_text()
+          handoff = Path('handoff/README.md').read_text()
+          joined = '\n'.join([readme, agents, context, closure, handoff])
+
+          required = [
+              '85ad1210ee27d105773ae20aaaac7a1a17dfe446',
+              '96c666c2c1e803573944b923838d72c36d47609a',
+              '#110 MERGED',
+              '32364024569 PASS',
+              '4982176517',
+              'open current product PRs                     0',
+              '#1 #5 #6 #7 #14 #15 #16 #17 #18',
+              'PUBLIC_MAIN_MERGED__LOCAL_HANDOFF_ACTIVE',
+              'LH-P7-01-ROOT-D-V3-LOCAL-READBACK',
+              '75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4',
+              '7be0a69b0046b66799baee2ddb5e305c90d60ec6',
+              '4a44e9cf9ece133e8117ecc100e419f359d8e1a1',
+              'ADVISORY_ONLY',
+              'PLAN_ONLY',
+              'BLOCKED_FOR_CLOSURE',
+              'requirement closure credit',
+          ]
+          for token in required:
+              assert token in joined, token
+
+          assert 'integration candidate' not in readme.lower()
+          assert 'directory' in readme.lower()
+          assert 'state machine' in readme.lower()
+          assert 'data flow' in readme.lower()
+          assert 'git-town-stacked-pr-worker' in readme
+          assert 'Freshness precedence' in agents
+          assert 'open current PRs     0' in context
+          assert 'open current product PRs 0' in closure
+          assert 'closed-unmerged' in closure
+
+          q = json.loads(Path('handoff/local-handoff-queue.json').read_text())
+          assert q['queue_execution'] == 'NOT_PERFORMED'
+          assert len([x for x in q['items'] if x['state'] == 'ACTIVE']) == 1
+
+          missing = json.loads(Path('/tmp/governance-missing.json').read_text())
+          assert missing['decision'] == 'BLOCKED_BY_MISSING_REAL_LOCAL_RECEIPT'
+          assert missing['real_local_evidence_credit'] == 0
+
+          runner = json.loads(Path('/tmp/governance-runner-plan.json').read_text())
+          reducer = json.loads(Path('/tmp/governance-reducer-plan.json').read_text())
+          assert runner['queue_execution'] == 'NOT_PERFORMED'
+          assert reducer['real_local_receipt'] == 'NOT_OBSERVED'
+          assert reducer['canonical_advancement_performed'] is False
+          print('PASS post-merge docs, owner set, queue truth, and evidence ceilings')
+          PY
+
+      - name: Prove machine and implementation surfaces are unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=85ad1210ee27d105773ae20aaaac7a1a17dfe446
+          forbidden='^(handoff/.*\.json|handoff/.*\.py|tests/|src/|contracts/|integrations/|profiles/|plans/|evidence/|\.github/)'
+          if git diff --name-only "$base"...HEAD | grep -Eq "$forbidden"; then
+            echo 'forbidden implementation/machine path changed'
+            exit 1
+          fi
+          echo 'PASS no machine or implementation mutation'
+
+      - name: Prove hosted verifier contains no real ACTIVE execute
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=.verifier/.github/workflows/post-merge-governance-verification.yml
+          test -f "$definition"
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('.verifier/.github/workflows/post-merge-governance-verification.yml').read_text()
+          forbidden = ['--mode' + ' execute', 'canonical_' + 'advancement_performed=true']
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS no hosted real execution/advancement invocation')
+          PY
+
+      - name: Compile parse and patch hygiene
+        run: |
+          python3 -m py_compile \
+            contracts/control-plane/verify.py \
+            src/enterprise_agent_system/orchestration.py \
+            src/enterprise_agent_system/shadow.py \
+            src/enterprise_agent_system/convergence.py \
+            integrations/github/verify_eas_a.py \
+            handoff/run_active.py handoff/run_active_core.py \
+            handoff/reduce_receipt.py handoff/reduce_receipt_core.py
+          python3 -m json.tool handoff/local-handoff-queue.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-receipt.schema.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-runner-contract.json >/dev/null
+          python3 -m json.tool handoff/local-receipt-reducer-contract.json >/dev/null
+          git diff --check 85ad1210ee27d105773ae20aaaac7a1a17dfe446...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS post-merge governance exact verification
+          target=1fb13ca67d7e723a7c3eeab917294debcec64e09
+          base=85ad1210ee27d105773ae20aaaac7a1a17dfe446
+          base_tree=96c666c2c1e803573944b923838d72c36d47609a
+          changed_paths=4
+          active_execution=NOT_PERFORMED
+          real_local_receipt=NOT_OBSERVED
+          requirement_closure_credit=0
+          full_architecture=BLOCKED_FOR_CLOSURE
+          evidence_ceiling=POST_MERGE_GOVERNANCE_DOCUMENTATION_ONLY
+          EOF
