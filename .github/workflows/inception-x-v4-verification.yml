@@ -131,11 +131,10 @@ jobs:
           definition=".verifier/.github/workflows/inception-x-v4-verification.yml"
           test -f "$definition"
           execute_token="--mode"" execute"
-          if grep -Fq -- "$execute_token" "$definition"; then
-            echo "P7_EXECUTE_TOKEN_FOUND"
-            exit 2
-          fi
-          for token in "googleapiclient" "request_write(" "run_active.py"; do
+          google_client="google""apiclient"
+          write_call="request_""write("
+          runner_script="run_""active.py"
+          for token in "$execute_token" "$google_client" "$write_call" "$runner_script"; do
             if grep -Fq -- "$token" "$definition"; then
               echo "FORBIDDEN_EXTERNAL_EXECUTION_TOKEN:$token"
               exit 2
