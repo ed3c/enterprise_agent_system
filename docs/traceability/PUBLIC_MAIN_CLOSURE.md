@@ -4,17 +4,21 @@ This document records the Tech Lead + Shadow Architect close/merge classificatio
 
 ## Post-merge readback
 
+The SHA/tree below is the immutable public-stack baseline produced by closeout #110. It is deliberately not labeled as the permanently current `main` HEAD, because merging governance documentation necessarily advances that branch. Every fresh Agent session must read the current repository HEAD/tree directly from Git.
+
 ```text
-main                     85ad1210ee27d105773ae20aaaac7a1a17dfe446
-main tree                96c666c2c1e803573944b923838d72c36d47609a
-closeout PR              #110 MERGED
-closeout verification    #111 / run 32364024569 PASS
-closeout Shadow          4982176517
-open current product PRs 0
-open canonical issues    #1 #5 #6 #7 #14 #15 #16 #17 #18
+public-stack baseline       85ad1210ee27d105773ae20aaaac7a1a17dfe446
+baseline tree               96c666c2c1e803573944b923838d72c36d47609a
+current repository HEAD     READ_FROM_GIT
+current repository tree     READ_FROM_GIT
+closeout PR                 #110 MERGED
+closeout verification       #111 / run 32364024569 PASS
+closeout Shadow             4982176517
+open canonical implementation PRs 0
+open canonical issues       #1 #5 #6 #7 #14 #15 #16 #17 #18
 ```
 
-This is the current public publication state. It does **not** change the operational evidence denominator.
+`open canonical implementation PRs = 0` excludes a transient governance-documentation refresh and its verification-only sibling. This is the public publication baseline; it does **not** change the operational evidence denominator. The immutable identity of this document version is the Git object containing it, not a predicted future merge SHA.
 
 ## Decision rule
 
@@ -31,15 +35,15 @@ A PR may merge only when it is a current canonical product subject or an explici
 ## Main integration decision
 
 ```text
-main before integration     5f14173181e0383ec84c40839939963845279506
-EAS-A exact product         #68 @ 250717db1cad584d50890c0d851153fa2cd755e8
-EAS-A merge commit          0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
-public product carrier      H4RR #107 @ 4a44e9cf9ece133e8117ecc100e419f359d8e1a1
-manual convergence commit   ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
-convergence tree            55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
-closeout target             #110 @ 4b043ac65cec60b9494f5504022a25c9fe09a712
-closeout target tree        96c666c2c1e803573944b923838d72c36d47609a
-main merge commit           85ad1210ee27d105773ae20aaaac7a1a17dfe446
+main before public integration 5f14173181e0383ec84c40839939963845279506
+EAS-A exact product             #68 @ 250717db1cad584d50890c0d851153fa2cd755e8
+EAS-A merge commit              0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
+public product carrier          H4RR #107 @ 4a44e9cf9ece133e8117ecc100e419f359d8e1a1
+manual convergence commit       ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
+convergence tree                55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
+closeout target                 #110 @ 4b043ac65cec60b9494f5504022a25c9fe09a712
+closeout target tree            96c666c2c1e803573944b923838d72c36d47609a
+public-stack closeout merge     85ad1210ee27d105773ae20aaaac7a1a17dfe446
 ```
 
 `#107` could not be retargeted directly after #68 because GitHub reported a merge conflict. Shadow classified this as `CONVERGENCE_REPAIR_REQUIRED`. The explicit two-parent integration commit uses main-after-#68 as first parent and exact #107 as second parent, then preserves the exact eight admitted EAS-A blobs from main. No unknown semantic conflict was auto-resolved.
@@ -154,7 +158,7 @@ The source-bound profile has mechanisms for source identity, requirements, contr
 
 Therefore the correct closure statement is:
 
-> Public implementation, deterministic verification, delivery cleanup, and main integration are complete at their declared ceilings. The article/PDF-derived real-world requirement set is **not yet operationally closed**.
+> Public implementation, deterministic verification, delivery cleanup, and public-stack integration are complete at their declared ceilings. The article/PDF-derived real-world requirement set is **not yet operationally closed**.
 
 No issue/PR publication state may be cited as proof of source correctness, physical/provider behavior, user outcome, Human admission, release, or rollback.
 
@@ -180,4 +184,4 @@ A public reducer decision always has `real_local_evidence_credit=0`; real local 
 
 ## Agent freshness rule
 
-If this document, README, CONTEXT, an issue body, or a historical PR disagrees, stop and reconcile the exact subject. Current immutable Git objects and typed external receipts outrank stale planning prose. Closed historical issues/PRs remain evidence history, not current task or execution authority.
+If this document, README, CONTEXT, an issue body, or a historical PR disagrees, stop and reconcile the exact subject. Read the current repository HEAD/tree from Git first. Immutable implementation subjects and typed external receipts outrank stale planning prose. Closed historical issues/PRs remain evidence history, not current task or execution authority.
