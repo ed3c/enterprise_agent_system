@@ -1,0 +1,21 @@
+{
+  "schema_version": "enterprise-agent-system/local-handoff-history/v1",
+  "record_id": "LH-EAS-INCEPTION-2026-08-18-SUPERSEDED",
+  "queue_id": "LH-EAS-INCEPTION-2026-08-18",
+  "repository": "ed3c/enterprise_agent_system",
+  "pull_request": 27,
+  "commit": "9223107163b27984ed490246b4c0899caeb1bdae",
+  "tree": "d462e2a1a69d225bf8161ce01918e5e8bb8d102f",
+  "previous_active_item": "LH-INCEPTION-SOURCE-01",
+  "previous_bound_profile_commit": "60f994f5f9da55168911d19fb32489775a5f4599",
+  "disposition": "SUPERSEDED_STALE_SUBJECT",
+  "superseded_by_issue": 46,
+  "reason": "Final P5/P6 subjects advanced beyond the queue's bound profile subject. Issue #14 requires stop on subject drift, so the old ACTIVE item must not execute or receive evidence credit.",
+  "execution_receipt": null,
+  "queue_execution": "NOT_PERFORMED",
+  "claims_not_proven": [
+    "This record does not imply the old queue executed.",
+    "No local-only PDF bytes are copied here.",
+    "No provider, physical, Human, merge, release or rollback state is advanced."
+  ]
+}
