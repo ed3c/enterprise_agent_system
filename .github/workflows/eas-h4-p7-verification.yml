@@ -1,0 +1,156 @@
+name: EAS-H4 exact queue v4 verification
+
+on:
+  push:
+    branches: [verify/eas-h4-p7-exact-296a130d]
+  pull_request:
+    paths:
+      - .github/workflows/eas-h4-p7-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-queue-v4-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout immutable P7 queue v4 target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 296a130d28ca71efd6c1bede18e8781905055a1a
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact target ancestry and five-path writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="296a130d28ca71efd6c1bede18e8781905055a1a"
+          tree="cc87c07e780df9adbb331f5d43e0a28efc775f80"
+          parent="6981c700f9f2f9128ebeebdf80e627178b2be336"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          python3 - <<'PY'
+          import subprocess
+          parent = "6981c700f9f2f9128ebeebdf80e627178b2be336"
+          expected = {
+              "handoff/README.md",
+              "handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json",
+              "handoff/local-handoff-queue.json",
+              "handoff/local-handoff-receipt.schema.json",
+              "tests/verify_handoff.py",
+          }
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
+          ).splitlines())
+          assert changed == expected, f"P7_PATH_LEASE:{sorted(changed ^ expected)}"
+          print(f"PASS exact target and P7 writer lease files={len(changed)}")
+          PY
+
+      - name: Replay inherited Profile-X v4 and Profile-D v5 controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Execute queue v4 positive and planted refusal controls
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+
+      - name: Verify queue denominator and evidence ceilings
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q = json.loads(Path("handoff/local-handoff-queue.json").read_text())
+          assert q["schema_version"] == "enterprise-agent-system/local-handoff-queue/v4"
+          assert q["queue_id"] == "LH-EAS-INCEPTION-P7-V4-2026-08-20"
+          assert q["queue_execution"] == "NOT_PERFORMED"
+          assert q["evidence_ceiling"] == "P7_EXECUTABLE_QUEUE_PREPARATION_ONLY"
+          items = q["items"]
+          assert len(items) == 11
+          assert len([x for x in items if x["state"] == "ACTIVE"]) == 1
+          assert len([x for x in items if x["state"] == "BLOCKED_BY_PREDECESSOR"]) == 9
+          assert items[-1]["state"] == "HUMAN_ADMIT_REQUIRED"
+          assert len(items[0]["commands"]) == 9
+          assert len(items[0]["cleanup"]) == 3
+          assert q["eas_a"]["authority"] == "ADVISORY_ONLY"
+          assert q["eas_a"]["relationship"] == "PROCESS_DEPENDENCY_NOT_GIT_PARENT"
+          assert q["eas_a"]["google_connectivity"] == "NOT_PERFORMED"
+          assert q["eas_a"]["google_write"] == "NOT_PERFORMED"
+          assert q["eas_a"]["source_correctness"] == "NOT_PROVEN"
+          p = q["closure_projection"]
+          assert p["requirements_total"] == 15
+          assert p["requirements_required_lane_satisfied"] == 1
+          assert p["requirements_closure_credit"] == 0
+          assert p["contradictions_total"] == 14
+          assert p["stronger_no_credit_lanes"] == 13
+          assert p["vertical_canary"] == "PLAN_ONLY"
+          assert p["vertical_execution_receipt"] is None
+          assert p["full_architecture"] == "BLOCKED_FOR_CLOSURE"
+          assert p["profile_release"] == "NOT_ADMITTED"
+          assert p["human_admission"] == "NOT_PERFORMED"
+          assert [x["pull_request"] for x in q["superseded_candidates"]] == [27, 50, 59]
+          assert all(x["authority"] == "NONE" for x in q["superseded_candidates"])
+          assert [x["pull_request"] for x in q["superseded_downstream"]] == [67, 71]
+          assert all(x["authority"] == "NONE" for x in q["superseded_downstream"])
+          print("PASS queue denominator 11/1/9/1 commands=9 cleanup=3 execution=NOT_PERFORMED")
+          PY
+
+      - name: Compile parse and portable private-surface checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py \
+            profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py \
+            tests/verify_handoff.py
+          python3 -m json.tool handoff/local-handoff-queue.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-receipt.schema.json >/dev/null
+          python3 -m json.tool handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json >/dev/null
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = [
+              Path("handoff/README.md"),
+              Path("handoff/local-handoff-queue.json"),
+              Path("handoff/local-handoff-receipt.schema.json"),
+              Path("tests/verify_handoff.py"),
+          ]
+          text = "\n".join(p.read_text(encoding="utf-8") for p in paths)
+          forbidden = ["/Users/", "/home/", "/mnt/data/", "BEGIN PRIVATE KEY", "Authorization: Bearer "]
+          assert not [x for x in forbidden if x in text], "NON_PORTABLE_OR_PRIVATE_SURFACE"
+          assert "queue_execution\": \"NOT_PERFORMED\"" in text
+          assert "ADVISORY_ONLY" in text
+          assert "PLAN_ONLY" in text
+          print("PASS portable/private surface and no execution promotion")
+          PY
+
+      - name: Check patch hygiene
+        run: git diff --check 6981c700f9f2f9128ebeebdf80e627178b2be336...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-H4V exact queue v4 verification
+          target=296a130d28ca71efd6c1bede18e8781905055a1a
+          tree=cc87c07e780df9adbb331f5d43e0a28efc775f80
+          writer_paths=5
+          queue_items=11
+          active_items=1
+          blocked_items=9
+          human_terminal=1
+          main_commands=9
+          cleanup_commands=3
+          planted_refusals=34
+          eas_a_authority=ADVISORY_ONLY
+          queue_execution=NOT_PERFORMED
+          active_execution=NOT_PERFORMED
+          evidence_ceiling=P7_EXECUTABLE_QUEUE_PREPARATION_ONLY
+          EOF
