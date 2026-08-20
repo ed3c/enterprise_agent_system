@@ -50,6 +50,8 @@ QUEUE_SUBJECT_BOUND
 → NEXT_EPOCH | BLOCKED | HUMAN_ADMIT_REQUIRED | COMPLETE
 ```
 
+Canonical projection invariant: `exactly-one-ACTIVE`.
+
 Queue-shape PASS is not execution PASS. A local command exit alone cannot advance the queue.
 
 ## First ACTIVE item
