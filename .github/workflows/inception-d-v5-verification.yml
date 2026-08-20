@@ -1,0 +1,243 @@
+name: INCEPTION-D v5 exact EAS-A rebind verification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/inception-d-v5-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-profile-d-v5:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable Profile-D v5 target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: daf9d94de29e753307ec802c3ce53a1df7fe1a91
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/inception-d-v5-exact-daf9d94d
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind exact target ancestry and seven-path writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="daf9d94de29e753307ec802c3ce53a1df7fe1a91"
+          tree="0d80e0eaa55d18f19b0cdb54dc9b19222d1c1ccc"
+          parent="df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0"
+          parent_tree="9290a2822ba30309a9d44933ce0ea4d640501a39"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          test "$(git rev-parse "$parent^{tree}")" = "$parent_tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          test "$(git rev-list --count "$parent"..HEAD)" = "7"
+          python3 - <<'PY'
+          import subprocess
+          parent = "df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0"
+          expected = {
+              "profiles/agent-thinking-inception/docs/README.md",
+              "profiles/agent-thinking-inception/plans/data-flow.json",
+              "profiles/agent-thinking-inception/plans/directory-state-machine-index.json",
+              "profiles/agent-thinking-inception/plans/molecular-stack-index.json",
+              "profiles/agent-thinking-inception/prompts/12-profile-docs-convergence.system.md",
+              "profiles/agent-thinking-inception/prompts/README.md",
+              "profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py",
+          }
+          changed = set(
+              subprocess.check_output(
+                  ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
+              ).splitlines()
+          )
+          assert changed == expected, f"PROFILE_D_V5_PATH_LEASE:{sorted(changed ^ expected)}"
+          print(f"PASS exact target true-child ancestry and path lease files={len(changed)}")
+          PY
+
+      - name: Replay inherited Profile-X v4 controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+
+      - name: Execute Profile-D v5 positive and mutation controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Verify machine denominator and authority ceilings
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("profiles/agent-thinking-inception")
+          flow = json.loads((root / "plans/data-flow.json").read_text())
+          state = json.loads((root / "plans/directory-state-machine-index.json").read_text())
+          stack = json.loads((root / "plans/molecular-stack-index.json").read_text())
+          closure = json.loads((root / "plans/closure-record.json").read_text())
+          canary = json.loads((root / "plans/vertical-canary.json").read_text())
+          receipts = json.loads((root / "evidence/convergence/receipt-index.json").read_text())
+
+          px = {
+              "pull_request": 80,
+              "commit": "df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0",
+              "tree": "9290a2822ba30309a9d44933ce0ea4d640501a39",
+              "external_verification_run": 32321499909,
+              "shadow_review": 4978282030,
+          }
+          for source in (flow, state):
+              parent = source["parent_profile_x"]
+              for key, value in px.items():
+                  assert parent[key] == value, (key, parent.get(key), value)
+
+          eas = flow["eas_a"]
+          assert eas["commit"] == "250717db1cad584d50890c0d851153fa2cd755e8"
+          assert eas["tree"] == "fbf6a75b6e89e906f227110dc5a61e4355b8a891"
+          assert eas["verification_run"] == 32295871632
+          assert eas["shadow_review"] == 4976213414
+          assert eas["authority"] == "ADVISORY_ONLY"
+          assert eas["relationship"] == "PROCESS_DEPENDENCY_NOT_GIT_PARENT"
+          assert eas["google_connectivity"] == "NOT_PERFORMED"
+          assert eas["google_write"] == "NOT_PERFORMED"
+          assert eas["source_correctness"] == "NOT_PROVEN"
+
+          atoms = {item["atom"]: item for item in stack["current_atoms"]}
+          assert atoms["PROFILE-X-V4"]["pull_request"] == 80
+          assert atoms["PROFILE-X-V4"]["commit"] == px["commit"]
+          assert atoms["PROFILE-X-V4"]["verification_run"] == 32321499909
+          assert atoms["PROFILE-X-V4"]["shadow_review"] == 4978282030
+          assert atoms["PROFILE-D-V5"]["authority"] == "P6_CANDIDATE"
+          assert atoms["EAS-A"]["authority"] == "ADVISORY_ONLY"
+          assert atoms["EAS-A"]["relationship"] == "PROCESS_DEPENDENCY_NOT_GIT_PARENT"
+
+          stale = stack["stale_or_superseded"]
+          expected_stale = {44, 57, 59, 67, 71}
+          observed = {
+              item["pull_request"]
+              for item in stale
+              if isinstance(item.get("pull_request"), int)
+              and item.get("disposition") == "STALE_PENDING_EAS_A_REBIND"
+          }
+          assert observed == expected_stale
+          assert all(item["authority"] == "NONE" for item in stale)
+
+          summary = closure["closure_summary"]
+          assert summary["requirements_total"] == 15
+          assert summary["requirements_required_lane_satisfied"] == 1
+          assert summary["requirements_closure_credit"] == 0
+          assert summary["contradictions_total"] == 14
+          assert summary["full_architecture"] == "BLOCKED_FOR_CLOSURE"
+          assert summary["profile_release_state"] == "NOT_ADMITTED"
+          assert len(closure["stronger_lanes"]) == 13
+          assert all(item["closure_credit"] == 0 for item in closure["requirements"])
+
+          digest = "sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2"
+          assert canary["state"] == "PLAN_ONLY"
+          assert canary["contract_digest"] == digest
+          assert canary["execution_receipt"] is None
+          assert receipts["vertical_canary"]["digest"] == digest
+          assert receipts["vertical_canary"]["state"] == "PLAN_ONLY"
+          assert receipts["closure"]["closure_credit"] == 0
+
+          p7 = next(item for item in state["entries"] if item["phase"] == "P7")
+          assert p7["evidence_ceiling"] == "NOT_CURRENT_YET"
+          assert "execution NOT_PERFORMED" in p7["blocker"]
+          assert stack["next_authority"] == "ROOT_D_REBIND_AFTER_PROFILE_D_V5_EXTERNAL_VERIFY_AND_SHADOW"
+          print("PASS Profile-D v5 15/14/13/1/0 denominator and P7 suspension")
+          PY
+
+      - name: Prove verifier cannot execute Local Handoff or external writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=".verifier/.github/workflows/inception-d-v5-verification.yml"
+          test -f "$definition"
+          execute_token="--mode"" execute"
+          runner_script="run_""active.py"
+          google_client="google""apiclient"
+          sheets_client="g""spread"
+          write_call="request_""write("
+          secret_name="GOOGLE_""APPLICATION_CREDENTIALS"
+          receipt_root="EAS_""RECEIPT_DIR"
+          for token in "$execute_token" "$runner_script" "$google_client" "$sheets_client" "$write_call" "$secret_name" "$receipt_root"; do
+            if grep -Fq -- "$token" "$definition"; then
+              echo "FORBIDDEN_EXTERNAL_EXECUTION_TOKEN:$token"
+              exit 2
+            fi
+          done
+          echo "PASS verifier-definition-present external-execution/write tokens absent"
+
+      - name: Parse compile portable surface and patch hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool profiles/agent-thinking-inception/plans/molecular-stack-index.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/directory-state-machine-index.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/data-flow.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/closure-record.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/vertical-canary.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/evidence/convergence/receipt-index.json >/dev/null
+          python3 -m py_compile \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py \
+            profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("profiles/agent-thinking-inception")
+          paths = [
+              root / "docs/README.md",
+              root / "plans/data-flow.json",
+              root / "plans/directory-state-machine-index.json",
+              root / "plans/molecular-stack-index.json",
+              root / "prompts/12-profile-docs-convergence.system.md",
+              root / "prompts/README.md",
+              root / "tests/docs/verify_profile_docs.py",
+          ]
+          corpus = "\n".join(path.read_text(encoding="utf-8") for path in paths)
+          forbidden = [
+              "/" + "Users" + "/",
+              "/" + "home" + "/",
+              "/mnt/" + "data/",
+              "BEGIN " + "PRIVATE KEY",
+          ]
+          assert not [token for token in forbidden if token in corpus], "NON_PORTABLE_OR_PRIVATE_SURFACE"
+          print("PASS portable/secret-free Profile-D surface")
+          PY
+          git diff --check df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS INCEPTION-D v5 exact-target verification
+          target=daf9d94de29e753307ec802c3ce53a1df7fe1a91
+          tree=0d80e0eaa55d18f19b0cdb54dc9b19222d1c1ccc
+          parent=df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0
+          parent_verify=32321499909
+          parent_Shadow=4978282030
+          Profile_D_paths=7
+          Profile_X_mutations=34
+          Profile_D_mutations=28
+          requirements=15
+          required_lanes_satisfied=1
+          requirement_closure_credit=0
+          contradictions=14
+          stronger_no_credit_lanes=13
+          EAS_A_authority=ADVISORY_ONLY
+          Google_connectivity_write=NOT_PERFORMED
+          source_correctness=NOT_PROVEN
+          vertical_canary=PLAN_ONLY
+          execution_receipt=null
+          Root_D=REBIND_REQUIRED
+          P7_execution=NOT_PERFORMED
+          Human_merge_release_rollback=NOT_PERFORMED
+          EOF
