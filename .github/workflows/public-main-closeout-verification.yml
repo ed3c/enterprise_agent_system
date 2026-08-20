@@ -18,7 +18,7 @@ jobs:
       - name: Checkout immutable closeout target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 1265c84c503ecdbf8512314fb65c442197a91d7c
+          ref: 4b043ac65cec60b9494f5504022a25c9fe09a712
           persist-credentials: false
           fetch-depth: 0
 
@@ -34,8 +34,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target=1265c84c503ecdbf8512314fb65c442197a91d7c
-          tree=2bf99dfda1b134d844636e0aae4d06357e27a90b
+          target=4b043ac65cec60b9494f5504022a25c9fe09a712
+          tree=96c666c2c1e803573944b923838d72c36d47609a
           main_parent=0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
           stack_parent=4a44e9cf9ece133e8117ecc100e419f359d8e1a1
           carrier=ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
@@ -184,8 +184,8 @@ jobs:
         run: |
           cat <<'EOF'
           PASS public-main closeout exact verification
-          target=1265c84c503ecdbf8512314fb65c442197a91d7c
-          tree=2bf99dfda1b134d844636e0aae4d06357e27a90b
+          target=4b043ac65cec60b9494f5504022a25c9fe09a712
+          tree=96c666c2c1e803573944b923838d72c36d47609a
           integration_carrier=ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
           eas_a_merge=0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
           public_stack_parent=4a44e9cf9ece133e8117ecc100e419f359d8e1a1
