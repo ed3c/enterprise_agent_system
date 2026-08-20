@@ -4,27 +4,33 @@ This is an Agent convenience projection. Immutable evidence remains the named re
 
 ## Current phase
 
+The closeout commit/tree below is the immutable public-stack integration baseline. The current moving repository HEAD/tree must be read from Git when a session starts; do not infer that a documentation merge leaves the branch SHA unchanged.
+
 ```text
-source program       #1
-repository program   #6
-Local Handoff        #14
-phase                PUBLIC_MAIN_MERGED__LOCAL_HANDOFF_ACTIVE
-main                 85ad1210ee27d105773ae20aaaac7a1a17dfe446
-main tree            96c666c2c1e803573944b923838d72c36d47609a
-closeout             #110 MERGED / #111 32364024569 PASS / Shadow 4982176517
-open current PRs     0
+source program        #1
+repository program    #6
+Local Handoff         #14
+phase                 PUBLIC_MAIN_MERGED__LOCAL_HANDOFF_ACTIVE
+public-stack baseline 85ad1210ee27d105773ae20aaaac7a1a17dfe446
+baseline tree         96c666c2c1e803573944b923838d72c36d47609a
+current repo HEAD     READ_FROM_GIT
+current repo tree     READ_FROM_GIT
+closeout              #110 MERGED / #111 32364024569 PASS / Shadow 4982176517
+open canonical implementation PRs 0
 open canonical issues #1 #5 #6 #7 #14 #15 #16 #17 #18
-EAS-A main merge     0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
-integration carrier  ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
-carrier tree         55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
-P7 public stack      QUEUE_RUNNER_REDUCER_V4_COMPLETE
-ACTIVE local item    LH-P7-01-ROOT-D-V3-LOCAL-READBACK
-ACTIVE execution     NOT_PERFORMED
-real local receipt   NOT_OBSERVED
-next authority       admitted local runtime → H4R #103 → external receipt → H4RR #107
+EAS-A main merge      0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
+integration carrier   ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
+carrier tree          55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
+P7 public stack       QUEUE_RUNNER_REDUCER_V4_COMPLETE
+ACTIVE local item     LH-P7-01-ROOT-D-V3-LOCAL-READBACK
+ACTIVE execution      NOT_PERFORMED
+real local receipt    NOT_OBSERVED
+next authority        admitted local runtime → H4R #103 → external receipt → H4RR #107
 ```
 
-All bounded public implementation, verification-only, and historical/superseded delivery metadata has been classified. There is no current product PR to merge. Do not reopen historical atoms or manufacture replacement implementation work unless a current open owner issue and exact evidence show a real uncovered mechanism.
+`open canonical implementation PRs = 0` excludes transient governance-documentation and verification-only siblings. All bounded public mechanism delivery, verification-only, and historical/superseded metadata has been classified. Do not reopen historical atoms or manufacture replacement mechanism work unless a current open owner issue and exact evidence show a real uncovered mechanism.
+
+The immutable identity of this CONTEXT version is the Git object containing this file. Never attempt to embed the SHA of its own future merge commit as a permanent `current main` literal.
 
 ## Exact current public subjects
 
