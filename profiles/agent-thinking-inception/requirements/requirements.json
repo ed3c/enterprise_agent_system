@@ -1,0 +1,18 @@
+{
+  "schema_version": "enterprise-agent-system/inception-requirements-manifest/v1",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "source_subject_id": "SRC-PDF-INCEPTION-001",
+  "shards": [
+    "control-requirements.json",
+    "assurance-requirements.json",
+    "delivery-requirements.json"
+  ],
+  "denominator": {
+    "total": 15,
+    "states": {
+      "SOURCE_PROPOSAL": 13,
+      "OWNER_PROPOSED": 2
+    },
+    "closure_credit": 0
+  }
+}
