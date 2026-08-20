@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable Profile-D v5 target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 8e0139ce244b574bce97a84c1f7c9b72526585a1
+          ref: f04f9fc78270c8f97ce978e2ccc161ab4d724ca4
           persist-credentials: false
           fetch-depth: 0
 
@@ -33,8 +33,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="8e0139ce244b574bce97a84c1f7c9b72526585a1"
-          tree="9f69294eca6cf7f805ee9f7c8e325e4cc0c25c15"
+          target="f04f9fc78270c8f97ce978e2ccc161ab4d724ca4"
+          tree="9740f25f9b1fa8f6533c49642381955b953dd12a"
           parent="df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0"
           parent_tree="9290a2822ba30309a9d44933ce0ea4d640501a39"
           test "$(git rev-parse HEAD)" = "$target"
@@ -42,7 +42,7 @@ jobs:
           test "$(git rev-parse "$parent^{tree}")" = "$parent_tree"
           git merge-base --is-ancestor "$parent" HEAD
           test "$(git merge-base "$parent" HEAD)" = "$parent"
-          test "$(git rev-list --count "$parent"..HEAD)" = "9"
+          test "$(git rev-list --count "$parent"..HEAD)" = "10"
           python3 - <<'PY'
           import subprocess
           parent = "df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0"
@@ -219,12 +219,12 @@ jobs:
         run: |
           cat <<'EOF'
           PASS INCEPTION-D v5 exact-target verification
-          target=8e0139ce244b574bce97a84c1f7c9b72526585a1
-          tree=9f69294eca6cf7f805ee9f7c8e325e4cc0c25c15
+          target=f04f9fc78270c8f97ce978e2ccc161ab4d724ca4
+          tree=9740f25f9b1fa8f6533c49642381955b953dd12a
           parent=df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0
           parent_verify=32321499909
           parent_Shadow=4978282030
-          Profile_D_commits=9
+          Profile_D_commits=10
           Profile_D_paths=7
           Profile_X_mutations=34
           Profile_D_mutations=28
