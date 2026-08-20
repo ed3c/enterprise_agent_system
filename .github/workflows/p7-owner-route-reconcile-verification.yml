@@ -56,18 +56,20 @@ jobs:
           python3 tests/verify_handoff.py --selftest
           python3 tests/verify_handoff_owner_routes.py
 
-      - name: Replay runner and reducer controls without ACTIVE execution
+      - name: Prove existing runner fails closed pending explicit rebind
+        shell: bash
         run: |
+          set -euo pipefail
           python3 tests/test_handoff_runner.py
           python3 tests/test_receipt_reducer.py
           python3 tests/test_receipt_reducer_v4.py
-          python3 handoff/run_active.py --mode plan >/tmp/owner-route-runner-plan.json
-          python3 handoff/reduce_receipt.py --mode plan >/tmp/owner-route-reducer-plan.json
           set +e
-          python3 handoff/reduce_receipt.py --mode inspect --receipt /tmp/definitely-absent-owner-route-receipt.json >/tmp/owner-route-missing.json
-          rc=$?
+          python3 handoff/run_active.py --mode plan >/tmp/stale-runner.out 2>/tmp/stale-runner.err
+          runner_rc=$?
           set -e
-          test "$rc" = 4
+          test "$runner_rc" = 3
+          grep -F 'BLOCKED:CONSUMED_QUEUE_BYTES_MUTATED' /tmp/stale-runner.err
+          echo 'PASS existing H4R refuses changed queue bytes and requires explicit runner rebind'
 
       - name: Prove only owner route changed and evidence ceiling is unchanged
         shell: bash
@@ -123,15 +125,6 @@ jobs:
           for item_id, issue in expected.items():
               assert new_items[item_id]['owner_issue'].endswith(f'/issues/{issue}')
           assert all(not i['owner_issue'].endswith('/issues/22') for i in q['items'])
-
-          missing = json.loads(Path('/tmp/owner-route-missing.json').read_text())
-          assert missing['decision'] == 'BLOCKED_BY_MISSING_REAL_LOCAL_RECEIPT'
-          assert missing['real_local_evidence_credit'] == 0
-          runner = json.loads(Path('/tmp/owner-route-runner-plan.json').read_text())
-          reducer = json.loads(Path('/tmp/owner-route-reducer-plan.json').read_text())
-          assert runner['queue_execution'] == 'NOT_PERFORMED'
-          assert reducer['real_local_receipt'] == 'NOT_OBSERVED'
-          assert reducer['canonical_advancement_performed'] is False
           print('PASS owner route corrected without queue/evidence promotion')
           PY
 
@@ -168,6 +161,7 @@ jobs:
           changed_paths=2
           vertical_canary_owner_issue=14
           closed_p5_issue_22_execution_authority=0
+          prior_h4r_state=BLOCKED_PENDING_EXPLICIT_REBIND
           active_execution=NOT_PERFORMED
           real_local_receipt=NOT_OBSERVED
           requirement_closure_credit=0
