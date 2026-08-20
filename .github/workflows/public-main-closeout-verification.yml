@@ -1,0 +1,197 @@
+name: Public main closeout exact verification
+
+on:
+  push:
+    branches: [verify/public-main-closeout-1265c84c]
+  pull_request:
+    paths:
+      - .github/workflows/public-main-closeout-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-closeout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable closeout target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 1265c84c503ecdbf8512314fb65c442197a91d7c
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/public-main-closeout-1265c84c
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind main ancestry and explicit convergence parents
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=1265c84c503ecdbf8512314fb65c442197a91d7c
+          tree=2bf99dfda1b134d844636e0aae4d06357e27a90b
+          main_parent=0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
+          stack_parent=4a44e9cf9ece133e8117ecc100e419f359d8e1a1
+          carrier=ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          git merge-base --is-ancestor "$main_parent" HEAD
+          git merge-base --is-ancestor "$stack_parent" HEAD
+          mapfile -t parents < <(git show -s --format=%P "$carrier" | tr ' ' '\n')
+          test "${parents[0]}" = "$main_parent"
+          test "${parents[1]}" = "$stack_parent"
+          test "$(git rev-parse "$carrier^{tree}")" = 55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
+          echo 'PASS exact target, main ancestry, and two-parent convergence carrier'
+
+      - name: Prove admitted EAS-A blobs survived convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          declare -A expected=(
+            [config/document-sources.example.yaml]=c98c3367b4198b8b04f2b1071f2c897b094dd6ef
+            [integrations/github/README.md]=b537c7dbf4860657ea0816bd4c1e1f3a460757ab
+            [integrations/github/adapter.py]=2f59d32fbf03c47dee91f94d4b063c97896457c2
+            [integrations/github/advisory_projection.py]=74ce8bd7a15a21ea676662ba89b4731604fab923
+            [integrations/github/verify_eas_a.py]=4855949d669d92d280206b1f5a4d4df52e7fb8cf
+            [integrations/google-drive/README.md]=7648a980428c8b1466bca76c4abcd5d9e7774c8c
+            [integrations/google-drive/adapter.py]=284c8a2ff578376dbd67551fb738c40b4b495d02
+            [prompts/02-source-ingest-worker.system.md]=70c2c845da5e38522b5a96093eb2ca55e534243b
+          )
+          for path in "${!expected[@]}"; do
+            test "$(git hash-object "$path")" = "${expected[$path]}"
+          done
+          echo 'PASS exact admitted EAS-A 8-path overlay'
+
+      - name: Replay generic deterministic controls
+        run: |
+          python3 contracts/control-plane/verify.py \
+            contracts/control-plane/examples/source-subject.example.json \
+            contracts/control-plane/examples/cross-repo-binding.example.json \
+            contracts/control-plane/examples/closure-record.example.json \
+            contracts/control-plane/examples/orchestration-run.example.json
+          python3 contracts/control-plane/verify.py --selftest contracts/control-plane/examples
+          python3 tests/test_orchestration.py
+          python3 tests/test_parent_binding.py
+          python3 tests/test_shadow.py
+          python3 tests/test_shadow_snapshots.py
+          python3 tests/test_convergence.py
+          python3 integrations/github/verify_eas_a.py
+          python3 integrations/github/verify_eas_a.py --selftest
+
+      - name: Replay current Profile-X and Profile-D controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Replay current P7 queue runner reducer controls
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+          python3 tests/test_handoff_runner.py
+          python3 tests/test_receipt_reducer.py
+          python3 tests/test_receipt_reducer_v4.py
+          python3 handoff/run_active.py --mode plan >/tmp/closeout-runner-plan.json
+          python3 handoff/reduce_receipt.py --mode plan >/tmp/closeout-reducer-plan.json
+          set +e
+          python3 handoff/reduce_receipt.py --mode inspect --receipt /tmp/definitely-absent-eas-receipt.json >/tmp/closeout-missing.json
+          rc=$?
+          set -e
+          test "$rc" = 4
+
+      - name: Verify evidence ceilings and Agent-readable closeout projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          readme = Path('README.md').read_text()
+          agents = Path('AGENTS.md').read_text()
+          context = Path('CONTEXT.md').read_text()
+          stack = Path('docs/traceability/MOLECULAR_STACK_INDEX.md').read_text()
+          closure = Path('docs/traceability/PUBLIC_MAIN_CLOSURE.md').read_text()
+          handoff = Path('handoff/README.md').read_text()
+          joined = '\n'.join([readme, agents, context, stack, closure, handoff])
+          required = [
+              'requirements                                15',
+              'requirement closure credit                   0',
+              'contradictions                               14 preserved',
+              'stronger no-credit lanes                     13',
+              'BLOCKED_FOR_CLOSURE', 'ADVISORY_ONLY', 'PLAN_ONLY',
+              'LH-P7-01-ROOT-D-V3-LOCAL-READBACK',
+              '7be0a69b0046b66799baee2ddb5e305c90d60ec6',
+              '4a44e9cf9ece133e8117ecc100e419f359d8e1a1',
+              'PUBLIC_MAIN_CLOSURE.md',
+          ]
+          for token in required:
+              assert token in joined, token
+          assert 'directory' in readme.lower() and 'state machine' in readme.lower() and 'data flow' in readme.lower()
+          assert 'git-town-stacked-pr-worker' in readme
+          q = json.loads(Path('handoff/local-handoff-queue.json').read_text())
+          assert q['queue_execution'] == 'NOT_PERFORMED'
+          assert len([x for x in q['items'] if x['state'] == 'ACTIVE']) == 1
+          missing = json.loads(Path('/tmp/closeout-missing.json').read_text())
+          assert missing['decision'] == 'BLOCKED_BY_MISSING_REAL_LOCAL_RECEIPT'
+          assert missing['real_local_evidence_credit'] == 0
+          runner = json.loads(Path('/tmp/closeout-runner-plan.json').read_text())
+          reducer = json.loads(Path('/tmp/closeout-reducer-plan.json').read_text())
+          assert runner['queue_execution'] == 'NOT_PERFORMED'
+          assert reducer['real_local_receipt'] == 'NOT_OBSERVED'
+          assert reducer['canonical_advancement_performed'] is False
+          print('PASS closeout docs, queue truth, and public evidence ceilings')
+          PY
+
+      - name: Prove hosted verifier contains no real ACTIVE execute
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=.verifier/.github/workflows/public-main-closeout-verification.yml
+          test -f "$definition"
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('.verifier/.github/workflows/public-main-closeout-verification.yml').read_text()
+          forbidden = ['--mode' + ' execute', 'canonical_' + 'advancement_performed=true']
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS no hosted real execution/advancement invocation')
+          PY
+
+      - name: Compile parse and patch hygiene
+        run: |
+          python3 -m py_compile \
+            contracts/control-plane/verify.py \
+            src/enterprise_agent_system/orchestration.py \
+            src/enterprise_agent_system/shadow.py \
+            src/enterprise_agent_system/convergence.py \
+            integrations/github/verify_eas_a.py \
+            handoff/run_active.py handoff/run_active_core.py \
+            handoff/reduce_receipt.py handoff/reduce_receipt_core.py
+          python3 -m json.tool handoff/local-handoff-queue.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-receipt.schema.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-runner-contract.json >/dev/null
+          python3 -m json.tool handoff/local-receipt-reducer-contract.json >/dev/null
+          git diff --check 0832cd7e7b5a486fd8924ff9b667bcb6205c1a35...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS public-main closeout exact verification
+          target=1265c84c503ecdbf8512314fb65c442197a91d7c
+          tree=2bf99dfda1b134d844636e0aae4d06357e27a90b
+          integration_carrier=ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
+          eas_a_merge=0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
+          public_stack_parent=4a44e9cf9ece133e8117ecc100e419f359d8e1a1
+          active_execution=NOT_PERFORMED
+          real_local_receipt=NOT_OBSERVED
+          requirement_closure_credit=0
+          full_architecture=BLOCKED_FOR_CLOSURE
+          evidence_ceiling=PUBLIC_MAIN_INTEGRATION_AND_TRACEABILITY_ONLY
+          EOF
