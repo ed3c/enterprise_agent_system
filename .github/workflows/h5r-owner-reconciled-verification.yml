@@ -1,0 +1,148 @@
+name: H5R owner-reconciled exact verification
+
+on:
+  push:
+    branches: [verify/h5r-owner-reconciled-4735e30d]
+  pull_request:
+    paths:
+      - .github/workflows/h5r-owner-reconciled-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-h5r:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable H5R target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 4735e30d2bc810dd3bfc25b645aaad35046bc1d5
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/h5r-owner-reconciled-4735e30d
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind exact queue parent and three-path H5R writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent=3fd99f4051dafa440d61c11eac610737281b1583
+          parent_tree=03a93749e3eb0999cca0e63041321a99286fbfb4
+          target=4735e30d2bc810dd3bfc25b645aaad35046bc1d5
+          target_tree=c6f8b9e7d536686461206c192121575683aff145
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$target_tree"
+          test "$(git rev-parse "$parent^{tree}")" = "$parent_tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          mapfile -t changed < <(git diff --name-only "$parent"...HEAD | sort)
+          expected=(
+            handoff/local-handoff-runner-contract-owner-reconciled.json
+            handoff/run_active_owner_reconciled.py
+            tests/test_handoff_runner_owner_reconciled.py
+          )
+          test "${#changed[@]}" = "${#expected[@]}"
+          for i in "${!expected[@]}"; do test "${changed[$i]}" = "${expected[$i]}"; done
+          echo 'PASS exact #114 parent and three-path H5R lease'
+
+      - name: Prove inherited queue and prior H4R bytes are immutable
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent=3fd99f4051dafa440d61c11eac610737281b1583
+          git diff --quiet "$parent"..HEAD -- handoff/local-handoff-queue.json handoff/local-handoff-receipt.schema.json tests/verify_handoff.py tests/verify_handoff_owner_routes.py
+          test "$(git hash-object handoff/run_active.py)" = 29cd7cb8861e93f8b31b6cd9110f9d14971338ba
+          test "$(git hash-object handoff/run_active_core.py)" = 8c4ae46515bca4ab2f5e89e1d2677c84d65bbd8f
+          echo 'PASS queue, old binding, and execution core immutable'
+
+      - name: Replay queue owner-route and runner tests
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+          python3 tests/verify_handoff_owner_routes.py
+          python3 tests/test_handoff_runner.py
+          python3 tests/test_handoff_runner_owner_reconciled.py
+
+      - name: Prove old H4R blocks and new H5R plan succeeds
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          python3 handoff/run_active.py --mode plan >/tmp/old-h4r.out 2>/tmp/old-h4r.err
+          old_rc=$?
+          set -e
+          test "$old_rc" = 3
+          grep -F 'BLOCKED:CONSUMED_QUEUE_BYTES_MUTATED' /tmp/old-h4r.err
+          python3 handoff/run_active_owner_reconciled.py --mode plan >/tmp/h5r-plan.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('/tmp/h5r-plan.json').read_text())
+          assert p['schema_version']=='enterprise-agent-system/local-handoff-runner-plan/v4'
+          assert p['queue_parent']['pull_request']==114
+          assert p['queue_parent']['commit']=='3fd99f4051dafa440d61c11eac610737281b1583'
+          assert p['queue_parent']['tree']=='03a93749e3eb0999cca0e63041321a99286fbfb4'
+          assert p['queue_parent']['verification_run']==32390022568
+          assert p['queue_parent']['shadow_review']==4984913981
+          assert p['vertical_canary_owner_issue']==14
+          assert p['closed_p5_issue_22_execution_authority']=='NONE'
+          assert p['queue_execution']=='NOT_PERFORMED'
+          assert p['runner_execution']=='NOT_PERFORMED'
+          assert p['canonical_advancement']=='NOT_PERFORMED'
+          assert len(p['command_ids'])==9 and len(p['cleanup_ids'])==3
+          print('PASS old H4R blocks; new H5R plan binds reconciled queue')
+          PY
+
+      - name: Prove execute still requires external exact runner admission
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          python3 handoff/run_active_owner_reconciled.py --mode execute --runtime-kind CODEX_CLI_LOCAL >/tmp/no-admit.out 2>/tmp/no-admit.err
+          rc=$?
+          set -e
+          test "$rc" = 3
+          grep -F 'BLOCKED:EXECUTE_REQUIRES_ADMITTED_RUNNER_SUBJECT' /tmp/no-admit.err
+          echo 'PASS no hosted or implicit ACTIVE execution'
+
+      - name: Compile parse and patch hygiene
+        run: |
+          python3 -m py_compile handoff/run_active_owner_reconciled.py tests/test_handoff_runner_owner_reconciled.py
+          python3 -m json.tool handoff/local-handoff-runner-contract-owner-reconciled.json >/dev/null
+          git diff --check 3fd99f4051dafa440d61c11eac610737281b1583...HEAD
+
+      - name: Prove hosted verifier contains no real ACTIVE execute
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=.verifier/.github/workflows/h5r-owner-reconciled-verification.yml
+          python3 - <<'PY'
+          from pathlib import Path
+          text=Path('.verifier/.github/workflows/h5r-owner-reconciled-verification.yml').read_text()
+          forbidden=['--mode'+' execute --admitted-runner-commit','canonical_'+'advancement_performed=true']
+          for token in forbidden: assert token not in text, token
+          print('PASS hosted verifier contains no admitted real execution')
+          PY
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS H5R owner-reconciled exact verification
+          target=4735e30d2bc810dd3bfc25b645aaad35046bc1d5
+          tree=c6f8b9e7d536686461206c192121575683aff145
+          queue_parent=3fd99f4051dafa440d61c11eac610737281b1583
+          changed_paths=3
+          old_h4r=BLOCKED_CONSUMED_QUEUE_BYTES_MUTATED
+          active_execution=NOT_PERFORMED
+          real_local_receipt=NOT_OBSERVED
+          canonical_advancement=NOT_PERFORMED
+          evidence_ceiling=PUBLIC_RECONCILED_QUEUE_RUNNER_BINDING_ONLY
+          EOF
