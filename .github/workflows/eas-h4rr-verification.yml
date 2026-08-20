@@ -1,0 +1,212 @@
+name: EAS-H4RR exact receipt reducer verification
+
+on:
+  push:
+    branches: [verify/eas-h4rr-exact-4a44e9cf]
+  pull_request:
+    paths:
+      - .github/workflows/eas-h4rr-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-h4rr-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout immutable H4RR target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 4a44e9cf9ece133e8117ecc100e419f359d8e1a1
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/eas-h4rr-exact-4a44e9cf
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind exact parent, six-path lease, and immutable reuse
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="4a44e9cf9ece133e8117ecc100e419f359d8e1a1"
+          tree="d088e4fa7a21958efc73f7246a707c2a77b5640a"
+          parent="7be0a69b0046b66799baee2ddb5e305c90d60ec6"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          test "$(git rev-list --count "$parent"..HEAD)" = "6"
+          python3 - <<'PY'
+          import subprocess
+          parent = "7be0a69b0046b66799baee2ddb5e305c90d60ec6"
+          expected = {
+              "handoff/REDUCER.md",
+              "handoff/local-receipt-reducer-contract.json",
+              "handoff/reduce_receipt.py",
+              "handoff/reduce_receipt_core.py",
+              "tests/test_receipt_reducer.py",
+              "tests/test_receipt_reducer_v4.py",
+          }
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
+          ).splitlines())
+          assert changed == expected, f"H4RR_PATH_LEASE:{sorted(changed ^ expected)}"
+          read_only = [
+              "handoff/local-handoff-queue.json",
+              "handoff/local-handoff-receipt.schema.json",
+              "tests/verify_handoff.py",
+              "handoff/RUNBOOK.md",
+              "handoff/local-handoff-runner-contract.json",
+              "handoff/run_active.py",
+              "handoff/run_active_core.py",
+              "tests/test_handoff_runner.py",
+          ]
+          subprocess.run(["git", "diff", "--quiet", f"{parent}..HEAD", "--", *read_only], check=True)
+          print("PASS H4RR exact parent / six-path lease / consumed bytes read-only")
+          PY
+          test "$(git hash-object handoff/reduce_receipt_core.py)" = "4c5581eabb265346865963c74c573ffc057381b8"
+
+      - name: Replay queue-v4 and H4R controls
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+          python3 tests/test_handoff_runner.py
+
+      - name: Execute H4RR legacy and current-epoch tests
+        run: |
+          python3 tests/test_receipt_reducer.py
+          python3 tests/test_receipt_reducer_v4.py
+
+      - name: Execute reducer plan and missing-receipt BLOCKED path only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 handoff/reduce_receipt.py --mode plan > /tmp/h4rr-plan.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path("/tmp/h4rr-plan.json").read_text())
+          assert p["schema_version"] == "enterprise-agent-system/local-receipt-reducer-plan/v2"
+          assert p["queue_subject"]["commit"] == "75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4"
+          assert p["runner_subject"]["commit"] == "7be0a69b0046b66799baee2ddb5e305c90d60ec6"
+          assert p["active_item_id"] == "LH-P7-01-ROOT-D-V3-LOCAL-READBACK"
+          assert p["next_item_id"] == "LH-P7-02-A2R-CONTEXT-TOKENIZER"
+          assert p["synthetic_fixture_real_local_credit"] == 0
+          assert p["real_label_real_local_credit"] == 0
+          assert p["real_local_credit_requires_external_authority"] is True
+          assert p["queue_mutation_performed"] is False
+          assert p["canonical_advancement_performed"] is False
+          assert p["queue_execution"] == "NOT_PERFORMED"
+          assert p["active_execution"] == "NOT_PERFORMED"
+          assert p["real_local_receipt"] == "NOT_OBSERVED"
+          print("PASS H4RR plan binds exact current subjects and zero-credit authority")
+          PY
+          missing="/tmp/eas-h4rr-missing-${GITHUB_RUN_ID}.json"
+          rm -f "$missing"
+          set +e
+          python3 handoff/reduce_receipt.py --mode inspect --receipt "$missing" > /tmp/h4rr-missing.json
+          rc=$?
+          set -e
+          test "$rc" = "4"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d = json.loads(Path("/tmp/h4rr-missing.json").read_text())
+          assert d["decision"] == "BLOCKED_BY_MISSING_REAL_LOCAL_RECEIPT"
+          assert d["receipt_state"] == "NOT_EXERCISED"
+          assert d["real_local_evidence_credit"] == 0
+          assert d["queue_mutation_performed"] is False
+          assert d["canonical_advancement_performed"] is False
+          print("PASS missing real receipt is BLOCKED with zero advancement credit")
+          PY
+
+      - name: Prove queue and H4R bytes remain immutable after tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent="7be0a69b0046b66799baee2ddb5e305c90d60ec6"
+          for path in \
+            handoff/local-handoff-queue.json \
+            handoff/local-handoff-receipt.schema.json \
+            tests/verify_handoff.py \
+            handoff/RUNBOOK.md \
+            handoff/local-handoff-runner-contract.json \
+            handoff/run_active.py \
+            handoff/run_active_core.py \
+            tests/test_handoff_runner.py; do
+            test "$(git hash-object "$path")" = "$(git rev-parse "$parent:$path")"
+          done
+          echo "PASS consumed queue/H4R bytes remain byte-identical"
+
+      - name: Prove hosted verifier has no execute, receipt creation, or queue-write authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=".verifier/.github/workflows/eas-h4rr-verification.yml"
+          test -f "$definition"
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path(".verifier/.github/workflows/eas-h4rr-verification.yml").read_text()
+          forbidden = [
+              "--mode" + " execute",
+              "run_" + "active.py --mode" + " execute",
+              "canonical_" + "advancement_performed=true",
+          ]
+          for token in forbidden:
+              assert token not in text, f"FORBIDDEN_HOSTED_AUTHORITY:{token}"
+          print("PASS verifier definition contains no real execute/advancement invocation")
+          PY
+
+      - name: Compile, parse, and verify portable emitted surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            handoff/reduce_receipt.py \
+            handoff/reduce_receipt_core.py \
+            tests/test_receipt_reducer.py \
+            tests/test_receipt_reducer_v4.py
+          python3 -m json.tool handoff/local-receipt-reducer-contract.json >/dev/null
+          python3 - <<'PY'
+          from pathlib import Path
+          emitted = "\n".join([
+              Path("handoff/local-receipt-reducer-contract.json").read_text(encoding="utf-8"),
+              Path("handoff/REDUCER.md").read_text(encoding="utf-8"),
+              Path("/tmp/h4rr-plan.json").read_text(encoding="utf-8"),
+              Path("/tmp/h4rr-missing.json").read_text(encoding="utf-8"),
+          ])
+          forbidden = ["/Users/", "/home/", "/mnt/data/", "BEGIN PRIVATE KEY", "Authorization: Bearer "]
+          assert not [x for x in forbidden if x in emitted], "NON_PORTABLE_EMITTED_SURFACE"
+          core = Path("handoff/reduce_receipt_core.py").read_text(encoding="utf-8")
+          tests = Path("tests/test_receipt_reducer.py").read_text(encoding="utf-8")
+          assert "PRIVATE_PATH" in core and "/home/" in core and "/mnt/data/" in core
+          assert "/home/" in tests
+          print("PASS emitted reducer surfaces portable; negative path controls retained in code/tests")
+          PY
+
+      - name: Check patch hygiene
+        run: git diff --check 7be0a69b0046b66799baee2ddb5e305c90d60ec6...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-H4RRV exact receipt reducer verification
+          target=4a44e9cf9ece133e8117ecc100e419f359d8e1a1
+          tree=d088e4fa7a21958efc73f7246a707c2a77b5640a
+          parent_runner=7be0a69b0046b66799baee2ddb5e305c90d60ec6
+          writer_paths=6
+          reused_core_blob=4c5581eabb265346865963c74c573ffc057381b8
+          queue_refusals=34/34
+          real_local_receipt=NOT_OBSERVED
+          real_local_evidence_credit=0
+          queue_mutation=NOT_PERFORMED
+          canonical_advancement=NOT_PERFORMED
+          active_execution=NOT_PERFORMED
+          evidence_ceiling=PUBLIC_QUEUE_V4_RECEIPT_REDUCER_SEMANTICS_ONLY
+          EOF
