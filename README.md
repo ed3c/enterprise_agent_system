@@ -4,30 +4,47 @@ Cross-repository management, routing, traceability, and closure control plane fo
 
 ## Current integrated public state
 
-This tree is the public-main integration candidate produced after the EAS-A rebind and P7 queue/runner/reducer rebuild.
+The verified public control-plane stack is **merged into `main`**. This is no longer an integration candidate.
+
+The immutable values below identify the public-stack integration baseline produced by closeout #110. They are intentionally **not** presented as an eternally current branch HEAD: a documentation merge necessarily moves `main`. Read the current repository HEAD/tree from Git at session start; the immutable subject of this document is the Git object that contains this file.
 
 ```text
-EAS-A #68                                  MERGED_TO_MAIN_AT_ADVISORY_CEILING
-public stack integration carrier           ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
-carrier tree                               55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
-carrier parent 1                           main after #68 @ 0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
-carrier parent 2                           H4RR #107 @ 4a44e9cf9ece133e8117ecc100e419f359d8e1a1
-P7 public queue/runner/reducer              COMPLETE_AT_DECLARED_PUBLIC_CEILINGS
-ACTIVE local execution                      NOT_PERFORMED
-real local receipt                          NOT_OBSERVED
-canonical queue advancement                 NOT_PERFORMED
-requirements                                15
-required evidence lanes satisfied            1
-requirement closure credit                   0
-contradictions                               14 preserved
-stronger no-credit lanes                     13
-vertical canary                              PLAN_ONLY / execution_receipt=null
-full architecture                            BLOCKED_FOR_CLOSURE
-profile release                              NOT_ADMITTED
-Human / release / rollback                   NOT_PERFORMED
+public-stack baseline commit                 85ad1210ee27d105773ae20aaaac7a1a17dfe446
+public-stack baseline tree                   96c666c2c1e803573944b923838d72c36d47609a
+current repository HEAD                      READ_FROM_GIT
+current repository tree                      READ_FROM_GIT
+closeout PR                                  #110 MERGED
+closeout verification                       #111 / 32364024569 PASS
+closeout Shadow                              4982176517
+open canonical implementation PRs            0
+open canonical issues                        #1 #5 #6 #7 #14 #15 #16 #17 #18
+EAS-A #68                                    MERGED_TO_MAIN_AT_ADVISORY_CEILING
+public stack integration carrier             ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
+carrier tree                                 55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
+carrier parent 1                             main after #68 @ 0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
+carrier parent 2                             H4RR #107 @ 4a44e9cf9ece133e8117ecc100e419f359d8e1a1
+P7 public queue/runner/reducer                COMPLETE_AT_DECLARED_PUBLIC_CEILINGS
+ACTIVE local execution                       NOT_PERFORMED
+real local receipt                           NOT_OBSERVED
+canonical queue advancement                  NOT_PERFORMED
+requirements                                 15
+required evidence lanes satisfied             1
+requirement closure credit                    0
+contradictions                                14 preserved
+stronger no-credit lanes                      13
+vertical canary                               PLAN_ONLY / execution_receipt=null
+full architecture                             BLOCKED_FOR_CLOSURE
+profile release                               NOT_ADMITTED
+Human / release / rollback                    NOT_PERFORMED
 ```
 
-**Main integration is not operational closure.** The public mechanisms are integration-ready; the source/PDF requirement set is not closed because the stronger local/provider/private/effect/user/Human lanes have not earned their required receipts.
+`open canonical implementation PRs = 0` refers to product/mechanism delivery, not a transient governance-docs or verification-only PR used to refresh this projection.
+
+All bounded public implementation, verification-only, and superseded delivery artifacts have been classified. Current product bytes are integrated; verification-only and historical/superseded PRs are closed-unmerged after their exact evidence was retained. The remaining open issue set is intentionally limited to the two operational programs, six stronger evidence owners, and the Local Handoff executor.
+
+**Main integration is not operational closure.** The public mechanisms are integrated, but the source/PDF requirement set is not closed because the stronger local/provider/private/effect/user/Human lanes have not earned their required receipts.
+
+When issue prose conflicts with current Git truth, use the newest exact-subject receipt. In particular, the current authority issues are `#1`, `#6`, and `#14`; stale bootstrap text or historical issue/PR state must not override the exact subjects below.
 
 ## Exact current public lineage
 
@@ -161,7 +178,7 @@ public reducer             ─X─► real-local evidence credit
 
 ## git-town-stacked-pr-worker — Molecular Stack index
 
-Current implementation stack is intentionally split into product atoms and evidence-only siblings.
+The current implementation stack is split into product atoms and evidence-only siblings. Product bytes below are integrated into public main; the verification siblings remain immutable evidence and are closed-unmerged.
 
 | Molecular atom | Current product PR | Exact role | Verification sibling | Integration disposition |
 |---|---:|---|---:|---|
@@ -179,7 +196,7 @@ Current implementation stack is intentionally split into product atoms and evide
 | H4R | #103 | fail-closed local runner | #105 | `INTEGRATED_THROUGH_PUBLIC_CONVERGENCE` |
 | H4RR | #107 | public receipt semantic reducer | #109 | `PUBLIC_CONVERGENCE_CARRIER` |
 
-Historical/no-current-authority PRs remain searchable rather than rewritten: #27, #40, #44, #50, #55, #57, #59, #67, #71, #77, #79, #92, #95 and their associated historical verifiers. See `docs/traceability/MOLECULAR_STACK_INDEX.md`.
+Historical/no-current-authority PRs remain searchable but closed-unmerged rather than rewritten: #27, #40, #44, #50, #55, #57, #59, #67, #71, #77, #79, #92, #95 and their associated historical verifiers. See `docs/traceability/MOLECULAR_STACK_INDEX.md`.
 
 ## Real-problem closure audit
 
@@ -199,7 +216,7 @@ Human admission                     NOT_PERFORMED
 release/rollback                    NOT_PERFORMED
 ```
 
-Implemented public mechanisms therefore may be merged/closed at their bounded objectives while program issue #6 and Local Handoff #14 remain open for the unresolved real-world denominator.
+Public implementation/deterministic delivery tasks have been integrated and may be closed at their bounded objectives. Operational program `#1`, repository-wide program `#6`, stronger-lane owners `#5/#7/#15/#16/#17/#18`, and Local Handoff `#14` remain open for the unresolved real-world denominator.
 
 ## Local Handoff — current execution queue
 
@@ -213,7 +230,7 @@ blocked successors     9
 Human terminal         1
 main commands          9
 cleanup commands       3
-queue execution       NOT_PERFORMED
+queue execution        NOT_PERFORMED
 ```
 
 Execution authority remains exact H4R #103, not an arbitrary future main HEAD. H4RR #107 may inspect the resulting external receipt but cannot self-grant real-local credit or mutate the queue. See `handoff/README.md` and issue #14.

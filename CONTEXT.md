@@ -4,19 +4,33 @@ This is an Agent convenience projection. Immutable evidence remains the named re
 
 ## Current phase
 
+The closeout commit/tree below is the immutable public-stack integration baseline. The current moving repository HEAD/tree must be read from Git when a session starts; do not infer that a documentation merge leaves the branch SHA unchanged.
+
 ```text
-program issue       #6
-Local Handoff       #14
-phase               PUBLIC_MAIN_INTEGRATION_AND_CLOSURE_REVIEW
-EAS-A main merge    0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
-integration carrier ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
-carrier tree         55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
-P7 public stack      QUEUE_RUNNER_REDUCER_V4_COMPLETE
-ACTIVE local item    LH-P7-01-ROOT-D-V3-LOCAL-READBACK
-ACTIVE execution     NOT_PERFORMED
-real local receipt   NOT_OBSERVED
-next authority       admitted local runtime → H4R #103 → external receipt → H4RR #107
+source program        #1
+repository program    #6
+Local Handoff         #14
+phase                 PUBLIC_MAIN_MERGED__LOCAL_HANDOFF_ACTIVE
+public-stack baseline 85ad1210ee27d105773ae20aaaac7a1a17dfe446
+baseline tree         96c666c2c1e803573944b923838d72c36d47609a
+current repo HEAD     READ_FROM_GIT
+current repo tree     READ_FROM_GIT
+closeout              #110 MERGED / #111 32364024569 PASS / Shadow 4982176517
+open canonical implementation PRs 0
+open canonical issues #1 #5 #6 #7 #14 #15 #16 #17 #18
+EAS-A main merge      0832cd7e7b5a486fd8924ff9b667bcb6205c1a35
+integration carrier   ecdb6bb0bbc6e058882e2eeabc49796cde3bebda
+carrier tree          55a1de45870e19dbc0b29a2b402d7a08dd5a3a1e
+P7 public stack       QUEUE_RUNNER_REDUCER_V4_COMPLETE
+ACTIVE local item     LH-P7-01-ROOT-D-V3-LOCAL-READBACK
+ACTIVE execution      NOT_PERFORMED
+real local receipt    NOT_OBSERVED
+next authority        admitted local runtime → H4R #103 → external receipt → H4RR #107
 ```
+
+`open canonical implementation PRs = 0` excludes transient governance-documentation and verification-only siblings. All bounded public mechanism delivery, verification-only, and historical/superseded metadata has been classified. Do not reopen historical atoms or manufacture replacement mechanism work unless a current open owner issue and exact evidence show a real uncovered mechanism.
+
+The immutable identity of this CONTEXT version is the Git object containing this file. Never attempt to embed the SHA of its own future merge commit as a permanent `current main` literal.
 
 ## Exact current public subjects
 
@@ -74,7 +88,21 @@ Human admission                       NOT_PERFORMED
 release/rollback                      NOT_PERFORMED
 ```
 
-Public implementation completion is therefore compatible with closing bounded implementation/verification issues after their bytes/receipts are integrated, while #6 and #14 remain open.
+Public implementation completion is compatible with closing bounded implementation/verification issues because every remaining stronger requirement has an explicit open owner. It is not compatible with closing #1, #6, or #14.
+
+## Current open owner set
+
+```text
+#1   source-specific operational closure
+#5   A1 durability/context/recovery stronger evidence
+#7   A2 runtime/sandbox/provider/steering stronger evidence
+#15  A3 independent/private semantic/source evidence
+#16  A4 exact external terms/live telemetry/Human legal-security
+#17  A5 external candidate/benchmark/admission
+#18  A6 live ingress/effect/readback/compensation
+#6   repository-wide operational closure
+#14  Local Handoff execution and subsequent epochs
+```
 
 ## Current Local Handoff truth
 
@@ -82,11 +110,14 @@ Public implementation completion is therefore compatible with closing bounded im
 queue_id             LH-EAS-INCEPTION-P7-V4-2026-08-20
 items                11
 ACTIVE                1
+ACTIVE item           LH-P7-01-ROOT-D-V3-LOCAL-READBACK
 blocked successors    9
 Human terminal        1
 main commands         9
 cleanup commands      3
 queue execution       NOT_PERFORMED
+ACTIVE execution      NOT_PERFORMED
+real local receipt    NOT_OBSERVED
 ```
 
 Execution subject remains exact H4R #103. The public H4RR reducer can validate a supplied receipt but always emits `real_local_evidence_credit=0`; external local authority must admit the real execution/readback.
@@ -95,12 +126,12 @@ Execution subject remains exact H4R #103. The public H4RR reducer can validate a
 
 ```text
 queue #27/#50/#59     authority NONE
-Profile-X #40/#77     authority NONE for current convergence
-Profile-D #44         authority NONE
+Profile-X #33/#36/#40/#77/#79  authority NONE for current convergence
+Profile-D #37/#44     authority NONE
 Root-D #57/#92        authority NONE
 runner #55/#67        authority NONE
 reducer #71           authority NONE
-XV/DV #79/#95         historical current credit 0
+verification-only/historical PRs closed-unmerged after receipt retention
 ```
 
-Do not resurrect a historical subject merely because it once had a green Gate.
+Do not resurrect a historical subject merely because it once had a green Gate. Latest exact-subject receipt wins over stale planning prose.
