@@ -128,7 +128,9 @@ jobs:
           for token in required:
               assert token in joined, token
 
-          assert 'integration candidate' not in readme.lower()
+          stale_positive = 'This tree is the public-main integration candidate produced after the EAS-A rebind and P7 queue/runner/reducer rebuild.'
+          assert stale_positive not in readme
+          assert 'no longer an integration candidate' in readme.lower()
           assert 'directory' in readme.lower()
           assert 'state machine' in readme.lower()
           assert 'data flow' in readme.lower()
