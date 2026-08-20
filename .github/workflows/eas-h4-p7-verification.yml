@@ -117,19 +117,21 @@ jobs:
           python3 -m json.tool handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json >/dev/null
           python3 - <<'PY'
           from pathlib import Path
-          paths = [
+          product_paths = [
               Path("handoff/README.md"),
               Path("handoff/local-handoff-queue.json"),
               Path("handoff/local-handoff-receipt.schema.json"),
-              Path("tests/verify_handoff.py"),
+              Path("handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json"),
           ]
-          text = "\n".join(p.read_text(encoding="utf-8") for p in paths)
+          text = "\n".join(p.read_text(encoding="utf-8") for p in product_paths)
           forbidden = ["/Users/", "/home/", "/mnt/data/", "BEGIN PRIVATE KEY", "Authorization: Bearer "]
-          assert not [x for x in forbidden if x in text], "NON_PORTABLE_OR_PRIVATE_SURFACE"
+          assert not [x for x in forbidden if x in text], "NON_PORTABLE_OR_PRIVATE_PRODUCT_SURFACE"
           assert "queue_execution\": \"NOT_PERFORMED\"" in text
           assert "ADVISORY_ONLY" in text
           assert "PLAN_ONLY" in text
-          print("PASS portable/private surface and no execution promotion")
+          verifier = Path("tests/verify_handoff.py").read_text(encoding="utf-8")
+          assert "PRIVATE_PATH" in verifier and "/mnt/data/" in verifier and "/home/" in verifier
+          print("PASS portable product surface; verifier retains private-path negative controls")
           PY
 
       - name: Check patch hygiene
