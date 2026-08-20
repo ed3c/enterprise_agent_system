@@ -1,0 +1,52 @@
+{
+  "schema_version": "enterprise-agent-system/inception-profile-convergence-receipts/v4",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "state": "P5_PROFILE_CONVERGENCE_CANDIDATE",
+  "multi_parent_input": {
+    "commit": "3a20e442afc6c0fc6999c3e0faec997524d1559c",
+    "tree": "4f9c5605c00841321108587434df38d0857ebe75",
+    "parents": [
+      {"atom": "EAS-X", "repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "b295eabec7b4c9d4e1f65f7fb0238034f454ae7f", "tree": "25bd4c7e934690b3ac15692ba04af4418a46b1f2", "verification_run": 32296886625, "shadow_review": 4976304922, "verdict": "ADMIT_FOR_PROFILE_X_REBIND_AFTER_EAS_A"},
+      {"atom": "INCEPTION-E", "repository": "ed3c/enterprise_agent_system", "pull_request": 32, "commit": "9f25b94ca891faf0d926b0fc22b67be88925aa81", "tree": "1452d1b9931c70ef70ed3b7dec78cedc51d6db35", "shadow_review": 4973593318, "verdict": "ADMIT_FOR_PROFILE_CONVERGENCE"}
+    ]
+  },
+  "eas_a_projection": {
+    "repository": "ed3c/enterprise_agent_system", "pull_request": 68,
+    "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+    "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891",
+    "verification_run": 32295871632, "shadow_review": 4976213414,
+    "authority": "ADVISORY_ONLY", "relationship": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
+    "evidence_ceiling": "ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY",
+    "google_connectivity": "NOT_PERFORMED", "google_write": "NOT_PERFORMED",
+    "source_correctness": "NOT_PROVEN"
+  },
+  "owners": [
+    {"atom": "A1", "repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d", "hosted_runs": [32259216877]},
+    {"atom": "A2R", "repository": "ed3c/runtime-env", "commit": "2ff4efe7bee3d12fb3063fed93631f8d323cd64a", "tree": "273c6873e7075d90a7f11275c5d39e746dd075dc", "hosted_runs": [32249588945,32249588946]},
+    {"atom": "A2", "repository": "ed3c/agent-shield-monorepo", "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2", "tree": "51adf9791485d597849c026a3828ded0088b3805", "hosted_runs": [32262032532,32262032583,32262032553]},
+    {"atom": "A3", "repository": "ed3c/truth-verify-loop", "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980", "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547", "hosted_runs": [32260293092,32260291970]},
+    {"atom": "A4", "repository": "ed3c/enterprise_agent_system", "commit": "bf976c7c33e315d1743733a79c15521e645ff6dc", "tree": "c09bef2457ad507433f253c8a5fd211147fae247", "hosted_runs": [32261864341]},
+    {"atom": "A5", "repository": "ed3c/bettor-arena", "commit": "81f02f4148273ffe5f5571c8605e1ee0afc59866", "tree": "f9612314e47ced69796db00703dd5d34ab592e36", "hosted_runs": [32260835956]},
+    {"atom": "A6", "repository": "ed3c/bettor-arena", "commit": "c2613432736c65756ed13d871feb2df486c69118", "tree": "53680d47048f88b9402c6320355121b7ec2f7244", "hosted_runs": [32262080676]}
+  ],
+  "local_handoff": {"pull_request": 59, "commit": "a6dbbc52fba70c9732a1bf664f52a072cd83d608", "tree": "7b54d0c56d088bf7edcf7b4c8984366a89ee9e36", "state": "STALE_PENDING_EAS_A_REBIND", "queue_execution": "NOT_PERFORMED", "authority": "NONE"},
+  "source": {"id": "SRC-PDF-INCEPTION-001", "digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da", "class": "SOURCE_PROPOSAL", "requirements": 15, "contradictions": 14},
+  "vertical_canary": {"path": "profiles/agent-thinking-inception/plans/vertical-canary.json", "digest": "sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2", "state": "PLAN_ONLY", "execution_receipt": null},
+  "closure": {"path": "profiles/agent-thinking-inception/plans/closure-record.json", "highest_state": "DETERMINISTIC_EVIDENCE_VERIFIED", "full_architecture": "BLOCKED_FOR_CLOSURE", "closure_credit": 0},
+  "residue": {
+    "superseded_branches": [
+      {"branch": "agent/inception-x-profile-convergence", "relationship": "DIVERGED_FROM_CURRENT_MULTI_PARENT_BASE", "authority": "NONE"},
+      {"branch": "agent/inception-x-profile-convergence-v2", "pull_request": 36, "relationship": "SUPERSEDED_BY_EAS_X_PARENT_REBIND", "authority": "NONE"},
+      {"branch": "agent/inception-x-profile-convergence-v3", "pull_request": 40, "relationship": "STALE_PENDING_EAS_A_REBIND", "authority": "NONE"}
+    ],
+    "rejected_base_attempts": [{"commit": "7d8b4ab76647e9817df74148107de27e65b2fd88", "reason": "PROFILE_SUBTREE_INCOMPLETE", "authority": "NONE"}]
+  },
+  "downstream_freshness": [
+    {"atom":"INCEPTION-D","pull_request":44,"commit":"a7a034ef1db778fcee586fff8d8ff7848bc9a1ab","state":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"ROOT-D","pull_request":57,"commit":"68828ec8de5f3ad5aa133a5c772eefb80c775568","state":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"P7","pull_request":59,"commit":"a6dbbc52fba70c9732a1bf664f52a072cd83d608","state":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"EAS-H3R","pull_request":67,"commit":"f81c2ecabaaac44ff82832a482524124baec106a","state":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"EAS-H3RR","pull_request":71,"commit":"82366dabf871f466c0c1353ef49198f82de90c16","state":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"}
+  ],
+  "next_authorities": {"profile_documentation":"https://github.com/ed3c/enterprise_agent_system/issues/23","root_documentation":"https://github.com/ed3c/enterprise_agent_system/issues/13","local_handoff":"https://github.com/ed3c/enterprise_agent_system/issues/14"}
+}
