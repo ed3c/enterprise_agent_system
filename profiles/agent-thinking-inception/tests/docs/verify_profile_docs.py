@@ -234,7 +234,15 @@ def selftest() -> None:
         ("p7 current", lambda b: next(x for x in b["state"]["entries"] if x["phase"] == "P7").__setitem__("evidence_ceiling", "CURRENT"), "STATE_P7_CURRENT"),
         ("p6 authority widening", lambda b: next(x for x in b["state"]["entries"] if x["phase"] == "P6").__setitem__("evidence_ceiling", "RUNTIME_PASS"), "STATE_P6_CEILING"),
         ("flow projection promotion", lambda b: b["flow"]["closure_projection"].__setitem__("requirements_closure_credit", 15), "FLOW_CLOSURE_PROJECTION"),
-        ("docs stale parent", lambda b: b.__setitem__("doc", b["doc"].replace(PX["commit"], "0" * 40)), f"DOC_TOKEN:{PX['commit']}"),
+        (
+            "docs stale parent",
+            lambda b: (
+                b.__setitem__("doc", b["doc"].replace(PX["commit"], "0" * 40)),
+                b.__setitem__("prompts", b["prompts"].replace(PX["commit"], "0" * 40)),
+                b.__setitem__("p6_prompt", b["p6_prompt"].replace(PX["commit"], "0" * 40)),
+            ),
+            f"DOC_TOKEN:{PX['commit']}",
+        ),
         ("docs canary promotion", lambda b: b.__setitem__("doc", b["doc"].replace("vertical canary                  PLAN_ONLY", "vertical canary                  EXECUTED")), "DOC_TOKEN:PLAN_ONLY"),
         ("prompt loses fresh session", lambda b: b.__setitem__("p6_prompt", b["p6_prompt"].replace("Prior chat memory is not an execution\ninput.", "")), "PROMPT_FRESH_SESSION"),
         ("prompt google authority", lambda b: b.__setitem__("prompts", b["prompts"].replace("ADVISORY_ONLY", "CANONICAL")), "DOC_TOKEN:ADVISORY_ONLY"),
