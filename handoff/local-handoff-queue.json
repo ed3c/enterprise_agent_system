@@ -227,7 +227,7 @@
       "item_id": "LH-P7-09-VERTICAL-CANARY",
       "state": "BLOCKED_BY_PREDECESSOR",
       "blocked_by": ["LH-P7-08-A6-PROVIDER-EFFECT"],
-      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/22",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14",
       "objective": "Execute the content-addressed vertical canary only after all predecessor lanes have admitted receipts.",
       "required_evidence_lane": "MULTI_LANE_VERTICAL",
       "resolver": {"requires": ["all predecessor exact receipts", "clean residue", "same canary digest"], "human_if": ["authority widening beyond contract"]},
