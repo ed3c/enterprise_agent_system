@@ -1,0 +1,179 @@
+{
+  "schema_version": "enterprise-agent-system/inception-profile-closure/v4",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "state": "PROFILE_CLOSURE_CANDIDATE_BLOCKED_STRONGER_LANES",
+  "source_subject": {"id": "SRC-PDF-INCEPTION-001", "digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da", "class": "SOURCE_PROPOSAL"},
+  "multi_parent_input": {
+    "commit": "6081eb6ecea028391989042f069f7128cafaa42d",
+    "tree": "4f9c5605c00841321108587434df38d0857ebe75",
+    "parents": [
+      {"repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "b295eabec7b4c9d4e1f65f7fb0238034f454ae7f", "tree": "25bd4c7e934690b3ac15692ba04af4418a46b1f2", "verification_run": 32296886625, "shadow_review": 4976304922, "verdict": "ADMIT_FOR_PROFILE_X_REBIND_AFTER_EAS_A"},
+      {"repository": "ed3c/enterprise_agent_system", "pull_request": 32, "commit": "9f25b94ca891faf0d926b0fc22b67be88925aa81", "tree": "1452d1b9931c70ef70ed3b7dec78cedc51d6db35", "shadow_review": 4973593318, "verdict": "ADMIT_FOR_PROFILE_CONVERGENCE"}
+    ]
+  },
+  "process_dependencies": {
+    "EAS-A": {"repository": "ed3c/enterprise_agent_system", "pull_request": 68, "commit": "250717db1cad584d50890c0d851153fa2cd755e8", "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891", "verification_run": 32295871632, "shadow_review": 4976213414, "authority": "ADVISORY_ONLY", "evidence_ceiling": "ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY", "git_relation": "PROCESS_DEPENDENCY_NOT_GIT_PARENT"}
+  },
+  "requirements": [
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-STATE-001", "owner_atom": "A1", "canonical_owner_repository": "ed3c/bettor-arena", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/5",
+      "owner_subject": {"repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"},
+      "evidence_subject": {"repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"},
+      "required_evidence_lane": "LIVE_PHYSICAL", "observed_evidence_lane": "TARGETED_PUBLIC_CRASH_CANARY", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Physical and multi-host durability remain unexercised."], "next_transition": "RUN_PUBLIC_CONTEXT_RECONSTRUCTION_FIXTURE"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-DAG-001", "owner_atom": "K", "canonical_owner_repository": "ed3c/enterprise_agent_system", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/4",
+      "owner_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e", "tree": "c3851a6953d456d0342a9776eed28561c1af0ca1"},
+      "evidence_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "6e0a916fd06dd8635d77c9a8c4d1b475185ea13e", "tree": "c3851a6953d456d0342a9776eed28561c1af0ca1"},
+      "required_evidence_lane": "CLOUD_DETERMINISTIC", "observed_evidence_lane": "PROFILE_DAG_DETERMINISTIC", "required_lane_satisfied": true, "closure_credit": 0,
+      "blockers": ["The integrated vertical canary remains PLAN_ONLY."], "next_transition": "PROFILE_X_RECONCILE_CURRENT_RECEIPTS"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-CONTEXT-001", "owner_atom": "A2R", "canonical_owner_repository": "ed3c/runtime-env", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/7",
+      "owner_subject": {"repository": "ed3c/runtime-env", "commit": "2ff4efe7bee3d12fb3063fed93631f8d323cd64a", "tree": "273c6873e7075d90a7f11275c5d39e746dd075dc"},
+      "evidence_subject": {"repository": "ed3c/runtime-env", "commit": "2ff4efe7bee3d12fb3063fed93631f8d323cd64a", "tree": "273c6873e7075d90a7f11275c5d39e746dd075dc"},
+      "required_evidence_lane": "LOCAL_DETERMINISTIC", "observed_evidence_lane": "RUNTIME_CONTRACT_GITHUB_DETERMINISTIC", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Provider tokenizer and context-limit observation are absent."], "next_transition": "ADD_FIXED_RUNTIME_FIXTURE_AND_PROVIDER_TOKENIZER_READBACK"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-CONTEXT-002", "owner_atom": "A1", "canonical_owner_repository": "ed3c/bettor-arena", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/5",
+      "owner_subject": {"repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"},
+      "evidence_subject": {"repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"},
+      "required_evidence_lane": "LOCAL_DETERMINISTIC", "observed_evidence_lane": "SAFE_TOOL_TRANSACTION_PUBLIC_DETERMINISTIC", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["No local/provider message-format canary has run."], "next_transition": "RUN_CONTEXT_RECONSTRUCTION_AND_MESSAGE_FORMAT_CANARY"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-CONTEXT-003", "owner_atom": "A1", "canonical_owner_repository": "ed3c/bettor-arena", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/5",
+      "owner_subject": {"repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"},
+      "evidence_subject": {"repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"},
+      "required_evidence_lane": "LIVE_PHYSICAL", "observed_evidence_lane": "TARGETED_PUBLIC_CRASH_CANARY", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Production storage, encryption and physical recovery remain unexercised."], "next_transition": "RUN_PHYSICAL_RECOVERY_HANDOFF"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-STEERING-001", "owner_atom": "A2", "canonical_owner_repository": "ed3c/agent-shield-monorepo", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/7",
+      "owner_subject": {"repository": "ed3c/agent-shield-monorepo", "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2", "tree": "51adf9791485d597849c026a3828ded0088b3805"},
+      "evidence_subject": {"repository": "ed3c/agent-shield-monorepo", "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2", "tree": "51adf9791485d597849c026a3828ded0088b3805"},
+      "required_evidence_lane": "LIVE_PROVIDER", "observed_evidence_lane": "TARGETED_PUBLIC_LOCAL_PROCESS_CANARY", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Provider capability observation and enrollment remain unexercised."], "next_transition": "RUN_PROVIDER_CAPABILITY_CANARY"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-SANDBOX-001", "owner_atom": "A2", "canonical_owner_repository": "ed3c/agent-shield-monorepo", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/7",
+      "owner_subject": {"repository": "ed3c/agent-shield-monorepo", "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2", "tree": "51adf9791485d597849c026a3828ded0088b3805"},
+      "evidence_subject": {"repository": "ed3c/agent-shield-monorepo", "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2", "tree": "51adf9791485d597849c026a3828ded0088b3805"},
+      "required_evidence_lane": "LIVE_PHYSICAL", "observed_evidence_lane": "TARGETED_PUBLIC_LOCAL_PROCESS_CANARY", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Network/gVisor and physical isolation remain unexercised."], "next_transition": "RUN_NETWORK_AND_HARDENED_ISOLATION_CANARY"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-EVIDENCE-001", "owner_atom": "A3", "canonical_owner_repository": "ed3c/truth-verify-loop", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/15",
+      "owner_subject": {"repository": "ed3c/truth-verify-loop", "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980", "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547"},
+      "evidence_subject": {"repository": "ed3c/truth-verify-loop", "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980", "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547"},
+      "required_evidence_lane": "CLOUD_AND_LOCAL_DETERMINISTIC", "observed_evidence_lane": "PUBLIC_GIT_OBJECT_PLUS_REPOSITORY_VERIFY", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Private-source and local or unsupported-language coverage remain separate."], "next_transition": "RUN_LOCAL_AND_PRIVATE_SOURCE_EVIDENCE_LANES"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-EVIDENCE-002", "owner_atom": "A3", "canonical_owner_repository": "ed3c/truth-verify-loop", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/15",
+      "owner_subject": {"repository": "ed3c/truth-verify-loop", "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980", "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547"},
+      "evidence_subject": {"repository": "ed3c/truth-verify-loop", "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980", "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547"},
+      "required_evidence_lane": "INDEPENDENT_VERIFICATION", "observed_evidence_lane": "DUAL_METHOD_DETERMINISTIC_FIXTURE", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["External independent semantic review remains unexercised."], "next_transition": "RUN_EXTERNAL_INDEPENDENT_SEMANTIC_REVIEW"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-COMPLIANCE-001", "owner_atom": "A4", "canonical_owner_repository": "ed3c/enterprise_agent_system", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/16",
+      "owner_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "bf976c7c33e315d1743733a79c15521e645ff6dc", "tree": "c09bef2457ad507433f253c8a5fd211147fae247"},
+      "evidence_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "bf976c7c33e315d1743733a79c15521e645ff6dc", "tree": "c09bef2457ad507433f253c8a5fd211147fae247"},
+      "required_evidence_lane": "HUMAN_LEGAL_SECURITY", "observed_evidence_lane": "FOUR_TIER_POLICY_PLUS_SYNTHETIC_LEAK_CANARY", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Exact external Model/Data/Trace terms and Human disposition remain unbound."], "next_transition": "BIND_EXACT_TERMS_AND_REQUEST_HUMAN_REVIEW"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-TELEMETRY-001", "owner_atom": "A2", "canonical_owner_repository": "ed3c/agent-shield-monorepo", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/16",
+      "owner_subject": {"repository": "ed3c/agent-shield-monorepo", "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2", "tree": "51adf9791485d597849c026a3828ded0088b3805"},
+      "evidence_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "bf976c7c33e315d1743733a79c15521e645ff6dc", "tree": "c09bef2457ad507433f253c8a5fd211147fae247"},
+      "required_evidence_lane": "LIVE_PHYSICAL", "observed_evidence_lane": "SYNTHETIC_SANITIZE_BEFORE_EXPORT_CANARY", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Live exporter/storage/delete and negative egress remain unexercised."], "next_transition": "RUN_SCOPED_LIVE_TELEMETRY_CANARY"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-CONVERGE-001", "owner_atom": "A5", "canonical_owner_repository": "ed3c/bettor-arena", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/17",
+      "owner_subject": {"repository": "ed3c/bettor-arena", "commit": "81f02f4148273ffe5f5571c8605e1ee0afc59866", "tree": "f9612314e47ced69796db00703dd5d34ab592e36"},
+      "evidence_subject": {"repository": "ed3c/bettor-arena", "commit": "81f02f4148273ffe5f5571c8605e1ee0afc59866", "tree": "f9612314e47ced69796db00703dd5d34ab592e36"},
+      "required_evidence_lane": "HUMAN_ADMIT", "observed_evidence_lane": "MATCHED_PUBLIC_FIXTURE_BENCHMARK", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["External candidate terms/benchmark and Human Admit remain absent."], "next_transition": "BIND_EXTERNAL_PUBLIC_CANDIDATE_AND_HUMAN_ADMIT"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-INGRESS-001", "owner_atom": "A6", "canonical_owner_repository": "ed3c/bettor-arena", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/18",
+      "owner_subject": {"repository": "ed3c/bettor-arena", "commit": "c2613432736c65756ed13d871feb2df486c69118", "tree": "53680d47048f88b9402c6320355121b7ec2f7244"},
+      "evidence_subject": {"repository": "ed3c/bettor-arena", "commit": "c2613432736c65756ed13d871feb2df486c69118", "tree": "53680d47048f88b9402c6320355121b7ec2f7244"},
+      "required_evidence_lane": "LIVE_PHYSICAL", "observed_evidence_lane": "PUBLIC_RESTART_RECONCILIATION", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Provider-specific auth and production durable ingress remain unexercised."], "next_transition": "RUN_PROVIDER_INGRESS_CANARY"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-INGRESS-002", "owner_atom": "A6", "canonical_owner_repository": "ed3c/bettor-arena", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/18",
+      "owner_subject": {"repository": "ed3c/bettor-arena", "commit": "c2613432736c65756ed13d871feb2df486c69118", "tree": "53680d47048f88b9402c6320355121b7ec2f7244"},
+      "evidence_subject": {"repository": "ed3c/bettor-arena", "commit": "c2613432736c65756ed13d871feb2df486c69118", "tree": "53680d47048f88b9402c6320355121b7ec2f7244"},
+      "required_evidence_lane": "LIVE_EXTERNAL_EFFECT", "observed_evidence_lane": "PUBLIC_UNKNOWN_EFFECT_RECONCILIATION", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Real external effect/readback and compensation remain unperformed."], "next_transition": "RUN_REVERSIBLE_COMPENSATION_THEN_PROVIDER_EFFECT_CANARY"
+    },
+    {
+      "requirement_id": "REQ-PDF-INCEPTION-HITL-001", "owner_atom": "H", "canonical_owner_repository": "ed3c/enterprise_agent_system", "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14",
+      "owner_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "9223107163b27984ed490246b4c0899caeb1bdae", "tree": "d462e2a1a69d225bf8161ce01918e5e8bb8d102f"},
+      "evidence_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "9223107163b27984ed490246b4c0899caeb1bdae", "tree": "d462e2a1a69d225bf8161ce01918e5e8bb8d102f"},
+      "required_evidence_lane": "HUMAN_ADMIT", "observed_evidence_lane": "HISTORICAL_DETERMINISTIC_LOCAL_HANDOFF_CONTRACT", "required_lane_satisfied": false, "closure_credit": 0,
+      "blockers": ["Current Local Handoff execution authority is suspended until Profile-X/Profile-D/Root-D/P7 rebind completes; Human admission remains unperformed."], "next_transition": "RECOMPILE_LOCAL_HANDOFF_AFTER_P6_REBIND"
+    }
+  ],
+  "contradictions": [
+    {"id": "UNK-INCEPTION-001", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A1/A2R", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-002", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A2R", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-003", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A1", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-004", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A1", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-005", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A2", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-006", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A3", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-007", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A4", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-008", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A5", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-009", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A4", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-010", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A6", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-011", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A6", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-012", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A3", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-013", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "A2", "remaining_blocker": "Public control exists, but stronger required lanes remain open."},
+    {"id": "UNK-INCEPTION-014", "state": "PRESERVED_WITH_PARTIAL_CONTROL", "control_atom": "E/H/A6", "remaining_blocker": "Public control exists, but stronger required lanes remain open."}
+  ],
+  "stronger_lanes": [
+    {"lane": "PHYSICAL_POWER_LOSS_MULTI_HOST", "state": "NOT_EXERCISED"},
+    {"lane": "NETWORK_GVISOR_ISOLATION", "state": "NOT_EXERCISED"},
+    {"lane": "PROVIDER_CAPABILITY_ENROLLMENT", "state": "NOT_EXERCISED"},
+    {"lane": "EXTERNAL_INDEPENDENT_SEMANTIC", "state": "NOT_EXERCISED"},
+    {"lane": "PRIVATE_EVIDENCE", "state": "NOT_EXERCISED"},
+    {"lane": "EXACT_EXTERNAL_MODEL_DATA_TRACE_TERMS", "state": "UNBOUND"},
+    {"lane": "LIVE_TELEMETRY_EXPORT_STORE_DELETE", "state": "NOT_EXERCISED"},
+    {"lane": "EXTERNAL_CANDIDATE_BENCHMARK", "state": "NOT_EXERCISED"},
+    {"lane": "REAL_EXTERNAL_EFFECT_REMOTE_READBACK", "state": "NOT_PERFORMED"},
+    {"lane": "COMPENSATION", "state": "NOT_EXERCISED"},
+    {"lane": "BUSINESS_USER_OUTCOME", "state": "NOT_VERIFIED"},
+    {"lane": "HUMAN_LEGAL_SECURITY_ADMISSION", "state": "HUMAN_ADMIT_REQUIRED"},
+    {"lane": "MERGE_RELEASE_ROLLBACK", "state": "NOT_PERFORMED"}
+  ],
+  "selected_vertical_canary": {"path": "profiles/agent-thinking-inception/plans/vertical-canary.json", "contract_digest": "sha256:fceeab78aaa6c36b5d4e340ea64a28874d584a492dabdeb2495307b42c942822", "state": "PLAN_ONLY", "execution_receipt": null},
+  "closure_summary": {
+    "requirements_total": 15,
+    "requirements_required_lane_satisfied": 1,
+    "requirements_closure_credit": 0,
+    "contradictions_total": 14,
+    "contradictions_preserved": 14,
+    "profile_shadow": "ADMIT_FOR_PROFILE_CONVERGENCE",
+    "generic_x": "ADMIT_FOR_PROFILE_X_REBIND_AFTER_EAS_A",
+    "eas_a": "ADVISORY_ONLY",
+    "vertical_canary": "PLAN_ONLY",
+    "highest_state": "DETERMINISTIC_EVIDENCE_VERIFIED",
+    "full_architecture": "BLOCKED_FOR_CLOSURE",
+    "profile_release_state": "NOT_ADMITTED",
+    "local_handoff": "EXECUTION_AUTHORITY_SUSPENDED_PENDING_REBIND"
+  },
+  "claims_not_proven": [
+    "EAS-A advisory projection semantics do not prove Google connectivity, write, source correctness, runtime or user outcomes.",
+    "Physical and multi-host durability are not verified.",
+    "Provider capability, network/gVisor isolation and private evidence are not verified.",
+    "External effects, business/user outcome and compensation are not verified.",
+    "Human legal/security admission, merge, release and rollback are not performed."
+  ],
+  "next_transition": "PROFILE_D_REBIND_REQUIRED"
+}
