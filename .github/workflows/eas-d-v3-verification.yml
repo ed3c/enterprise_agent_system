@@ -1,0 +1,304 @@
+name: EAS-D v3 exact Profile-D-v5 rebind verification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/eas-d-v3-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-root-d-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable Root-D v3 target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ba1f1de8665d8a8401e38e1e9b1e38e518e597e1
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/eas-d-v3-exact-ba1f1de8
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind exact target ancestry and 18-path Root-D lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="ba1f1de8665d8a8401e38e1e9b1e38e518e597e1"
+          tree="658a7ab416c7921b6c9c7cb039eb1a3287647b4e"
+          parent="f04f9fc78270c8f97ce978e2ccc161ab4d724ca4"
+          parent_tree="9740f25f9b1fa8f6533c49642381955b953dd12a"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          test "$(git rev-parse "$parent^{tree}")" = "$parent_tree"
+          test "$(git rev-parse HEAD^)" = "$parent"
+          test "$(git rev-list --count "$parent"..HEAD)" = "1"
+          python3 - <<'PY'
+          import subprocess
+          parent = "f04f9fc78270c8f97ce978e2ccc161ab4d724ca4"
+          expected = {
+              "README.md", "AGENTS.md", "ARCHITECTURE.md", "CONTEXT.md",
+              "docs/INDEX.md",
+              "docs/architecture/DATA_FLOW.md",
+              "docs/architecture/STATE_MACHINES.md",
+              "docs/prompts/P0-source-authority-auditor.system.md",
+              "docs/prompts/P1-contract-lock-worker.system.md",
+              "docs/prompts/P2-tech-lead-controller.system.md",
+              "docs/prompts/P3-owner-wave-worker.system.md",
+              "docs/prompts/P4-shadow-architect.system.md",
+              "docs/prompts/P5-convergence-owner.system.md",
+              "docs/prompts/P6-docs-stack-convergence.system.md",
+              "docs/prompts/P7-local-handoff-compiler.system.md",
+              "docs/traceability/MOLECULAR_STACK_INDEX.md",
+              "handoff/README.md",
+              "prompts/README.md",
+          }
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
+          ).splitlines())
+          assert changed == expected, f"ROOT_D_V3_PATH_LEASE:{sorted(changed ^ expected)}"
+          print(f"PASS exact target direct child and root writer lease files={len(changed)}")
+          PY
+
+      - name: Replay inherited Profile-X and Profile-D controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py --selftest
+
+      - name: Verify root projections and 16 fail-closed mutations
+        run: |
+          python3 - <<'PY'
+          from copy import deepcopy
+          from pathlib import Path
+
+          paths = {
+              "readme": Path("README.md"),
+              "agents": Path("AGENTS.md"),
+              "arch": Path("ARCHITECTURE.md"),
+              "context": Path("CONTEXT.md"),
+              "index": Path("docs/INDEX.md"),
+              "flow": Path("docs/architecture/DATA_FLOW.md"),
+              "states": Path("docs/architecture/STATE_MACHINES.md"),
+              "stack": Path("docs/traceability/MOLECULAR_STACK_INDEX.md"),
+              "handoff": Path("handoff/README.md"),
+              "catalog": Path("prompts/README.md"),
+          }
+          prompt_paths = [
+              Path(f"docs/prompts/P{i}-{name}.system.md")
+              for i, name in [
+                  (0,"source-authority-auditor"),(1,"contract-lock-worker"),
+                  (2,"tech-lead-controller"),(3,"owner-wave-worker"),
+                  (4,"shadow-architect"),(5,"convergence-owner"),
+                  (6,"docs-stack-convergence"),(7,"local-handoff-compiler"),
+              ]
+          ]
+          base = {key: path.read_text(encoding="utf-8") for key, path in paths.items()}
+          for i, path in enumerate(prompt_paths):
+              base[f"p{i}"] = path.read_text(encoding="utf-8")
+
+          profile_d = "f04f9fc78270c8f97ce978e2ccc161ab4d724ca4"
+          profile_tree = "9740f25f9b1fa8f6533c49642381955b953dd12a"
+          profile_x = "df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0"
+          eas_a = "250717db1cad584d50890c0d851153fa2cd755e8"
+          red_runs = ("32325143724", "32325653265", "32325967828")
+
+          def need(text, token, reason):
+              if token not in text:
+                  raise AssertionError(reason)
+
+          def validate(b):
+              r = b["readme"]
+              need(r, profile_d, "ROOT_PROFILE_D_COMMIT")
+              need(r, profile_tree, "ROOT_PROFILE_D_TREE")
+              need(r, profile_x, "ROOT_PROFILE_X_COMMIT")
+              need(r, eas_a, "ROOT_EAS_A_COMMIT")
+              need(r, "32326260896 PASS", "ROOT_PROFILE_D_VERIFY")
+              need(r, "4978669357", "ROOT_PROFILE_D_SHADOW")
+              need(r, "EAS-A                                   ADVISORY_ONLY", "ROOT_EAS_A_AUTHORITY")
+              need(r, "PROCESS_DEPENDENCY_NOT_GIT_PARENT", "ROOT_EAS_A_RELATION")
+              need(r, "requirements                            15", "ROOT_REQUIREMENTS")
+              need(r, "contradictions                          14", "ROOT_CONTRADICTIONS")
+              need(r, "stronger no-credit lanes                13", "ROOT_STRONGER")
+              need(r, "required lanes satisfied                 1", "ROOT_REQUIRED_LANES")
+              need(r, "requirement closure credit               0", "ROOT_CLOSURE_CREDIT")
+              need(r, "vertical canary                         PLAN_ONLY / execution_receipt=null", "ROOT_CANARY")
+              need(r, "P7 local execution                      NOT_PERFORMED", "ROOT_P7")
+              need(r, "FINAL_EXTERNAL_RECEIPT_REQUIRED", "ROOT_SELF_REFERENCE_LAW")
+              for token in red_runs:
+                  need(r, token, f"ROOT_FAULT_HISTORY:{token}")
+              for token in ("#40", "#44", "#57", "#59", "#67", "#71", "#77", "#79"):
+                  need(r, token, f"ROOT_HISTORY:{token}")
+              need(b["agents"], profile_d, "AGENTS_PROFILE_D")
+              need(b["agents"], "P7 execution              NOT_PERFORMED", "AGENTS_P7")
+              need(b["arch"], profile_d, "ARCH_PROFILE_D")
+              need(b["arch"], "EAS-A #68", "ARCH_EAS_A")
+              need(b["context"], profile_d, "CONTEXT_PROFILE_D")
+              need(b["context"], "P7 execution                    NOT_PERFORMED", "CONTEXT_P7")
+              need(b["flow"], "Profile-D #84", "FLOW_PROFILE_D")
+              need(b["flow"], "P7_execution                        NOT_PERFORMED", "FLOW_P7")
+              need(b["states"], "P6 ROOT_DOCS_CANDIDATE", "STATE_ROOT_CANDIDATE")
+              need(b["states"], "P7 execution                    NOT_PERFORMED", "STATE_P7")
+              need(b["stack"], profile_d, "STACK_PROFILE_D")
+              need(b["stack"], "Root-D #57", "STACK_STALE_ROOT_D")
+              need(b["handoff"], "queue #59    authority NONE", "HANDOFF_OLD_QUEUE")
+              need(b["handoff"], "P7 local execution             NOT_PERFORMED", "HANDOFF_P7")
+              need(b["catalog"], profile_d, "CATALOG_PROFILE_D")
+              for i in range(8):
+                  text = b[f"p{i}"].lower()
+                  need(text, "prior chat memory is not an execution input", f"PROMPT_FRESH_SESSION:{i}")
+              need(b["p6"], profile_d, "P6_PROFILE_D")
+              need(b["p7"], "Historical queue/runner/reducer subjects #59/#67/#71 have `authority NONE`", "P7_STALE_REFUSAL")
+
+          validate(base)
+
+          mutations = []
+          def replace_all(token, repl):
+              def apply(b):
+                  for key in list(b):
+                      b[key] = b[key].replace(token, repl)
+              return apply
+          mutations.extend([
+              ("profile-d-commit", replace_all(profile_d, "0"*40)),
+              ("profile-d-tree", replace_all(profile_tree, "0"*40)),
+              ("profile-x-commit", replace_all(profile_x, "0"*40)),
+              ("eas-a-commit", replace_all(eas_a, "0"*40)),
+              ("profile-d-verify", replace_all("32326260896 PASS", "1 FAIL")),
+              ("profile-d-shadow", replace_all("4978669357", "1")),
+              ("eas-a-authority", replace_all("ADVISORY_ONLY", "CANONICAL")),
+              ("eas-a-parent", replace_all("PROCESS_DEPENDENCY_NOT_GIT_PARENT", "GIT_PARENT")),
+              ("requirements", replace_all("requirements                            15", "requirements                            14")),
+              ("contradictions", replace_all("contradictions                          14", "contradictions                          13")),
+              ("stronger", replace_all("stronger no-credit lanes                13", "stronger no-credit lanes                12")),
+              ("closure-credit", replace_all("requirement closure credit               0", "requirement closure credit               1")),
+              ("canary", replace_all("PLAN_ONLY", "EXECUTED")),
+              ("p7", replace_all("NOT_PERFORMED", "PASS")),
+              ("fault-history", replace_all(red_runs[0], "")),
+              ("self-reference-law", replace_all("FINAL_EXTERNAL_RECEIPT_REQUIRED", "FINAL_PASS")),
+          ])
+          for label, mutate in mutations:
+              b = deepcopy(base)
+              mutate(b)
+              try:
+                  validate(b)
+              except AssertionError:
+                  continue
+              raise AssertionError(f"ROOT_MUTATION_ACCEPTED:{label}")
+          print(f"PASS root projection positive + mutations {len(mutations)}/{len(mutations)} prompts=8")
+          PY
+
+      - name: Verify exact machine ceiling and current P7 suspension
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("profiles/agent-thinking-inception")
+          closure = json.loads((root / "plans/closure-record.json").read_text())
+          canary = json.loads((root / "plans/vertical-canary.json").read_text())
+          state = json.loads((root / "plans/directory-state-machine-index.json").read_text())
+          summary = closure["closure_summary"]
+          assert summary["requirements_total"] == 15
+          assert summary["requirements_required_lane_satisfied"] == 1
+          assert summary["requirements_closure_credit"] == 0
+          assert summary["contradictions_total"] == 14
+          assert len(closure["stronger_lanes"]) == 13
+          assert summary["full_architecture"] == "BLOCKED_FOR_CLOSURE"
+          assert summary["profile_release_state"] == "NOT_ADMITTED"
+          eas = closure["eas_a_projection"]
+          assert eas["authority"] == "ADVISORY_ONLY"
+          assert eas["relationship"] == "PROCESS_DEPENDENCY_NOT_GIT_PARENT"
+          assert eas["google_connectivity"] == "NOT_PERFORMED"
+          assert eas["google_write"] == "NOT_PERFORMED"
+          assert eas["source_correctness"] == "NOT_PROVEN"
+          assert canary["state"] == "PLAN_ONLY" and canary["execution_receipt"] is None
+          p7 = next(item for item in state["entries"] if item["phase"] == "P7")
+          assert p7["evidence_ceiling"] == "NOT_CURRENT_YET"
+          print("PASS machine 15/14/13/1/0 EAS-A advisory canary PLAN_ONLY P7 NOT_CURRENT_YET")
+          PY
+
+      - name: Prove verifier cannot execute Local Handoff or external writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=".verifier/.github/workflows/eas-d-v3-verification.yml"
+          test -f "$definition"
+          execute_token="--mode"" execute"
+          runner_script="run_""active.py"
+          google_client="google""apiclient"
+          sheets_client="g""spread"
+          write_call="request_""write("
+          secret_name="GOOGLE_""APPLICATION_CREDENTIALS"
+          receipt_root="EAS_""RECEIPT_DIR"
+          for token in "$execute_token" "$runner_script" "$google_client" "$sheets_client" "$write_call" "$secret_name" "$receipt_root"; do
+            if grep -Fq -- "$token" "$definition"; then
+              echo "FORBIDDEN_EXTERNAL_EXECUTION_TOKEN:$token"
+              exit 2
+            fi
+          done
+          echo "PASS verifier definition present; external-execution/write tokens absent"
+
+      - name: Parse compile portable surface and patch hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool profiles/agent-thinking-inception/plans/closure-record.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/vertical-canary.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/molecular-stack-index.json >/dev/null
+          python3 -m py_compile \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py \
+            profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = [
+              Path("README.md"), Path("AGENTS.md"), Path("ARCHITECTURE.md"), Path("CONTEXT.md"),
+              Path("docs/INDEX.md"), Path("docs/architecture/DATA_FLOW.md"),
+              Path("docs/architecture/STATE_MACHINES.md"), Path("docs/traceability/MOLECULAR_STACK_INDEX.md"),
+              Path("prompts/README.md"), Path("handoff/README.md"),
+          ] + sorted(Path("docs/prompts").glob("P*.system.md"))
+          corpus = "\n".join(path.read_text(encoding="utf-8") for path in paths)
+          forbidden = ["/"+"Users"+"/", "/"+"home"+"/", "/mnt/"+"data/", "BEGIN "+"PRIVATE KEY"]
+          assert not [token for token in forbidden if token in corpus], "NON_PORTABLE_OR_PRIVATE_SURFACE"
+          assert len(sorted(Path("docs/prompts").glob("P*.system.md"))) == 8
+          print("PASS portable/secret-free Root-D surface prompts=8")
+          PY
+          git diff --check f04f9fc78270c8f97ce978e2ccc161ab4d724ca4...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-D v3 exact-target verification
+          target=ba1f1de8665d8a8401e38e1e9b1e38e518e597e1
+          tree=658a7ab416c7921b6c9c7cb039eb1a3287647b4e
+          parent=f04f9fc78270c8f97ce978e2ccc161ab4d724ca4
+          parent_verify=32326260896
+          parent_Shadow=4978669357
+          Root_D_paths=18
+          Root_D_mutations=16
+          root_prompts=8
+          Profile_X_mutations=34
+          Profile_D_mutations=28
+          requirements=15
+          required_lanes_satisfied=1
+          requirement_closure_credit=0
+          contradictions=14
+          stronger_no_credit_lanes=13
+          EAS_A_authority=ADVISORY_ONLY
+          Google_connectivity_write=NOT_PERFORMED
+          source_correctness=NOT_PROVEN
+          vertical_canary=PLAN_ONLY
+          execution_receipt=null
+          P7_queue_recompile=REQUIRED_AFTER_ROOT_D_ADMISSION
+          P7_execution=NOT_PERFORMED
+          Human_merge_release_rollback=NOT_PERFORMED
+          EOF
