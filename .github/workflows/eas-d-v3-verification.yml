@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable Root-D v3 target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ba1f1de8665d8a8401e38e1e9b1e38e518e597e1
+          ref: 2fa8b025dc8aad6c7094dd288ef9f74dbfc68126
           persist-credentials: false
           fetch-depth: 0
 
@@ -33,15 +33,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="ba1f1de8665d8a8401e38e1e9b1e38e518e597e1"
-          tree="658a7ab416c7921b6c9c7cb039eb1a3287647b4e"
+          target="2fa8b025dc8aad6c7094dd288ef9f74dbfc68126"
+          tree="09734897da51607a5d4a1b27ce00bee0970ff2c8"
           parent="f04f9fc78270c8f97ce978e2ccc161ab4d724ca4"
           parent_tree="9740f25f9b1fa8f6533c49642381955b953dd12a"
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
           test "$(git rev-parse "$parent^{tree}")" = "$parent_tree"
-          test "$(git rev-parse HEAD^)" = "$parent"
-          test "$(git rev-list --count "$parent"..HEAD)" = "1"
+          git merge-base --is-ancestor "$parent" HEAD
+          test "$(git merge-base "$parent" HEAD)" = "$parent"
+          test "$(git rev-list --count "$parent"..HEAD)" = "2"
           python3 - <<'PY'
           import subprocess
           parent = "f04f9fc78270c8f97ce978e2ccc161ab4d724ca4"
@@ -66,7 +67,7 @@ jobs:
               ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
           ).splitlines())
           assert changed == expected, f"ROOT_D_V3_PATH_LEASE:{sorted(changed ^ expected)}"
-          print(f"PASS exact target direct child and root writer lease files={len(changed)}")
+          print(f"PASS exact target true-child ancestry and root writer lease files={len(changed)}")
           PY
 
       - name: Replay inherited Profile-X and Profile-D controls
@@ -278,11 +279,12 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-D v3 exact-target verification
-          target=ba1f1de8665d8a8401e38e1e9b1e38e518e597e1
-          tree=658a7ab416c7921b6c9c7cb039eb1a3287647b4e
+          target=2fa8b025dc8aad6c7094dd288ef9f74dbfc68126
+          tree=09734897da51607a5d4a1b27ce00bee0970ff2c8
           parent=f04f9fc78270c8f97ce978e2ccc161ab4d724ca4
           parent_verify=32326260896
           parent_Shadow=4978669357
+          Root_D_commits=2
           Root_D_paths=18
           Root_D_mutations=16
           root_prompts=8
