@@ -1,0 +1,154 @@
+name: EAS-H4R exact runner verification
+
+on:
+  push:
+    branches: [verify/eas-h4r-exact-7be0a69b]
+  pull_request:
+    paths:
+      - .github/workflows/eas-h4r-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-h4r-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout immutable H4R target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 7be0a69b0046b66799baee2ddb5e305c90d60ec6
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind queue parent and five-path runner lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="7be0a69b0046b66799baee2ddb5e305c90d60ec6"
+          tree="e8a5643b7379acca281387727c203aa9c9559acb"
+          parent="75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          git merge-base --is-ancestor "$parent" HEAD
+          python3 - <<'PY'
+          import subprocess
+          parent = "75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4"
+          expected = {
+              "handoff/RUNBOOK.md",
+              "handoff/local-handoff-runner-contract.json",
+              "handoff/run_active.py",
+              "handoff/run_active_core.py",
+              "tests/test_handoff_runner.py",
+          }
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--name-only", f"{parent}...HEAD"], text=True
+          ).splitlines())
+          assert changed == expected, f"H4R_PATH_LEASE:{sorted(changed ^ expected)}"
+          subprocess.run([
+              "git", "diff", "--quiet", f"{parent}..HEAD", "--",
+              "handoff/local-handoff-queue.json",
+              "handoff/local-handoff-receipt.schema.json",
+              "tests/verify_handoff.py",
+          ], check=True)
+          print("PASS queue/schema/verifier bytes remain read-only")
+          PY
+          test "$(git hash-object handoff/run_active_core.py)" = "8c4ae46515bca4ab2f5e89e1d2677c84d65bbd8f"
+
+      - name: Replay queue v4 controls
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+
+      - name: Execute H4R runner tests
+        run: python3 tests/test_handoff_runner.py
+
+      - name: Execute real runner plan path only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 handoff/run_active.py --mode plan > /tmp/h4r-plan.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path("/tmp/h4r-plan.json").read_text())
+          assert p["schema_version"] == "enterprise-agent-system/local-handoff-runner-plan/v3"
+          assert p["mode"] == "plan"
+          assert p["queue_parent"]["commit"] == "75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4"
+          assert p["queue_parent"]["tree"] == "eef641a94dec755267ebe8086b68ecbe98c5b68a"
+          assert p["queue_id"] == "LH-EAS-INCEPTION-P7-V4-2026-08-20"
+          assert p["active_item_id"] == "LH-P7-01-ROOT-D-V3-LOCAL-READBACK"
+          assert p["queue_execution"] == "NOT_PERFORMED"
+          assert p["runner_execution"] == "NOT_PERFORMED"
+          assert p["canonical_advancement"] == "NOT_PERFORMED"
+          assert p["eas_a_authority"] == "ADVISORY_ONLY"
+          assert len(p["command_ids"]) == 9 and len(p["cleanup_ids"]) == 3
+          encoded = json.dumps(p, sort_keys=True)
+          assert all(x not in encoded for x in ("/Users/", "/home/", "/mnt/data/"))
+          print("PASS H4R plan binds current queue and exposes no resolved local paths")
+          PY
+
+      - name: Verify hosted workflow does not invoke execute mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show origin/verify/eas-h4r-exact-7be0a69b:.github/workflows/eas-h4r-verification.yml > /tmp/h4r-workflow.yml
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path("/tmp/h4r-workflow.yml").read_text()
+          forbidden = "--mode" + " execute"
+          assert forbidden not in text, "HOSTED_EXECUTE_MODE_FORBIDDEN"
+          print("PASS hosted verifier has no execute-mode invocation")
+          PY
+
+      - name: Compile parse and verify portable runner surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile handoff/run_active.py handoff/run_active_core.py tests/test_handoff_runner.py
+          python3 -m json.tool handoff/local-handoff-runner-contract.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-queue.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-receipt.schema.json >/dev/null
+          python3 - <<'PY'
+          from pathlib import Path
+          product = "\n".join(
+              Path(p).read_text(encoding="utf-8") for p in (
+                  "handoff/RUNBOOK.md",
+                  "handoff/local-handoff-runner-contract.json",
+                  "handoff/run_active.py",
+                  "handoff/run_active_core.py",
+              )
+          )
+          forbidden = ["/Users/", "/home/", "/mnt/data/", "BEGIN PRIVATE KEY", "Authorization: Bearer "]
+          assert not [x for x in forbidden if x in product], "NON_PORTABLE_RUNNER_PRODUCT_SURFACE"
+          tests = Path("tests/test_handoff_runner.py").read_text(encoding="utf-8")
+          assert "/mnt/data/" in tests and "/home/" in tests
+          contract = Path("handoff/local-handoff-runner-contract.json").read_text(encoding="utf-8")
+          for token in (
+              "PUBLIC_QUEUE_V4_RUNNER_IMPLEMENTATION_ONLY", "NOT_PERFORMED", "ADVISORY_ONLY",
+              "CODE_REUSE_ONLY", "ATOMIC_REPLACE", "CANONICAL_REDUCER_ONLY",
+          ):
+              assert token in contract, token
+          print("PASS portable runner product; negative controls retained in tests")
+          PY
+
+      - name: Check patch hygiene
+        run: git diff --check 75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS EAS-H4RV exact runner verification
+          target=7be0a69b0046b66799baee2ddb5e305c90d60ec6
+          tree=e8a5643b7379acca281387727c203aa9c9559acb
+          parent_queue=75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4
+          writer_paths=5
+          reused_core_blob=8c4ae46515bca4ab2f5e89e1d2677c84d65bbd8f
+          queue_mutations=34/34
+          hosted_mode=plan_only
+          active_execution=NOT_PERFORMED
+          queue_execution=NOT_PERFORMED
+          canonical_advancement=NOT_PERFORMED
+          evidence_ceiling=PUBLIC_QUEUE_V4_RUNNER_IMPLEMENTATION_ONLY
+          EOF
