@@ -18,7 +18,7 @@ jobs:
       - name: Checkout immutable governance target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 069c7fbcf1008c4567e6b29b74e8981f5b1d9f29
+          ref: de689860837283bf0791296218f0edd70edd5017
           persist-credentials: false
           fetch-depth: 0
 
@@ -35,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           base=85ad1210ee27d105773ae20aaaac7a1a17dfe446
-          target=069c7fbcf1008c4567e6b29b74e8981f5b1d9f29
+          target=de689860837283bf0791296218f0edd70edd5017
           base_tree=96c666c2c1e803573944b923838d72c36d47609a
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse "$base^{tree}")" = "$base_tree"
@@ -52,7 +52,7 @@ jobs:
           for i in "${!expected[@]}"; do
             test "${changed[$i]}" = "${expected[$i]}"
           done
-          echo 'PASS exact main base and four-file governance lease'
+          echo 'PASS exact baseline and four-file governance lease'
 
       - name: Replay generic deterministic controls
         run: |
@@ -113,7 +113,7 @@ jobs:
               '#110 MERGED',
               '32364024569 PASS',
               '4982176517',
-              'open current product PRs                     0',
+              'open canonical implementation PRs',
               '#1 #5 #6 #7 #14 #15 #16 #17 #18',
               'PUBLIC_MAIN_MERGED__LOCAL_HANDOFF_ACTIVE',
               'LH-P7-01-ROOT-D-V3-LOCAL-READBACK',
@@ -124,6 +124,7 @@ jobs:
               'PLAN_ONLY',
               'BLOCKED_FOR_CLOSURE',
               'requirement closure credit',
+              'READ_FROM_GIT',
               '## Repository ownership',
               '`skills-shared`',
               '`runtime-env`',
@@ -138,14 +139,21 @@ jobs:
           stale_positive = 'This tree is the public-main integration candidate produced after the EAS-A rebind and P7 queue/runner/reducer rebuild.'
           assert stale_positive not in readme
           assert 'no longer an integration candidate' in readme.lower()
+          assert 'public-stack baseline commit' in readme
+          assert 'current repository HEAD                      READ_FROM_GIT' in readme
+          assert 'main                                         85ad1210ee27d105773ae20aaaac7a1a17dfe446' not in readme
+          assert 'public-stack baseline' in agents
+          assert 'current repository HEAD READ_FROM_GIT' in agents
+          assert 'current repo HEAD     READ_FROM_GIT' in context
+          assert 'public-stack baseline' in closure
+          assert 'current repository HEAD     READ_FROM_GIT' in closure
+          assert 'open canonical implementation PRs 0' in closure
           assert 'directory' in readme.lower()
           assert 'state machine' in readme.lower()
           assert 'data flow' in readme.lower()
           assert 'git-town-stacked-pr-worker' in readme
           assert 'One interface or canonical state has one owner.' in readme
           assert 'Freshness precedence' in agents
-          assert 'open current PRs     0' in context
-          assert 'open current product PRs 0' in closure
           assert 'closed-unmerged' in closure
 
           q = json.loads(Path('handoff/local-handoff-queue.json').read_text())
@@ -161,7 +169,7 @@ jobs:
           assert runner['queue_execution'] == 'NOT_PERFORMED'
           assert reducer['real_local_receipt'] == 'NOT_OBSERVED'
           assert reducer['canonical_advancement_performed'] is False
-          print('PASS post-merge docs, ownership map, owner set, queue truth, and evidence ceilings')
+          print('PASS non-self-referential governance docs, ownership map, queue truth, and evidence ceilings')
           PY
 
       - name: Prove machine and implementation surfaces are unchanged
@@ -211,10 +219,11 @@ jobs:
         run: |
           cat <<'EOF'
           PASS post-merge governance exact verification
-          target=069c7fbcf1008c4567e6b29b74e8981f5b1d9f29
-          base=85ad1210ee27d105773ae20aaaac7a1a17dfe446
-          base_tree=96c666c2c1e803573944b923838d72c36d47609a
+          target=de689860837283bf0791296218f0edd70edd5017
+          public_stack_baseline=85ad1210ee27d105773ae20aaaac7a1a17dfe446
+          baseline_tree=96c666c2c1e803573944b923838d72c36d47609a
           changed_paths=4
+          current_branch_head_policy=READ_FROM_GIT
           active_execution=NOT_PERFORMED
           real_local_receipt=NOT_OBSERVED
           requirement_closure_credit=0
