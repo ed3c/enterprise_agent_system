@@ -1,0 +1,137 @@
+{
+  "schema_version": "enterprise-agent-system/local-receipt-reducer-contract/v3",
+  "contract_id": "EAS-H5RR-P7-OWNER-ROUTE-RECONCILED-REDUCER-2026-08-20",
+  "state": "REDUCER_REBIND_CANDIDATE",
+  "queue_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 114,
+    "commit": "3fd99f4051dafa440d61c11eac610737281b1583",
+    "tree": "03a93749e3eb0999cca0e63041321a99286fbfb4",
+    "verification_run": 32390022568,
+    "shadow_review": 4984913981
+  },
+  "runner_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 116,
+    "commit": "4735e30d2bc810dd3bfc25b645aaad35046bc1d5",
+    "tree": "c6f8b9e7d536686461206c192121575683aff145",
+    "verification_run": 32390817585,
+    "shadow_review": 4984976210,
+    "relationship": "TRUE_GIT_PARENT"
+  },
+  "binding_reuse": {
+    "source_pull_request": 107,
+    "source_commit": "4a44e9cf9ece133e8117ecc100e419f359d8e1a1",
+    "source_tree": "d088e4fa7a21958efc73f7246a707c2a77b5640a",
+    "source_blob": "d804cc2ea2b7dde494adc1de1cd2a705f5bb0fc1",
+    "path": "handoff/reduce_receipt.py",
+    "reuse_authority": "CODE_REUSE_ONLY",
+    "canonical_advancement_authority": "NONE"
+  },
+  "reducer_core_reuse": {
+    "source_pull_request": 71,
+    "source_commit": "82366dabf871f466c0c1353ef49198f82de90c16",
+    "source_tree": "6ca3e205afdc6b9347ccde06769344b8b37e1964",
+    "source_blob": "4c5581eabb265346865963c74c573ffc057381b8",
+    "path": "handoff/reduce_receipt_core.py",
+    "reuse_authority": "CODE_REUSE_ONLY",
+    "canonical_advancement_authority": "NONE"
+  },
+  "pre_reconciliation_authority": [
+    {
+      "kind": "queue",
+      "pull_request": 99,
+      "commit": "75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4",
+      "tree": "eef641a94dec755267ebe8086b68ecbe98c5b68a",
+      "authority": "NONE"
+    },
+    {
+      "kind": "runner",
+      "pull_request": 103,
+      "commit": "7be0a69b0046b66799baee2ddb5e305c90d60ec6",
+      "tree": "e8a5643b7379acca281387727c203aa9c9559acb",
+      "authority": "NONE"
+    },
+    {
+      "kind": "reducer",
+      "pull_request": 107,
+      "commit": "4a44e9cf9ece133e8117ecc100e419f359d8e1a1",
+      "tree": "d088e4fa7a21958efc73f7246a707c2a77b5640a",
+      "authority": "NONE"
+    }
+  ],
+  "owner_routes": {
+    "LH-P7-01-ROOT-D-V3-LOCAL-READBACK": 14,
+    "LH-P7-02-A2R-CONTEXT-TOKENIZER": 7,
+    "LH-P7-03-A1-PHYSICAL-DURABILITY": 5,
+    "LH-P7-04-A2-ISOLATION-PROVIDER": 7,
+    "LH-P7-05-A3-INDEPENDENT-SEMANTIC": 15,
+    "LH-P7-06-A4-TERMS-TELEMETRY": 16,
+    "LH-P7-07-A5-EXTERNAL-BENCHMARK": 17,
+    "LH-P7-08-A6-PROVIDER-EFFECT": 18,
+    "LH-P7-09-VERTICAL-CANARY": 14,
+    "LH-P7-10-FINAL-TRUTH-VERIFY": 15,
+    "LH-P7-11-HUMAN-ADMISSION": 14
+  },
+  "active_item_id": "LH-P7-01-ROOT-D-V3-LOCAL-READBACK",
+  "next_item_id": "LH-P7-02-A2R-CONTEXT-TOKENIZER",
+  "required_receipt": {
+    "schema": "handoff/local-handoff-receipt.schema.json",
+    "schema_version": "enterprise-agent-system/local-handoff-receipt/v2",
+    "environment_name": "EAS_RECEIPT_DIR",
+    "filename": "LH-P7-01-ROOT-D-V3-LOCAL-READBACK.json",
+    "origin": "EXTERNAL_ADMITTED_LOCAL_EXECUTION_ONLY"
+  },
+  "reducer_laws": {
+    "missing_receipt": "BLOCKED_BY_MISSING_REAL_LOCAL_RECEIPT",
+    "synthetic_fixture_receives_real_local_credit": false,
+    "real_label_self_grants_local_credit": false,
+    "real_local_credit_requires_external_authority": true,
+    "trust_receipt_result_without_readback": false,
+    "require_exact_runner_subject": true,
+    "require_exact_root_d_observation_for_pass": true,
+    "require_complete_command_cleanup_denominator_for_pass": true,
+    "require_clean_residue_for_pass": true,
+    "require_local_deterministic_lane": true,
+    "queue_mutation": false,
+    "direct_queue_advancement": false,
+    "output": "NEXT_EPOCH_CANDIDATE_ONLY"
+  },
+  "expected_pass_denominator": {
+    "main_commands": 9,
+    "cleanup_commands": 3,
+    "total_command_records": 12,
+    "root_d_commit": "6981c700f9f2f9128ebeebdf80e627178b2be336",
+    "root_d_tree": "d044ae652b65af6a0aba49f0f79c7c04c630bebf",
+    "success_transition": "CANDIDATE_RECEIPT_READY_FOR_CANONICAL_REDUCER"
+  },
+  "eas_a": {
+    "pull_request": 68,
+    "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+    "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891",
+    "authority": "ADVISORY_ONLY",
+    "relationship": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
+    "google_connectivity": "NOT_PERFORMED",
+    "google_write": "NOT_PERFORMED",
+    "source_correctness": "NOT_PROVEN"
+  },
+  "public_verification": {
+    "synthetic_receipt_fixtures_allowed": true,
+    "real_canonical_receipt_creation_allowed": false,
+    "real_local_credit_grant_allowed": false,
+    "active_execution_allowed": false,
+    "queue_write_allowed": false
+  },
+  "queue_execution": "NOT_PERFORMED",
+  "active_execution": "NOT_PERFORMED",
+  "real_local_receipt": "NOT_OBSERVED",
+  "canonical_advancement": "NOT_PERFORMED",
+  "evidence_ceiling": "PUBLIC_OWNER_RECONCILED_RECEIPT_REDUCER_SEMANTICS_ONLY",
+  "claims_not_proven": [
+    "Reducer rebinding does not prove a real local receipt exists.",
+    "A caller label REAL_LOCAL_RECEIPT cannot self-grant real local evidence credit.",
+    "The public reducer cannot mutate the queue or grant canonical local evidence credit.",
+    "Closed P5 issue #22 has no execution authority; vertical-canary execution remains owned by #14.",
+    "Provider, physical, private, external-effect, user, Human, release and rollback lanes remain unproven until their own receipts exist."
+  ]
+}
