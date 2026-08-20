@@ -18,7 +18,7 @@ jobs:
       - name: Checkout immutable governance target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 1fb13ca67d7e723a7c3eeab917294debcec64e09
+          ref: 069c7fbcf1008c4567e6b29b74e8981f5b1d9f29
           persist-credentials: false
           fetch-depth: 0
 
@@ -35,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           base=85ad1210ee27d105773ae20aaaac7a1a17dfe446
-          target=1fb13ca67d7e723a7c3eeab917294debcec64e09
+          target=069c7fbcf1008c4567e6b29b74e8981f5b1d9f29
           base_tree=96c666c2c1e803573944b923838d72c36d47609a
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse "$base^{tree}")" = "$base_tree"
@@ -124,6 +124,13 @@ jobs:
               'PLAN_ONLY',
               'BLOCKED_FOR_CLOSURE',
               'requirement closure credit',
+              '## Repository ownership',
+              '`skills-shared`',
+              '`runtime-env`',
+              '`bettor-arena`',
+              '`agent-shield-monorepo`',
+              '`truth-verify-loop`',
+              '`openwiki-source-anchoring`',
           ]
           for token in required:
               assert token in joined, token
@@ -135,6 +142,7 @@ jobs:
           assert 'state machine' in readme.lower()
           assert 'data flow' in readme.lower()
           assert 'git-town-stacked-pr-worker' in readme
+          assert 'One interface or canonical state has one owner.' in readme
           assert 'Freshness precedence' in agents
           assert 'open current PRs     0' in context
           assert 'open current product PRs 0' in closure
@@ -153,7 +161,7 @@ jobs:
           assert runner['queue_execution'] == 'NOT_PERFORMED'
           assert reducer['real_local_receipt'] == 'NOT_OBSERVED'
           assert reducer['canonical_advancement_performed'] is False
-          print('PASS post-merge docs, owner set, queue truth, and evidence ceilings')
+          print('PASS post-merge docs, ownership map, owner set, queue truth, and evidence ceilings')
           PY
 
       - name: Prove machine and implementation surfaces are unchanged
@@ -203,7 +211,7 @@ jobs:
         run: |
           cat <<'EOF'
           PASS post-merge governance exact verification
-          target=1fb13ca67d7e723a7c3eeab917294debcec64e09
+          target=069c7fbcf1008c4567e6b29b74e8981f5b1d9f29
           base=85ad1210ee27d105773ae20aaaac7a1a17dfe446
           base_tree=96c666c2c1e803573944b923838d72c36d47609a
           changed_paths=4
