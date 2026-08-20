@@ -243,9 +243,17 @@ def selftest() -> None:
             ),
             f"DOC_TOKEN:{PX['commit']}",
         ),
-        ("docs canary promotion", lambda b: b.__setitem__("doc", b["doc"].replace("vertical canary                  PLAN_ONLY", "vertical canary                  EXECUTED")), "DOC_TOKEN:PLAN_ONLY"),
+        (
+            "docs canary promotion",
+            lambda b: (
+                b.__setitem__("doc", b["doc"].replace("PLAN_ONLY", "EXECUTED")),
+                b.__setitem__("prompts", b["prompts"].replace("PLAN_ONLY", "EXECUTED")),
+                b.__setitem__("p6_prompt", b["p6_prompt"].replace("PLAN_ONLY", "EXECUTED")),
+            ),
+            "DOC_TOKEN:PLAN_ONLY",
+        ),
         ("prompt loses fresh session", lambda b: b.__setitem__("p6_prompt", b["p6_prompt"].replace("Prior chat memory is not an execution\ninput.", "")), "PROMPT_FRESH_SESSION"),
-        ("prompt google authority", lambda b: b.__setitem__("prompts", b["prompts"].replace("ADVISORY_ONLY", "CANONICAL")), "DOC_TOKEN:ADVISORY_ONLY"),
+        ("prompt google authority", lambda b: b.__setitem__("prompts", b["prompts"].replace("ADVISORY_ONLY", "CANONICAL")), "PROMPT_GOOGLE_AUTHORITY"),
     ]
     for label, mutate, expected in cases:
         must_refuse(label, mutate, expected)
