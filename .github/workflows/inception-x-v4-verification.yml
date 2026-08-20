@@ -1,0 +1,185 @@
+name: INCEPTION-X v4 exact EAS-A rebind verification
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/inception-x-v4-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-profile-x-v4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable Profile-X v4 target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 1dbb8a9cd4e07f073e0af4c444c8966a1b715f9a
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/inception-x-v4-exact-1dbb8a9c
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind exact two-parent base and seven-path writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="1dbb8a9cd4e07f073e0af4c444c8966a1b715f9a"
+          tree="8332dd058504cadbe5e94fc5b8423e90080148e2"
+          base="6081eb6ecea028391989042f069f7128cafaa42d"
+          base_tree="4f9c5605c00841321108587434df38d0857ebe75"
+          generic_x="b295eabec7b4c9d4e1f65f7fb0238034f454ae7f"
+          profile_e="9f25b94ca891faf0d926b0fc22b67be88925aa81"
+          test "$(git rev-parse HEAD)" = "$target"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
+          test "$(git rev-parse "$base^{tree}")" = "$base_tree"
+          read -r c p1 p2 extra <<<"$(git rev-list --parents -n 1 "$base")"
+          test "$c" = "$base"
+          test "$p1" = "$generic_x"
+          test "$p2" = "$profile_e"
+          test -z "${extra:-}"
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git merge-base "$base" HEAD)" = "$base"
+          python3 - <<'PY'
+          import subprocess
+          base='6081eb6ecea028391989042f069f7128cafaa42d'
+          expected={
+            'profiles/agent-thinking-inception/evidence/convergence/README.md',
+            'profiles/agent-thinking-inception/evidence/convergence/receipt-index.json',
+            'profiles/agent-thinking-inception/plans/closure-record.json',
+            'profiles/agent-thinking-inception/plans/vertical-canary.json',
+            'profiles/agent-thinking-inception/prompts/11-profile-convergence.system.md',
+            'profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py',
+            'profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py',
+          }
+          changed=set(subprocess.check_output(['git','diff','--name-only',f'{base}...HEAD'],text=True).splitlines())
+          assert changed == expected, f'PROFILE_X_V4_PATH_LEASE:{sorted(changed ^ expected)}'
+          print(f'PASS true multi-parent base and Profile-X v4 writer lease files={len(changed)}')
+          PY
+
+      - name: Replay inherited Generic-X controls
+        run: python3 -m unittest tests.test_convergence -v
+
+      - name: Replay inherited Profile-E Shadow controls
+        run: |
+          python3 profiles/agent-thinking-inception/tests/shadow/verify_profile_shadow.py
+          python3 profiles/agent-thinking-inception/tests/shadow/verify_profile_shadow_mutations.py
+
+      - name: Execute Profile-X v4 positive and semantic mutations
+        run: |
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py
+          python3 profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+
+      - name: Verify machine denominator and EAS-A authority ceiling
+        run: |
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path('profiles/agent-thinking-inception')
+          receipts=json.loads((root/'evidence/convergence/receipt-index.json').read_text())
+          closure=json.loads((root/'plans/closure-record.json').read_text())
+          canary=json.loads((root/'plans/vertical-canary.json').read_text())
+          assert receipts['schema_version']=='enterprise-agent-system/inception-profile-convergence-receipts/v4'
+          assert closure['schema_version']=='enterprise-agent-system/inception-profile-closure/v4'
+          assert canary['schema_version']=='enterprise-agent-system/inception-profile-vertical-canary/v2'
+          assert receipts['multi_parent_input']['commit']=='6081eb6ecea028391989042f069f7128cafaa42d'
+          assert receipts['multi_parent_input']['tree']=='4f9c5605c00841321108587434df38d0857ebe75'
+          a=receipts['process_dependencies']['EAS-A']
+          assert a['commit']=='250717db1cad584d50890c0d851153fa2cd755e8'
+          assert a['tree']=='fbf6a75b6e89e906f227110dc5a61e4355b8a891'
+          assert a['verification_run']==32295871632
+          assert a['shadow_review']==4976213414
+          assert a['authority']=='ADVISORY_ONLY'
+          assert a['evidence_ceiling']=='ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY'
+          assert a['git_relation']=='PROCESS_DEPENDENCY_NOT_GIT_PARENT'
+          assert len(receipts['owners'])==7
+          assert len(closure['requirements'])==15
+          assert sum(1 for x in closure['requirements'] if x['required_lane_satisfied'])==1
+          assert all(x['closure_credit']==0 for x in closure['requirements'])
+          assert len(closure['contradictions'])==14
+          assert all(x['state']=='PRESERVED_WITH_PARTIAL_CONTROL' for x in closure['contradictions'])
+          assert len(closure['stronger_lanes'])==13
+          assert all(x['state']!='PASS' for x in closure['stronger_lanes'])
+          assert canary['state']=='PLAN_ONLY' and canary['execution_receipt'] is None
+          payload=json.dumps(canary['contract'],sort_keys=True,separators=(',',':')).encode()
+          assert canary['contract_digest']=='sha256:'+hashlib.sha256(payload).hexdigest()
+          old=next(x for x in receipts['residue']['superseded_subjects'] if x.get('pull_request')==40)
+          assert old['authority']=='NONE' and old['relationship']=='STALE_PENDING_EAS_A_REBIND'
+          assert receipts['downstream']['profile_d']['state']=='REBIND_REQUIRED'
+          assert receipts['downstream']['root_d']['state']=='REBIND_REQUIRED'
+          assert receipts['downstream']['local_handoff']['state']=='EXECUTION_AUTHORITY_SUSPENDED_PENDING_REBIND'
+          assert receipts['downstream']['local_handoff']['queue_execution']=='NOT_PERFORMED'
+          assert closure['closure_summary']['requirements_closure_credit']==0
+          assert closure['closure_summary']['local_handoff']=='EXECUTION_AUTHORITY_SUSPENDED_PENDING_REBIND'
+          assert closure['closure_summary']['full_architecture']=='BLOCKED_FOR_CLOSURE'
+          print('PASS v4 15/14/13/0 denominator, EAS-A ADVISORY_ONLY, P7 suspended')
+          PY
+
+      - name: Prove verifier cannot execute suspended P7 or Google writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=".verifier/.github/workflows/inception-x-v4-verification.yml"
+          test -f "$definition"
+          execute_token="--mode"" execute"
+          if grep -Fq -- "$execute_token" "$definition"; then
+            echo "P7_EXECUTE_TOKEN_FOUND"
+            exit 2
+          fi
+          for token in "googleapiclient" "request_write(" "run_active.py"; do
+            if grep -Fq -- "$token" "$definition"; then
+              echo "FORBIDDEN_EXTERNAL_EXECUTION_TOKEN:$token"
+              exit 2
+            fi
+          done
+          echo "PASS verifier-definition-present p7-execute/google-write absent"
+
+      - name: Compile parse and patch hygiene
+        run: |
+          python3 -m py_compile \
+            src/enterprise_agent_system/convergence.py \
+            tests/test_convergence.py \
+            profiles/agent-thinking-inception/tests/shadow/verify_profile_shadow.py \
+            profiles/agent-thinking-inception/tests/shadow/verify_profile_shadow_mutations.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py \
+            profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py
+          python3 -m json.tool profiles/agent-thinking-inception/evidence/convergence/receipt-index.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/closure-record.json >/dev/null
+          python3 -m json.tool profiles/agent-thinking-inception/plans/vertical-canary.json >/dev/null
+          git diff --check 6081eb6ecea028391989042f069f7128cafaa42d...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS INCEPTION-X v4 exact EAS-A rebind verification
+          target=1dbb8a9cd4e07f073e0af4c444c8966a1b715f9a
+          tree=8332dd058504cadbe5e94fc5b8423e90080148e2
+          multi_parent_base=6081eb6ecea028391989042f069f7128cafaa42d
+          Generic_X=b295eabec7b4c9d4e1f65f7fb0238034f454ae7f
+          Profile_E=9f25b94ca891faf0d926b0fc22b67be88925aa81
+          EAS_A=250717db1cad584d50890c0d851153fa2cd755e8
+          EAS_A_authority=ADVISORY_ONLY
+          owners=7
+          requirements=15
+          required_lanes_satisfied=1
+          requirement_closure_credit=0
+          contradictions=14
+          stronger_no_credit_lanes=13
+          semantic_mutations=38
+          vertical_canary=PLAN_ONLY
+          execution_receipt=null
+          Profile_D=REBIND_REQUIRED
+          Root_D=REBIND_REQUIRED
+          P7_execution_authority=EXECUTION_AUTHORITY_SUSPENDED_PENDING_REBIND
+          Google_connectivity_write=NOT_PERFORMED
+          Human_merge_release_rollback=NOT_PERFORMED
+          EOF
