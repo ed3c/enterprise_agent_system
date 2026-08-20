@@ -1,0 +1,45 @@
+{
+  "schema_version": "enterprise-agent-system/inception-molecular-stack-index/v5",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "state": "P6_PROFILE_DOCUMENTATION_CANDIDATE_AFTER_EAS_A",
+  "current_atoms": [
+    {"atom":"C0","issue":2,"pull_request":21,"relationship":"ANCESTOR","authority":"SOURCE_GRAPH"},
+    {"atom":"C1","issue":3,"pull_request":28,"relationship":"ANCESTOR","authority":"PROFILE_CONTRACTS"},
+    {"atom":"K","issue":4,"pull_request":29,"relationship":"ANCESTOR","authority":"PROFILE_DAG_PACKETS"},
+    {"atom":"E","issue":19,"pull_request":32,"commit":"9f25b94ca891faf0d926b0fc22b67be88925aa81","tree":"1452d1b9931c70ef70ed3b7dec78cedc51d6db35","relationship":"PROFILE_X_GIT_PARENT","authority":"READ_ONLY_SHADOW"},
+    {"atom":"EAS-A","issue":10,"pull_request":68,"commit":"250717db1cad584d50890c0d851153fa2cd755e8","tree":"fbf6a75b6e89e906f227110dc5a61e4355b8a891","verification_run":32295871632,"shadow_review":4976213414,"relationship":"PROCESS_DEPENDENCY_NOT_GIT_PARENT","authority":"ADVISORY_ONLY"},
+    {"atom":"GENERIC-X","issue":12,"pull_request":31,"commit":"b295eabec7b4c9d4e1f65f7fb0238034f454ae7f","tree":"25bd4c7e934690b3ac15692ba04af4418a46b1f2","verification_run":32296886625,"shadow_review":4976304922,"relationship":"PROFILE_X_GIT_PARENT","authority":"AGGREGATE_CONVERGENCE"},
+    {"atom":"PROFILE-X-V4","issue":76,"pull_request":80,"commit":"df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0","tree":"9290a2822ba30309a9d44933ce0ea4d640501a39","verification_run":32321499909,"shadow_review":4978282030,"relationship":"PROFILE_D_TRUE_PARENT","authority":"P5_CURRENT"},
+    {"atom":"PROFILE-D-V5","issue":23,"relationship":"TRUE_CHILD_OF_PROFILE_X_V4","authority":"P6_CANDIDATE"}
+  ],
+  "owner_atoms": [
+    {"atom":"A1","repository":"ed3c/bettor-arena","commit":"21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328","tree":"31ea6bec01899a4c9e4f994998ea6041116db49d","hosted_runs":[32259216877]},
+    {"atom":"A2R","repository":"ed3c/runtime-env","commit":"2ff4efe7bee3d12fb3063fed93631f8d323cd64a","tree":"273c6873e7075d90a7f11275c5d39e746dd075dc","hosted_runs":[32249588945,32249588946]},
+    {"atom":"A2","repository":"ed3c/agent-shield-monorepo","commit":"8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2","tree":"51adf9791485d597849c026a3828ded0088b3805","hosted_runs":[32262032532,32262032583,32262032553]},
+    {"atom":"A3","repository":"ed3c/truth-verify-loop","commit":"5ea4dd42d2ee5bbd22537f5426cd276f10222980","tree":"fc6486b9ab6a48752e32a536a847c6e5635f8547","hosted_runs":[32260293092,32260291970]},
+    {"atom":"A4","repository":"ed3c/enterprise_agent_system","commit":"bf976c7c33e315d1743733a79c15521e645ff6dc","tree":"c09bef2457ad507433f253c8a5fd211147fae247","hosted_runs":[32261864341]},
+    {"atom":"A5","repository":"ed3c/bettor-arena","commit":"81f02f4148273ffe5f5571c8605e1ee0afc59866","tree":"f9612314e47ced69796db00703dd5d34ab592e36","hosted_runs":[32260835956]},
+    {"atom":"A6","repository":"ed3c/bettor-arena","commit":"c2613432736c65756ed13d871feb2df486c69118","tree":"53680d47048f88b9402c6320355121b7ec2f7244","hosted_runs":[32262080676]}
+  ],
+  "stale_or_superseded": [
+    {"atom":"PROFILE-X-V3","pull_request":40,"commit":"fe2748e09a5222f439f09c5d0d71e486e1ade3e8","disposition":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"PROFILE-D-V4","pull_request":44,"commit":"a7a034ef1db778fcee586fff8d8ff7848bc9a1ab","disposition":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"ROOT-D-V2","pull_request":57,"commit":"68828ec8de5f3ad5aa133a5c772eefb80c775568","disposition":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"P7","pull_request":59,"commit":"a6dbbc52fba70c9732a1bf664f52a072cd83d608","disposition":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"H3R","pull_request":67,"commit":"f81c2ecabaaac44ff82832a482524124baec106a","disposition":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"H3RR","pull_request":71,"commit":"82366dabf871f466c0c1353ef49198f82de90c16","disposition":"STALE_PENDING_EAS_A_REBIND","authority":"NONE"},
+    {"atom":"PROFILE-X-REJECTED-BASE","commit":"7d8b4ab76647e9817df74148107de27e65b2fd88","disposition":"PROFILE_SUBTREE_INCOMPLETE","authority":"NONE"}
+  ],
+  "laws": [
+    "process dependency is not Git ancestry",
+    "EAS-A is ADVISORY_ONLY and cannot write canonical execution/Human state",
+    "Profile-X external exact-target verification is evidence but not Git ancestry",
+    "Profile-D is a true child of Profile-X v4",
+    "stale descendants cannot execute or receive current closure credit",
+    "documentation consistency cannot promote stronger evidence lanes"
+  ],
+  "closure_projection": {
+    "requirements":15,"contradictions":14,"stronger_no_credit_lanes":13,"required_lanes_satisfied":1,"closure_credit":0,"canary":"PLAN_ONLY","canary_digest":"sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2","full_architecture":"BLOCKED_FOR_CLOSURE","profile_release":"NOT_ADMITTED"
+  },
+  "next_authority": "ROOT_D_REBIND_AFTER_PROFILE_D_V5_EXTERNAL_VERIFY_AND_SHADOW"
+}

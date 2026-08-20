@@ -1,0 +1,72 @@
+{
+  "schema_version": "enterprise-agent-system/inception-profile-vertical-canary/v2",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "canary_id": "INCEPTION-X-PUBLIC-NO-EFFECT-001",
+  "state": "PLAN_ONLY",
+  "contract_digest": "sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2",
+  "contract": {
+    "generic_x": {
+      "repository": "ed3c/enterprise_agent_system",
+      "pull_request": 31,
+      "commit": "b295eabec7b4c9d4e1f65f7fb0238034f454ae7f",
+      "tree": "25bd4c7e934690b3ac15692ba04af4418a46b1f2",
+      "verification_run": 32296886625,
+      "shadow_review": 4976304922,
+      "verdict": "ADMIT_FOR_PROFILE_X_REBIND_AFTER_EAS_A"
+    },
+    "profile_shadow": {
+      "repository": "ed3c/enterprise_agent_system",
+      "pull_request": 32,
+      "commit": "9f25b94ca891faf0d926b0fc22b67be88925aa81",
+      "tree": "1452d1b9931c70ef70ed3b7dec78cedc51d6db35",
+      "shadow_review": 4973593318,
+      "verdict": "ADMIT_FOR_PROFILE_CONVERGENCE"
+    },
+    "eas_a_projection": {
+      "repository": "ed3c/enterprise_agent_system",
+      "pull_request": 68,
+      "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+      "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891",
+      "verification_run": 32295871632,
+      "shadow_review": 4976213414,
+      "authority": "ADVISORY_ONLY",
+      "relationship": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
+      "evidence_ceiling": "ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY",
+      "google_connectivity": "NOT_PERFORMED",
+      "google_write": "NOT_PERFORMED",
+      "source_correctness": "NOT_PROVEN"
+    },
+    "constraints": {
+      "public_only": true,
+      "private_data": false,
+      "external_effects": false,
+      "human_operation": false,
+      "provider_enrollment": false,
+      "production_credentials": false,
+      "reversible": true
+    },
+    "steps": [
+      {"order": 1, "mode": "CONSTITUENT_RECEIPT_ONLY", "atom": "A1", "repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d", "hosted_runs": [32259216877]},
+      {"order": 2, "mode": "CONSTITUENT_RECEIPT_ONLY", "atom": "A2R", "repository": "ed3c/runtime-env", "commit": "2ff4efe7bee3d12fb3063fed93631f8d323cd64a", "tree": "273c6873e7075d90a7f11275c5d39e746dd075dc", "hosted_runs": [32249588945, 32249588946]},
+      {"order": 3, "mode": "CONSTITUENT_RECEIPT_ONLY", "atom": "A2", "repository": "ed3c/agent-shield-monorepo", "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2", "tree": "51adf9791485d597849c026a3828ded0088b3805", "hosted_runs": [32262032532, 32262032583, 32262032553]},
+      {"order": 4, "mode": "CONSTITUENT_RECEIPT_ONLY", "atom": "A3", "repository": "ed3c/truth-verify-loop", "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980", "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547", "hosted_runs": [32260293092, 32260291970]},
+      {"order": 5, "mode": "CONSTITUENT_RECEIPT_ONLY", "atom": "A4", "repository": "ed3c/enterprise_agent_system", "commit": "bf976c7c33e315d1743733a79c15521e645ff6dc", "tree": "c09bef2457ad507433f253c8a5fd211147fae247", "hosted_runs": [32261864341]},
+      {"order": 6, "mode": "CONSTITUENT_RECEIPT_ONLY", "atom": "A5", "repository": "ed3c/bettor-arena", "commit": "81f02f4148273ffe5f5571c8605e1ee0afc59866", "tree": "f9612314e47ced69796db00703dd5d34ab592e36", "hosted_runs": [32260835956]},
+      {"order": 7, "mode": "CONSTITUENT_RECEIPT_ONLY", "atom": "A6", "repository": "ed3c/bettor-arena", "commit": "c2613432736c65756ed13d871feb2df486c69118", "tree": "53680d47048f88b9402c6320355121b7ec2f7244", "hosted_runs": [32262080676]}
+    ],
+    "completion_assertions": [
+      "all seven constituent subjects are immutable and unique",
+      "EAS-A is advisory process metadata and is not a Profile-X Git parent",
+      "Google connectivity/write/source correctness receive no credit",
+      "each constituent hosted run is evidence for its declared public lane only",
+      "no constituent receipt is promoted to provider/private/physical/user/Human/release/rollback evidence",
+      "canary execution remains absent until an independent integrated execution receipt exists"
+    ]
+  },
+  "execution_receipt": null,
+  "claims_not_proven": [
+    "Constituent public receipts do not prove integrated cross-repository execution.",
+    "EAS-A proves advisory projection semantics only; Google connectivity/write/source correctness are not proven.",
+    "No private data, provider enrollment, real external effect, Human operation, merge, release or rollback occurred."
+  ]
+}

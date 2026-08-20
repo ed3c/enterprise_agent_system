@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enterprise-agent-system.invalid/contracts/control-plane/cross-repo-binding.v1.schema.json",
+  "title": "Enterprise Agent System Cross Repository Binding v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "binding_id", "source_subject_id", "owner", "interfaces", "consumers", "state", "claims_not_proven"],
+  "properties": {
+    "schema_version": {"const": "enterprise-agent-system/cross-repo-binding/v1"},
+    "binding_id": {"type": "string", "pattern": "^BIND-[A-Z0-9][A-Z0-9._-]*$"},
+    "source_subject_id": {"type": "string", "pattern": "^SRC-"},
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plane", "repository"],
+      "properties": {
+        "plane": {"enum": ["CONTROL_PLANE", "INSTRUCTION_METHOD_PLANE", "RUNTIME_CONTRACT_PLANE", "WORKFLOW_EFFECT_PLANE", "PROVIDER_ADAPTER_PLANE", "INDEPENDENT_VERIFICATION_PLANE", "HUMAN_RELEASE_PLANE"]},
+        "repository": {"type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$"},
+        "directory": {"type": "string", "minLength": 1}
+      }
+    },
+    "interfaces": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["interface_id", "owner_repository", "implementation_state", "digest"],
+        "properties": {
+          "interface_id": {"type": "string", "minLength": 1},
+          "owner_repository": {"type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$"},
+          "implementation_state": {"enum": ["ABSENT", "NOT_IMPLEMENTED", "IMPLEMENTED", "PARTIAL", "PASS"]},
+          "digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "consumers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[^/\\s]+/[^/\\s]+$"}},
+    "state": {"enum": ["UNBOUND", "SOURCE_SUBJECT_BOUND", "OWNER_PLANE_BOUND", "CONTRACT_IDS_BOUND", "EVIDENCE_LANES_DECLARED", "CLOSURE_RECORD_VALIDATED", "CONSUMER_READY", "BLOCKED"]},
+    "claims_not_proven": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

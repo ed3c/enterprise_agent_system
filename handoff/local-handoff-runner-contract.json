@@ -1,0 +1,116 @@
+{
+  "schema_version": "enterprise-agent-system/local-handoff-runner-contract/v3",
+  "contract_id": "EAS-H4R-P7-QUEUE-V4-RUNNER-2026-08-20",
+  "state": "RUNNER_IMPLEMENTATION_CANDIDATE",
+  "queue_subject": {
+    "repository": "ed3c/enterprise_agent_system",
+    "pull_request": 99,
+    "commit": "75648e0a0ca37e9ebaf182ebd757e1fa9610cbb4",
+    "tree": "eef641a94dec755267ebe8086b68ecbe98c5b68a",
+    "verification_run": 32348407481,
+    "shadow_review": 4980566877,
+    "relationship": "TRUE_GIT_PARENT"
+  },
+  "eas_a": {
+    "pull_request": 68,
+    "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+    "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891",
+    "authority": "ADVISORY_ONLY",
+    "relationship": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
+    "google_connectivity": "NOT_PERFORMED",
+    "google_write": "NOT_PERFORMED",
+    "source_correctness": "NOT_PROVEN"
+  },
+  "core_reuse": {
+    "source_pull_request": 67,
+    "source_commit": "f81c2ecabaaac44ff82832a482524124baec106a",
+    "source_tree": "49170e045200b1cd42d8022ca6fcb81c23314932",
+    "source_blob": "8c4ae46515bca4ab2f5e89e1d2677c84d65bbd8f",
+    "path": "handoff/run_active_core.py",
+    "reuse_authority": "CODE_REUSE_ONLY",
+    "execution_authority": "NONE"
+  },
+  "superseded_authority": [
+    {
+      "kind": "queue",
+      "pull_request": 59,
+      "commit": "a6dbbc52fba70c9732a1bf664f52a072cd83d608",
+      "tree": "7b54d0c56d088bf7edcf7b4c8984366a89ee9e36",
+      "authority": "NONE"
+    },
+    {
+      "kind": "runner",
+      "pull_request": 67,
+      "commit": "f81c2ecabaaac44ff82832a482524124baec106a",
+      "tree": "49170e045200b1cd42d8022ca6fcb81c23314932",
+      "authority": "NONE"
+    }
+  ],
+  "consumed_read_only_paths": [
+    "handoff/local-handoff-queue.json",
+    "handoff/local-handoff-receipt.schema.json",
+    "tests/verify_handoff.py"
+  ],
+  "active_item_id": "LH-P7-01-ROOT-D-V3-LOCAL-READBACK",
+  "default_mode": "plan",
+  "modes": ["plan", "execute"],
+  "allowed_runtime_kinds": ["CODEX_CLI_LOCAL", "CLAUDE_CODE_LOCAL"],
+  "execute_requires_external_runner_admission": true,
+  "execute_required_admission_fields": ["runner_commit", "runner_tree"],
+  "execute_required_environment_names": ["EAS_CHECKOUT", "EAS_WORKTREES", "EAS_RECEIPT_DIR"],
+  "subprocess_contract": {
+    "shell": false,
+    "capture_output": true,
+    "serialized_output": "SHA256_DIGEST_ONLY",
+    "inherit_arbitrary_environment": false,
+    "git_terminal_prompt": false
+  },
+  "path_contract": {
+    "environment_names_only": true,
+    "relative_paths_only": true,
+    "reject_parent_traversal": true,
+    "reject_root_escape": true,
+    "execution_roots_pairwise_disjoint": true,
+    "receipt_root_outside_checkout": true
+  },
+  "preflight_contract": {
+    "checkout_must_be_clean": true,
+    "root_d_worktree_relative": "root-d-v3",
+    "root_d_worktree_must_be_absent": true,
+    "root_d_worktree_registration_must_be_absent": true,
+    "temporary_root_d_ref": "refs/remotes/origin/p7-root-d-v3",
+    "temporary_root_d_ref_must_be_absent": true
+  },
+  "cleanup_contract": {
+    "run_in_finally": true,
+    "expected_command_ids": ["REMOVE_ROOT_D_WORKTREE", "PRUNE_WORKTREES", "DELETE_TEMP_ROOT_D_REF"],
+    "required_absent_residue": ["EAS_WORKTREES/root-d-v3", "registered worktree EAS_WORKTREES/root-d-v3", "refs/remotes/origin/p7-root-d-v3"],
+    "dirty_state_must_match_pre_execution": true
+  },
+  "receipt_contract": {
+    "schema": "handoff/local-handoff-receipt.schema.json",
+    "schema_version": "enterprise-agent-system/local-handoff-receipt/v2",
+    "write_mode": "ATOMIC_REPLACE",
+    "validate_before_write": true,
+    "secret_values_allowed": false,
+    "resolved_local_paths_serialized": false,
+    "queue_advancement": "CANONICAL_REDUCER_ONLY"
+  },
+  "public_verification": {
+    "real_queue_execute_allowed": false,
+    "plan_allowed": true,
+    "hermetic_subprocess_fixture_allowed": true,
+    "failure_cleanup_fixture_allowed": true
+  },
+  "runner_execution": "NOT_PERFORMED",
+  "queue_execution": "NOT_PERFORMED",
+  "canonical_advancement": "NOT_PERFORMED",
+  "evidence_ceiling": "PUBLIC_QUEUE_V4_RUNNER_IMPLEMENTATION_ONLY",
+  "claims_not_proven": [
+    "A green runner test or plan does not prove the ACTIVE queue item executed.",
+    "The runner cannot advance canonical queue state; receipt reducer readback is separate.",
+    "Reused H3R core code carries no current execution authority by itself.",
+    "EAS-A and Google projections remain advisory and cannot grant execution or closure credit.",
+    "Provider, physical, private, external-effect, user, Human, merge, release and rollback lanes remain unproven until their own receipts exist."
+  ]
+}

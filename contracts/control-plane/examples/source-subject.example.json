@@ -1,0 +1,16 @@
+{
+  "schema_version": "enterprise-agent-system/source-subject/v1",
+  "subject_id": "SRC-DUAL-AGENT-PDF-001",
+  "source_kind": "SOURCE_PROPOSAL",
+  "locator": {
+    "provider": "FILE",
+    "url": "library://双-Agent-架构-云端本地协同.pdf",
+    "navigation_ref": "uploaded source document"
+  },
+  "identity": {"identity_kind": "CONTENT_ONLY"},
+  "data_class": "INTERNAL",
+  "egress_allowed": false,
+  "captured_at": "2026-08-18T00:00:00Z",
+  "content_digest": "sha256:3d30ed79cc0edadd2e02fdc3196975c578d7baaf18cba5e510271718e8709039",
+  "claims_not_proven": ["runtime implementation", "transport durability", "provider isolation", "user outcome", "release readiness"]
+}
