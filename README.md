@@ -8,7 +8,7 @@ Cross-repository **management, routing, traceability, and closure control plane*
 P0-P5 public/control convergence         COMPLETE_AT_DECLARED_PUBLIC_EVIDENCE_CEILING
 P6 Profile-D v5                         COMPLETE_AT_DOCS_CEILING / PR #84
 P6 Root-D v3 authored bytes             ROOT_D_V3_CANDIDATE_BYTES_COMPLETE
-P6 Root-D final external receipt        REQUIRED
+P6 Root-D final external receipt        FINAL_EXTERNAL_RECEIPT_REQUIRED
 P7 current queue recompilation          REQUIRED_AFTER_ROOT_D_ADMISSION
 P7 local execution                      NOT_PERFORMED
 requirements                            15
