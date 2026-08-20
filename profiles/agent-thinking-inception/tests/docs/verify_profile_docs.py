@@ -35,7 +35,7 @@ EAS_A = {
     "relationship": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
 }
 CANARY_DIGEST = "sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2"
-STALE_PRS = {44, 57, 59, 67, 71}
+STALE_PRS = {40, 44, 57, 59, 67, 71}
 PROMPT_FILES = {
     "00-source-auditor.system.md",
     "01-profile-contract-worker.system.md",
