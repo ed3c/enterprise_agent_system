@@ -1,0 +1,176 @@
+name: P7 owner-route reconciliation exact verification
+
+on:
+  push:
+    branches: [verify/p7-owner-route-reconcile-3fd99f40]
+  pull_request:
+    paths:
+      - .github/workflows/p7-owner-route-reconcile-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-owner-routes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable queue reconciliation target
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 3fd99f4051dafa440d61c11eac610737281b1583
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout verifier definition separately
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: verify/p7-owner-route-reconcile-3fd99f40
+          persist-credentials: false
+          fetch-depth: 1
+          path: .verifier
+
+      - name: Bind exact main base and two-path writer lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=0089950cd96b638e9f8db7eff7b08d6b3dfa0c3d
+          target=3fd99f4051dafa440d61c11eac610737281b1583
+          test "$(git rev-parse HEAD)" = "$target"
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git merge-base "$base" HEAD)" = "$base"
+          mapfile -t changed < <(git diff --name-only "$base"...HEAD | sort)
+          expected=(
+            handoff/local-handoff-queue.json
+            tests/verify_handoff_owner_routes.py
+          )
+          test "${#changed[@]}" = "${#expected[@]}"
+          for i in "${!expected[@]}"; do
+            test "${changed[$i]}" = "${expected[$i]}"
+          done
+          echo 'PASS exact base and two-path owner-route lease'
+
+      - name: Replay queue and owner-route controls
+        run: |
+          python3 tests/verify_handoff.py
+          python3 tests/verify_handoff.py --selftest
+          python3 tests/verify_handoff_owner_routes.py
+
+      - name: Replay runner and reducer controls without ACTIVE execution
+        run: |
+          python3 tests/test_handoff_runner.py
+          python3 tests/test_receipt_reducer.py
+          python3 tests/test_receipt_reducer_v4.py
+          python3 handoff/run_active.py --mode plan >/tmp/owner-route-runner-plan.json
+          python3 handoff/reduce_receipt.py --mode plan >/tmp/owner-route-reducer-plan.json
+          set +e
+          python3 handoff/reduce_receipt.py --mode inspect --receipt /tmp/definitely-absent-owner-route-receipt.json >/tmp/owner-route-missing.json
+          rc=$?
+          set -e
+          test "$rc" = 4
+
+      - name: Prove only owner route changed and evidence ceiling is unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+
+          base = '0089950cd96b638e9f8db7eff7b08d6b3dfa0c3d'
+          q = json.loads(Path('handoff/local-handoff-queue.json').read_text())
+          old = json.loads(subprocess.check_output(['git','show',f'{base}:handoff/local-handoff-queue.json'], text=True))
+
+          ids = [item['item_id'] for item in q['items']]
+          assert ids == [item['item_id'] for item in old['items']]
+          assert len(ids) == 11
+          assert q['active_item_id'] == old['active_item_id'] == 'LH-P7-01-ROOT-D-V3-LOCAL-READBACK'
+          assert q['queue_execution'] == old['queue_execution'] == 'NOT_PERFORMED'
+          assert q['closure_projection'] == old['closure_projection']
+          assert q['closure_projection']['vertical_canary'] == 'PLAN_ONLY'
+          assert q['closure_projection']['vertical_execution_receipt'] is None
+          assert q['closure_projection']['requirements_closure_credit'] == 0
+          assert q['environment_name_allowlist'] == old['environment_name_allowlist']
+          assert q['secret_values_allowed'] is False
+          assert q['credential_values_allowed'] is False
+
+          old_items = {i['item_id']: i for i in old['items']}
+          new_items = {i['item_id']: i for i in q['items']}
+          target = 'LH-P7-09-VERTICAL-CANARY'
+          for item_id in ids:
+              if item_id == target:
+                  a = dict(old_items[item_id]); b = dict(new_items[item_id])
+                  old_owner = a.pop('owner_issue'); new_owner = b.pop('owner_issue')
+                  assert old_owner.endswith('/issues/22')
+                  assert new_owner.endswith('/issues/14')
+                  assert a == b
+              else:
+                  assert old_items[item_id] == new_items[item_id], item_id
+
+          expected = {
+              'LH-P7-01-ROOT-D-V3-LOCAL-READBACK': 14,
+              'LH-P7-02-A2R-CONTEXT-TOKENIZER': 7,
+              'LH-P7-03-A1-PHYSICAL-DURABILITY': 5,
+              'LH-P7-04-A2-ISOLATION-PROVIDER': 7,
+              'LH-P7-05-A3-INDEPENDENT-SEMANTIC': 15,
+              'LH-P7-06-A4-TERMS-TELEMETRY': 16,
+              'LH-P7-07-A5-EXTERNAL-BENCHMARK': 17,
+              'LH-P7-08-A6-PROVIDER-EFFECT': 18,
+              'LH-P7-09-VERTICAL-CANARY': 14,
+              'LH-P7-10-FINAL-TRUTH-VERIFY': 15,
+              'LH-P7-11-HUMAN-ADMISSION': 14,
+          }
+          for item_id, issue in expected.items():
+              assert new_items[item_id]['owner_issue'].endswith(f'/issues/{issue}')
+          assert all(not i['owner_issue'].endswith('/issues/22') for i in q['items'])
+
+          missing = json.loads(Path('/tmp/owner-route-missing.json').read_text())
+          assert missing['decision'] == 'BLOCKED_BY_MISSING_REAL_LOCAL_RECEIPT'
+          assert missing['real_local_evidence_credit'] == 0
+          runner = json.loads(Path('/tmp/owner-route-runner-plan.json').read_text())
+          reducer = json.loads(Path('/tmp/owner-route-reducer-plan.json').read_text())
+          assert runner['queue_execution'] == 'NOT_PERFORMED'
+          assert reducer['real_local_receipt'] == 'NOT_OBSERVED'
+          assert reducer['canonical_advancement_performed'] is False
+          print('PASS owner route corrected without queue/evidence promotion')
+          PY
+
+      - name: Prove hosted verifier contains no real ACTIVE execute
+        shell: bash
+        run: |
+          set -euo pipefail
+          definition=.verifier/.github/workflows/p7-owner-route-reconcile-verification.yml
+          test -f "$definition"
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('.verifier/.github/workflows/p7-owner-route-reconcile-verification.yml').read_text()
+          forbidden = ['--mode' + ' execute', 'canonical_' + 'advancement_performed=true']
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS no hosted real execution/advancement invocation')
+          PY
+
+      - name: Compile parse and patch hygiene
+        run: |
+          python3 -m py_compile tests/verify_handoff.py tests/verify_handoff_owner_routes.py handoff/run_active.py handoff/run_active_core.py handoff/reduce_receipt.py handoff/reduce_receipt_core.py
+          python3 -m json.tool handoff/local-handoff-queue.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-receipt.schema.json >/dev/null
+          python3 -m json.tool handoff/local-handoff-runner-contract.json >/dev/null
+          python3 -m json.tool handoff/local-receipt-reducer-contract.json >/dev/null
+          git diff --check 0089950cd96b638e9f8db7eff7b08d6b3dfa0c3d...HEAD
+
+      - name: Evidence ceiling receipt
+        run: |
+          cat <<'EOF'
+          PASS P7 owner-route reconciliation exact verification
+          target=3fd99f4051dafa440d61c11eac610737281b1583
+          base=0089950cd96b638e9f8db7eff7b08d6b3dfa0c3d
+          changed_paths=2
+          vertical_canary_owner_issue=14
+          closed_p5_issue_22_execution_authority=0
+          active_execution=NOT_PERFORMED
+          real_local_receipt=NOT_OBSERVED
+          requirement_closure_credit=0
+          vertical_canary=PLAN_ONLY
+          evidence_ceiling=LOCAL_HANDOFF_OWNER_ROUTE_RECONCILIATION_ONLY
+          EOF
