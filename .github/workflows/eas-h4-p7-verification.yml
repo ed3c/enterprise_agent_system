@@ -18,7 +18,7 @@ jobs:
       - name: Checkout immutable P7 queue v4 target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: 296a130d28ca71efd6c1bede18e8781905055a1a
+          ref: 339795575fead962f7b19b38fec1a2fbb32c5a23
           persist-credentials: false
           fetch-depth: 0
 
@@ -26,8 +26,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="296a130d28ca71efd6c1bede18e8781905055a1a"
-          tree="cc87c07e780df9adbb331f5d43e0a28efc775f80"
+          target="339795575fead962f7b19b38fec1a2fbb32c5a23"
+          tree="39bce6b5c25ca38651cfd69ebc77be90b2ecf655"
           parent="6981c700f9f2f9128ebeebdf80e627178b2be336"
           test "$(git rev-parse HEAD)" = "$target"
           test "$(git rev-parse 'HEAD^{tree}')" = "$tree"
@@ -139,8 +139,8 @@ jobs:
         run: |
           cat <<'EOF'
           PASS EAS-H4V exact queue v4 verification
-          target=296a130d28ca71efd6c1bede18e8781905055a1a
-          tree=cc87c07e780df9adbb331f5d43e0a28efc775f80
+          target=339795575fead962f7b19b38fec1a2fbb32c5a23
+          tree=39bce6b5c25ca38651cfd69ebc77be90b2ecf655
           writer_paths=5
           queue_items=11
           active_items=1
