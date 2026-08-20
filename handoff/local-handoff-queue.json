@@ -1,0 +1,267 @@
+{
+  "schema_version": "enterprise-agent-system/local-handoff-queue/v4",
+  "queue_id": "LH-EAS-INCEPTION-P7-V4-2026-08-20",
+  "state": "READY_FOR_LOCAL_EXECUTION_PREPARATION",
+  "compiled_from": {
+    "repository": "ed3c/enterprise_agent_system",
+    "issue": 13,
+    "pull_request": 94,
+    "commit": "6981c700f9f2f9128ebeebdf80e627178b2be336",
+    "tree": "d044ae652b65af6a0aba49f0f79c7c04c630bebf",
+    "verification_run": 32342272177,
+    "shadow_review": 4979950874,
+    "p6_state": "ADMIT_FOR_P7_REBIND_AFTER_EAS_A"
+  },
+  "eas_a": {
+    "pull_request": 68,
+    "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+    "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891",
+    "verification_run": 32295871632,
+    "shadow_review": 4976213414,
+    "authority": "ADVISORY_ONLY",
+    "relationship": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
+    "google_connectivity": "NOT_PERFORMED",
+    "google_write": "NOT_PERFORMED",
+    "source_correctness": "NOT_PROVEN"
+  },
+  "superseded_candidates": [
+    {
+      "queue_id": "LH-EAS-INCEPTION-2026-08-18",
+      "pull_request": 27,
+      "commit": "9223107163b27984ed490246b4c0899caeb1bdae",
+      "tree": "d462e2a1a69d225bf8161ce01918e5e8bb8d102f",
+      "disposition": "SUPERSEDED_STALE_SUBJECT",
+      "authority": "NONE",
+      "history_record": "handoff/history/LH-EAS-INCEPTION-2026-08-18-superseded.json"
+    },
+    {
+      "queue_id": "LH-EAS-INCEPTION-P7-2026-08-20",
+      "pull_request": 50,
+      "commit": "00b9ae644352485e4779102b1c3c2d18f6a7155c",
+      "tree": "4effe7ce338753ee61972890f676700ad33c3e04",
+      "disposition": "SUPERSEDED_STALE_ROOT_D",
+      "authority": "NONE"
+    },
+    {
+      "queue_id": "LH-EAS-INCEPTION-P7-V3-2026-08-20",
+      "pull_request": 59,
+      "commit": "a6dbbc52fba70c9732a1bf664f52a072cd83d608",
+      "tree": "7b54d0c56d088bf7edcf7b4c8984366a89ee9e36",
+      "disposition": "SUPERSEDED_BY_EAS_A_ROOT_D_REBIND",
+      "authority": "NONE"
+    }
+  ],
+  "superseded_downstream": [
+    {
+      "atom": "H3R",
+      "pull_request": 67,
+      "commit": "f81c2ecabaaac44ff82832a482524124baec106a",
+      "tree": "49170e045200b1cd42d8022ca6fcb81c23314932",
+      "authority": "NONE"
+    },
+    {
+      "atom": "H3RR",
+      "pull_request": 71,
+      "commit": "82366dabf871f466c0c1353ef49198f82de90c16",
+      "authority": "NONE"
+    }
+  ],
+  "p7_prompt": {
+    "path": "docs/prompts/P7-local-handoff-compiler.system.md",
+    "blob": "364b07078f9d29b67e03270eb04454ddcf997184",
+    "source_commit": "6981c700f9f2f9128ebeebdf80e627178b2be336"
+  },
+  "closure_projection": {
+    "requirements_total": 15,
+    "requirements_required_lane_satisfied": 1,
+    "requirements_closure_credit": 0,
+    "contradictions_total": 14,
+    "contradictions_preserved": 14,
+    "stronger_no_credit_lanes": 13,
+    "full_architecture": "BLOCKED_FOR_CLOSURE",
+    "vertical_canary": "PLAN_ONLY",
+    "vertical_canary_digest": "sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2",
+    "vertical_execution_receipt": null,
+    "profile_release": "NOT_ADMITTED",
+    "human_admission": "NOT_PERFORMED"
+  },
+  "environment_name_allowlist": [
+    "EAS_CHECKOUT",
+    "EAS_WORKTREES",
+    "EAS_RECEIPT_DIR",
+    "RUNTIME_ENV_CHECKOUT",
+    "BETTOR_ARENA_CHECKOUT",
+    "AGENT_SHIELD_CHECKOUT",
+    "TRUTH_VERIFY_CHECKOUT"
+  ],
+  "secret_values_allowed": false,
+  "credential_values_allowed": false,
+  "active_item_id": "LH-P7-01-ROOT-D-V3-LOCAL-READBACK",
+  "items": [
+    {
+      "item_id": "LH-P7-01-ROOT-D-V3-LOCAL-READBACK",
+      "state": "ACTIVE",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14",
+      "objective": "Locally read back the current public Root-D v3 exact bytes and replay admitted deterministic convergence/documentation controls before any stronger action.",
+      "required_evidence_lane": "LOCAL_DETERMINISTIC",
+      "required_runtime_any_of": ["CODEX_CLI_LOCAL", "CLAUDE_CODE_LOCAL"],
+      "required_capabilities": ["git", "python3", "local-filesystem-read", "detached-git-worktree"],
+      "subjects": [
+        {"subject_id": "ROOT-D", "repository": "ed3c/enterprise_agent_system", "pull_request": 94, "commit": "6981c700f9f2f9128ebeebdf80e627178b2be336", "tree": "d044ae652b65af6a0aba49f0f79c7c04c630bebf", "verification_run": 32342272177, "shadow_review": 4979950874},
+        {"subject_id": "GENERIC-X", "repository": "ed3c/enterprise_agent_system", "pull_request": 31, "commit": "b295eabec7b4c9d4e1f65f7fb0238034f454ae7f", "tree": "25bd4c7e934690b3ac15692ba04af4418a46b1f2", "verification_run": 32296886625, "shadow_review": 4976304922},
+        {"subject_id": "PROFILE-X", "repository": "ed3c/enterprise_agent_system", "pull_request": 80, "commit": "df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0", "tree": "9290a2822ba30309a9d44933ce0ea4d640501a39", "verification_run": 32321499909, "shadow_review": 4978282030},
+        {"subject_id": "PROFILE-D", "repository": "ed3c/enterprise_agent_system", "pull_request": 84, "commit": "f04f9fc78270c8f97ce978e2ccc161ab4d724ca4", "tree": "9740f25f9b1fa8f6533c49642381955b953dd12a", "verification_run": 32326260896, "shadow_review": 4978669357},
+        {"subject_id": "EAS-A", "repository": "ed3c/enterprise_agent_system", "pull_request": 68, "commit": "250717db1cad584d50890c0d851153fa2cd755e8", "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891", "verification_run": 32295871632, "shadow_review": 4976213414, "authority": "ADVISORY_ONLY", "relationship": "PROCESS_DEPENDENCY_NOT_GIT_PARENT"}
+      ],
+      "commands": [
+        {"command_id": "FETCH_ROOT_D", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "fetch"}, {"literal": "origin"}, {"literal": "agent/eas-d-final-docs-convergence-v3-f04f9fc7:refs/remotes/origin/p7-root-d-v3"}], "timeout_seconds": 120},
+        {"command_id": "CREATE_ROOT_D_WORKTREE", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "add"}, {"literal": "--detach"}, {"env_path": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}}, {"literal": "6981c700f9f2f9128ebeebdf80e627178b2be336"}], "timeout_seconds": 60},
+        {"command_id": "ASSERT_ROOT_D_SUBJECT", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}, "argv": [{"literal": "python3"}, {"literal": "-c"}, {"literal": "import subprocess,sys; c=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(); t=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(); print(c,t); sys.exit(0 if c=='6981c700f9f2f9128ebeebdf80e627178b2be336' and t=='d044ae652b65af6a0aba49f0f79c7c04c630bebf' else 2)"}], "timeout_seconds": 60},
+        {"command_id": "REPLAY_GENERIC_X", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}, "argv": [{"literal": "python3"}, {"literal": "tests/test_convergence.py"}], "timeout_seconds": 180},
+        {"command_id": "REPLAY_PROFILE_X", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence.py"}], "timeout_seconds": 180},
+        {"command_id": "REPLAY_PROFILE_X_MUTATIONS", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/convergence/verify_profile_convergence_mutations.py"}], "timeout_seconds": 180},
+        {"command_id": "REPLAY_PROFILE_D", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py"}], "timeout_seconds": 180},
+        {"command_id": "REPLAY_PROFILE_D_MUTATIONS", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}, "argv": [{"literal": "python3"}, {"literal": "profiles/agent-thinking-inception/tests/docs/verify_profile_docs.py"}, {"literal": "--selftest"}], "timeout_seconds": 180},
+        {"command_id": "ASSERT_ROOT_D_PROJECTION", "cwd": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}, "argv": [{"literal": "python3"}, {"literal": "-c"}, {"literal": "from pathlib import Path; s=Path('README.md').read_text()+Path('CONTEXT.md').read_text()+Path('docs/traceability/MOLECULAR_STACK_INDEX.md').read_text(); r=['ROOT_D_V3_CANDIDATE','NOT_PERFORMED','BLOCKED_FOR_CLOSURE','PLAN_ONLY','ADVISORY_ONLY','250717db1cad584d50890c0d851153fa2cd755e8','f04f9fc78270c8f97ce978e2ccc161ab4d724ca4']; m=[x for x in r if x not in s]; print(m); raise SystemExit(0 if not m else 2)"}], "timeout_seconds": 60}
+      ],
+      "required_receipt": {
+        "schema": "handoff/local-handoff-receipt.schema.json",
+        "path": {"env": "EAS_RECEIPT_DIR", "relative": "LH-P7-01-ROOT-D-V3-LOCAL-READBACK.json"},
+        "required_fields": ["queue_id", "item_id", "started_at", "finished_at", "subject_before", "subject_after", "commands", "exit_codes", "stdout_digests", "stderr_digests", "observed_commit", "observed_tree", "evidence_lane", "result", "dirty_state_before", "dirty_state_after", "residue_inventory", "cleanup_result", "failures", "retries", "claims_not_proven", "next_transition"]
+      },
+      "cleanup": [
+        {"command_id": "REMOVE_ROOT_D_WORKTREE", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "remove"}, {"literal": "--force"}, {"env_path": {"env": "EAS_WORKTREES", "relative": "root-d-v3"}}], "timeout_seconds": 60},
+        {"command_id": "PRUNE_WORKTREES", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "worktree"}, {"literal": "prune"}], "timeout_seconds": 60},
+        {"command_id": "DELETE_TEMP_ROOT_D_REF", "cwd": {"env": "EAS_CHECKOUT", "relative": "."}, "argv": [{"literal": "git"}, {"literal": "update-ref"}, {"literal": "-d"}, {"literal": "refs/remotes/origin/p7-root-d-v3"}], "timeout_seconds": 60}
+      ],
+      "rollback_subject": {"repository": "ed3c/enterprise_agent_system", "commit": "6981c700f9f2f9128ebeebdf80e627178b2be336", "tree": "d044ae652b65af6a0aba49f0f79c7c04c630bebf"},
+      "success_transition": "CANDIDATE_RECEIPT_READY_FOR_CANONICAL_REDUCER",
+      "failure_transition": "BLOCKED_WITH_EXACT_LOCAL_RECEIPT",
+      "claims_not_proven": ["This item does not prove provider, physical, private, external-effect, user, Human, merge, release or rollback lanes.", "A local replay cannot advance the queue until canonical reducer readback and clean cleanup."]
+    },
+    {
+      "item_id": "LH-P7-02-A2R-CONTEXT-TOKENIZER",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-01-ROOT-D-V3-LOCAL-READBACK"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/7",
+      "objective": "Exercise exact runtime-env contract on an admitted local workload and bind tokenizer/context-limit observation.",
+      "required_evidence_lane": "LOCAL_DETERMINISTIC",
+      "subject": {"repository": "ed3c/runtime-env", "commit": "2ff4efe7bee3d12fb3063fed93631f8d323cd64a", "tree": "273c6873e7075d90a7f11275c5d39e746dd075dc"},
+      "resolver": {"requires": ["RUNTIME_ENV_CHECKOUT", "admitted workload/tokenizer observation capability"], "human_if": ["provider enrollment or credential change"]},
+      "next_transition": "LOCAL_CONTEXT_RECEIPT_THEN_CANONICAL_REDUCER",
+      "claims_not_proven": ["Provider capability/enrollment remains separate unless directly observed."]
+    },
+    {
+      "item_id": "LH-P7-03-A1-PHYSICAL-DURABILITY",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-02-A2R-CONTEXT-TOKENIZER"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/5",
+      "objective": "Run physical/restart durability and reconstruction probes for exact A1.",
+      "required_evidence_lane": "LIVE_PHYSICAL",
+      "subject": {"repository": "ed3c/bettor-arena", "commit": "21ac4fdcd6ce4c5acea920dc4e59a53d13ecd328", "tree": "31ea6bec01899a4c9e4f994998ea6041116db49d"},
+      "resolver": {"requires": ["BETTOR_ARENA_CHECKOUT", "admitted durable storage", "physical/restart observation"], "human_if": ["destructive host manipulation"]},
+      "next_transition": "PHYSICAL_DURABILITY_RECEIPT_THEN_CANONICAL_REDUCER",
+      "claims_not_proven": ["GitHub crash fixtures do not prove physical power-loss or production multi-host recovery."]
+    },
+    {
+      "item_id": "LH-P7-04-A2-ISOLATION-PROVIDER",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-03-A1-PHYSICAL-DURABILITY"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/7",
+      "objective": "Exercise network/gVisor isolation and provider steering capability for exact A2.",
+      "required_evidence_lane": "LIVE_PROVIDER_AND_PHYSICAL",
+      "subject": {"repository": "ed3c/agent-shield-monorepo", "commit": "8ec782b78ec9e13f78f2faf14e6ffa722c1b78f2", "tree": "51adf9791485d597849c026a3828ded0088b3805"},
+      "resolver": {"requires": ["AGENT_SHIELD_CHECKOUT", "gVisor or admitted hardened sandbox", "provider capability handle names"], "human_if": ["provider enrollment", "credential creation", "egress approval"]},
+      "next_transition": "ISOLATION_PROVIDER_RECEIPT_THEN_CANONICAL_REDUCER",
+      "claims_not_proven": ["Local process cleanup does not prove gVisor/network isolation or live provider steering."]
+    },
+    {
+      "item_id": "LH-P7-05-A3-INDEPENDENT-SEMANTIC",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-04-A2-ISOLATION-PROVIDER"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/15",
+      "objective": "Obtain independent semantic/private-source evidence for exact A3 without self-judging.",
+      "required_evidence_lane": "INDEPENDENT_VERIFICATION",
+      "subject": {"repository": "ed3c/truth-verify-loop", "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980", "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547"},
+      "resolver": {"requires": ["TRUTH_VERIFY_CHECKOUT", "independent verifier/provider or Human reviewer"], "human_if": ["private-source access or external disclosure"]},
+      "next_transition": "INDEPENDENT_EVIDENCE_RECEIPT_THEN_CANONICAL_REDUCER",
+      "claims_not_proven": ["Public Git-object and deterministic semantic fixtures do not prove private or external independent verification."]
+    },
+    {
+      "item_id": "LH-P7-06-A4-TERMS-TELEMETRY",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-05-A3-INDEPENDENT-SEMANTIC"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/16",
+      "objective": "Bind exact external Model/Data/Trace terms and run scoped live telemetry export/store/delete canary.",
+      "required_evidence_lane": "HUMAN_LEGAL_SECURITY_AND_LIVE_PHYSICAL",
+      "subject": {"repository": "ed3c/enterprise_agent_system", "commit": "bf976c7c33e315d1743733a79c15521e645ff6dc", "tree": "c09bef2457ad507433f253c8a5fd211147fae247"},
+      "resolver": {"requires": ["exact external terms subjects", "admitted telemetry test environment"], "human_if": ["legal/security disposition", "external egress approval"]},
+      "next_transition": "TERMS_TELEMETRY_RECEIPT_THEN_CANONICAL_REDUCER",
+      "claims_not_proven": ["Synthetic leak canaries are not legal clearance and do not prove live exporter/storage/deletion."]
+    },
+    {
+      "item_id": "LH-P7-07-A5-EXTERNAL-BENCHMARK",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-06-A4-TERMS-TELEMETRY"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/17",
+      "objective": "Bind one exact external public candidate and terms, run matched benchmark, then route admission.",
+      "required_evidence_lane": "HUMAN_ADMIT",
+      "subject": {"repository": "ed3c/bettor-arena", "commit": "81f02f4148273ffe5f5571c8605e1ee0afc59866", "tree": "f9612314e47ced69796db00703dd5d34ab592e36"},
+      "resolver": {"requires": ["BETTOR_ARENA_CHECKOUT", "exact external candidate revision/terms", "matched benchmark runtime"], "human_if": ["dependency activation or admission"]},
+      "next_transition": "BENCHMARK_RECEIPT_THEN_HUMAN_ADMISSION",
+      "claims_not_proven": ["Matched public fixture evidence does not prove external superiority, legal usability or admission."]
+    },
+    {
+      "item_id": "LH-P7-08-A6-PROVIDER-EFFECT",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-07-A5-EXTERNAL-BENCHMARK"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/18",
+      "objective": "Exercise provider-authenticated ingress, UNKNOWN_EFFECT reconciliation, reversible effect/readback and compensation.",
+      "required_evidence_lane": "LIVE_EXTERNAL_EFFECT",
+      "subject": {"repository": "ed3c/bettor-arena", "commit": "c2613432736c65756ed13d871feb2df486c69118", "tree": "53680d47048f88b9402c6320355121b7ec2f7244"},
+      "resolver": {"requires": ["BETTOR_ARENA_CHECKOUT", "provider test credential handle", "reversible remote test target", "readback/compensation oracle"], "human_if": ["irreversible effect", "production target", "credential enrollment"]},
+      "next_transition": "REMOTE_EFFECT_RECEIPT_THEN_CANONICAL_REDUCER",
+      "claims_not_proven": ["No real external effect or compensation has been performed by queue preparation."]
+    },
+    {
+      "item_id": "LH-P7-09-VERTICAL-CANARY",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-08-A6-PROVIDER-EFFECT"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/22",
+      "objective": "Execute the content-addressed vertical canary only after all predecessor lanes have admitted receipts.",
+      "required_evidence_lane": "MULTI_LANE_VERTICAL",
+      "resolver": {"requires": ["all predecessor exact receipts", "clean residue", "same canary digest"], "human_if": ["authority widening beyond contract"]},
+      "canary": {"contract_digest": "sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2", "current_state": "PLAN_ONLY", "execution_receipt": null},
+      "next_transition": "VERTICAL_EXECUTION_RECEIPT_THEN_TRUTH_VERIFY",
+      "claims_not_proven": ["The canary remains PLAN_ONLY until an execution receipt exists."]
+    },
+    {
+      "item_id": "LH-P7-10-FINAL-TRUTH-VERIFY",
+      "state": "BLOCKED_BY_PREDECESSOR",
+      "blocked_by": ["LH-P7-09-VERTICAL-CANARY"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/15",
+      "objective": "Independently read back vertical execution artifacts and reconcile requirement/contradiction/user-outcome evidence.",
+      "required_evidence_lane": "INDEPENDENT_VERIFICATION",
+      "subject": {"repository": "ed3c/truth-verify-loop", "commit": "5ea4dd42d2ee5bbd22537f5426cd276f10222980", "tree": "fc6486b9ab6a48752e32a536a847c6e5635f8547"},
+      "resolver": {"requires": ["vertical execution receipt", "independent Truth Verify lane"], "human_if": ["semantic conflict cannot be resolved deterministically"]},
+      "next_transition": "FINAL_TRUTH_RECEIPT_THEN_HUMAN_ADMISSION",
+      "claims_not_proven": ["Truth verification cannot itself perform Human admission, merge or release."]
+    },
+    {
+      "item_id": "LH-P7-11-HUMAN-ADMISSION",
+      "state": "HUMAN_ADMIT_REQUIRED",
+      "blocked_by": ["LH-P7-10-FINAL-TRUTH-VERIFY"],
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14",
+      "objective": "Human legal/security/admission and separate merge/release/rollback decision after all required evidence lanes are independently reconciled.",
+      "required_evidence_lane": "HUMAN_ADMIT",
+      "resolver": {"requires": ["all admitted exact receipts", "Human operator"], "human_if": ["always"]},
+      "next_transition": "HUMAN_DECISION_ONLY",
+      "claims_not_proven": ["Queue preparation cannot perform or imply Human admission, merge, release or rollback."]
+    }
+  ],
+  "advance_rule": "Only the canonical reducer/owner may advance the ACTIVE item after exact receipt, subject readback, required evidence-lane match and clean residue verification. Queue-shape or command exit alone cannot advance state.",
+  "failed_blocked_retried_attempts_must_remain_visible": true,
+  "human_owned": ["provider enrollment", "credential creation", "private-data egress approval", "semantic conflict resolution", "legal/security admission", "irreversible external effects", "merge", "release", "rollback"],
+  "queue_execution": "NOT_PERFORMED",
+  "evidence_ceiling": "P7_EXECUTABLE_QUEUE_PREPARATION_ONLY"
+}

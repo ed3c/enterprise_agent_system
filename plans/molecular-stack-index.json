@@ -1,0 +1,109 @@
+{
+  "schema_version": "enterprise-agent-system/molecular-stack-index/v1",
+  "required_atoms": ["C", "K", "A", "E", "X", "D"],
+  "atoms": [
+    {
+      "atom": "C",
+      "name": "EAS-C",
+      "class": "root",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/8",
+      "pull_request": 20,
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "ac0a7645392f689ae488328a53e7b6f3bb6ad02d",
+        "tree": "51c94cb43ed1e4a3a3ac05e42838532c3ec2e598"
+      },
+      "state": "DETERMINISTIC_VERIFIED",
+      "lane": "CONTROL_PLANE",
+      "next": "K"
+    },
+    {
+      "atom": "K",
+      "name": "EAS-K",
+      "class": "child",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/9",
+      "pull_request": 24,
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "b1362f48b6edc0b4cd6d301da2a5d0e94d970f8c",
+        "tree": "19353937e8d642a0bd731e20b3f61ffa3af2b913"
+      },
+      "state": "DETERMINISTIC_VERIFIED",
+      "lane": "TECH_LEAD_ORCHESTRATION",
+      "next": "E"
+    },
+    {
+      "atom": "A",
+      "name": "EAS-A",
+      "class": "sibling",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/10",
+      "pull_request": 68,
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+        "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891"
+      },
+      "verification_run": 32295871632,
+      "shadow_review": 4976213414,
+      "state": "DETERMINISTIC_VERIFIED",
+      "lane": "ADVISORY_PROJECTIONS",
+      "authority": "ADVISORY_ONLY",
+      "evidence_ceiling": "ADAPTER_AND_ADVISORY_PROJECTION_SEMANTICS_ONLY",
+      "git_relation_to_x": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
+      "next": "D",
+      "claims_not_proven": [
+        "Google connectivity and writes were not performed.",
+        "Advisory projections cannot mutate canonical task/workflow/effect/Human/release state."
+      ]
+    },
+    {
+      "atom": "E",
+      "name": "EAS-E",
+      "class": "review-only",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/11",
+      "pull_request": 25,
+      "subject": {
+        "repository": "ed3c/enterprise_agent_system",
+        "commit": "177ba870c41cc5605532ea79770d54aea124fa0c",
+        "tree": "20073aa3b719f30c95a6cbf449f0d6a2144f71c3"
+      },
+      "state": "DETERMINISTIC_VERIFIED",
+      "lane": "INDEPENDENT_SHADOW",
+      "next": "X"
+    },
+    {
+      "atom": "X",
+      "name": "EAS-X",
+      "class": "convergence",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/12",
+      "pull_request": 31,
+      "branch": "agent/eas-x-cross-repo-convergence",
+      "subject": null,
+      "subject_binding": "PR_HEAD_READBACK_REQUIRED_AFTER_PUBLICATION",
+      "state": "IN_PROGRESS",
+      "lane": "CROSS_REPO_CONVERGENCE",
+      "true_git_parent": "EAS-E@177ba870c41cc5605532ea79770d54aea124fa0c",
+      "process_dependencies": ["EAS-K", "EAS-A"],
+      "next": "D"
+    },
+    {
+      "atom": "D",
+      "name": "EAS-D",
+      "class": "planned",
+      "issue": "https://github.com/ed3c/enterprise_agent_system/issues/13",
+      "pull_request": null,
+      "historical_blueprint_pull_request": 26,
+      "subject": null,
+      "state": "BLOCKED_BY_EAS_X_REBIND",
+      "lane": "DOCUMENTATION_CONVERGENCE",
+      "next": "P7_LOCAL_HANDOFF"
+    }
+  ],
+  "laws": [
+    "review-only atoms are evaluation dependencies, not merge parents unless bytes are actually consumed",
+    "planned atoms never receive an invented branch or immutable subject",
+    "open mutable branch names are navigation metadata, not immutable evidence",
+    "a process dependency is not automatically Git ancestry",
+    "an admitted EAS-A advisory atom remains ADVISORY_ONLY and cannot back-prove runtime/live/Human state"
+  ]
+}

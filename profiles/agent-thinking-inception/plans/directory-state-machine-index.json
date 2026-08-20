@@ -1,0 +1,47 @@
+{
+  "schema_version": "enterprise-agent-system/inception-directory-state-machine-index/v3",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "state": "P6_PROFILE_DOCUMENTATION_CANDIDATE_AFTER_EAS_A",
+  "parent_profile_x": {
+    "pull_request": 80,
+    "commit": "df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0",
+    "tree": "9290a2822ba30309a9d44933ce0ea4d640501a39",
+    "external_verification_run": 32321499909,
+    "shadow_review": 4978282030
+  },
+  "entries": [
+    {
+      "phase":"P0","directory":"profiles/agent-thinking-inception/source/** + requirements/**","canonical_owner":"INCEPTION-C0 / #2","state_machine":["SOURCE_REGISTERED","DIGEST_BOUND","REQUIREMENT_GRAPH_FROZEN","SOURCE_PROPOSAL"],"inputs":["local-only PDF digest","page locators"],"outputs":["15 requirements","14 contradictions"],"gate":"SOURCE_DENOMINATOR_FROZEN","blocker":"source proposal is not runtime truth","next_owner":"INCEPTION-C1","evidence_ceiling":"SOURCE_AND_CONTROL_GRAPH"
+    },
+    {
+      "phase":"P1","directory":"profiles/agent-thinking-inception/contracts/**","canonical_owner":"INCEPTION-C1 / #3","state_machine":["PROFILE_CONTRACT_READY","STRICT_RECORDS_BOUND","MUTATIONS_REPLAYED","OWNER_LANES_BOUND"],"inputs":["15/14 source graph","EAS-C vocabulary"],"outputs":["11 profile contracts"],"gate":"DETERMINISTIC_CONTRACT_CONTROLS","blocker":"contract shape is not runtime execution","next_owner":"INCEPTION-K","evidence_ceiling":"DETERMINISTIC_EVIDENCE_VERIFIED"
+    },
+    {
+      "phase":"P2","directory":"profiles/agent-thinking-inception/orchestration/**","canonical_owner":"INCEPTION-K / #4","state_machine":["REQUEST_BOUND","START_DAG","COMPLETION_DAG","PACKETS","LEASES","OWNER_WAVES"],"inputs":["C1","generic K"],"outputs":["task DAG","fresh-session packets","leases"],"gate":"DAG_PACKET_LEASE_CONTROLS","blocker":"packet readiness is not execution","next_owner":"A1/A2R/A2/A3/A4/A5/A6","evidence_ceiling":"DETERMINISTIC_EVIDENCE_VERIFIED"
+    },
+    {
+      "phase":"P3","directory":"external owner repositories + owners/compliance/**","canonical_owner":"A1/A2R/A2/A3/A4/A5/A6","state_machine":["OWNER_SUBJECT_BOUND","PUBLIC_MECHANISM","TARGETED_CANARY","RECEIPT"],"inputs":["K packets"],"outputs":["seven exact public receipts"],"gate":"OWNER_EXACT_SUBJECTS_AND_HOSTED_RUNS","blocker":"provider/private/physical/effect/Human lanes remain separate","next_owner":"INCEPTION-E","evidence_ceiling":"TARGETED_PUBLIC_AND_DETERMINISTIC_ONLY"
+    },
+    {
+      "phase":"P3-A","directory":"integrations/github/** + integrations/google-drive/**","canonical_owner":"EAS-A / #10","state_machine":["REFERENCE_DECLARED","ACCESS_POLICY","REVISION_OR_GIT_SUBJECT","DIGEST","FRESHNESS","CURRENT_OR_STALE_OR_REFUSED_OR_ABSENT"],"inputs":["GitHub/Google references"],"outputs":["advisory projection record"],"gate":"32295871632 PASS / Shadow 4976213414","blocker":"Google connectivity/write and source correctness not proven","next_owner":"Generic-X/Profile-X projection only","evidence_ceiling":"ADVISORY_ONLY"
+    },
+    {
+      "phase":"P4","directory":"profiles/agent-thinking-inception/shadow/**","canonical_owner":"INCEPTION-E / #19","state_machine":["PUBLIC_DENOMINATOR","REPLAY","FAILED_ATTEMPTS_PRESERVED","STRONGER_LANES_PRESERVED","ADMIT_OR_BLOCK"],"inputs":["seven owner receipts","15/14"],"outputs":["read-only Shadow snapshot"],"gate":"Shadow 4973593318 / may_commit=[]","blocker":"full closure blocked","next_owner":"INCEPTION-X","evidence_ceiling":"READ_ONLY_EVALUATION"
+    },
+    {
+      "phase":"P5-GENERIC","directory":"generic convergence paths","canonical_owner":"EAS-X / #12","state_machine":["OWNER_RECEIPTS","EAS_A_ADVISORY_REBIND","LANE_RECONCILE","DOWNSTREAM_READY"],"inputs":["owners","EAS-A"],"outputs":["aggregate convergence"],"gate":"32296886625 PASS / Shadow 4976304922","blocker":"no stronger evidence promotion","next_owner":"Profile-X","evidence_ceiling":"CROSS_REPO_ROUTING_CANDIDATE"
+    },
+    {
+      "phase":"P5-PROFILE","directory":"profiles/agent-thinking-inception/evidence/convergence/** + plans/{closure-record,vertical-canary}.json + tests/convergence/**","canonical_owner":"INCEPTION-X / #22","state_machine":["GENERIC_X_AND_PROFILE_E_BOUND","EAS_A_ADVISORY_BOUND","15_14_13_RECONCILED","PLAN_ONLY_CANARY","ADMIT_FOR_P6_OR_BLOCK"],"inputs":["Generic-X","Profile-E","EAS-A advisory","source shards"],"outputs":["closure matrix","receipt index","canary"],"gate":"PR #80 / verify 32321499909 / Shadow 4978282030 / 34 mutations","blocker":"integrated execution and stronger lanes open","next_owner":"INCEPTION-D","evidence_ceiling":"PROFILE_P5_EXACT_SUBJECT_RECONCILIATION_ONLY"
+    },
+    {
+      "phase":"P6","directory":"profiles/agent-thinking-inception/docs/** + plans/{molecular-stack-index,directory-state-machine-index,data-flow}.json + prompts/{README,12-profile-docs-convergence.system.md} + tests/docs/**","canonical_owner":"INCEPTION-D / #23","state_machine":["PROFILE_X_V4_PINNED","MACHINE_PROJECTIONS","PROMPT_CATALOGUE","DOCS_VERIFY","SHADOW","ROOT_D_HANDOFF"],"inputs":["Profile-X #80 machine records"],"outputs":["profile README","Stack","data flow","State Machine index","prompt catalogue"],"gate":"external immutable-target verification + fresh Shadow required","blocker":"Root-D/P7 descendants remain stale until this P6 subject is admitted","next_owner":"Root EAS-D #13","evidence_ceiling":"DOCUMENTATION_AND_TRACEABILITY_ONLY"
+    },
+    {
+      "phase":"P7","directory":"handoff/** + runner/reducer siblings","canonical_owner":"EAS-H / #14","state_machine":["CURRENT_ROOT_D_RECEIPT","QUEUE_COMPILED","ONE_ACTIVE","EXECUTE","RECEIPT","CLEANUP","REDUCER","NEXT_OR_HUMAN"],"inputs":["fresh Root-D exact receipt"],"outputs":["future local/provider receipts"],"gate":"current P7 must be rebuilt after EAS-A","blocker":"old #59/#67/#71 authority NONE; execution NOT_PERFORMED","next_owner":"local/provider/Human authorities","evidence_ceiling":"NOT_CURRENT_YET"
+    }
+  ],
+  "closure_projection": {
+    "requirements":15,"contradictions":14,"stronger_no_credit_lanes":13,"required_lanes_satisfied":1,"closure_credit":0,"vertical_canary":"PLAN_ONLY","canary_digest":"sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2","full_architecture":"BLOCKED_FOR_CLOSURE","profile_release":"NOT_ADMITTED"
+  }
+}

@@ -1,0 +1,469 @@
+{
+  "schema_version": "enterprise-agent-system/inception-worker-packet-specs/v1",
+  "spec_set_id": "PACKETS-INCEPTION-K-2026-08-18",
+  "input_binding": {
+    "path": "profiles/agent-thinking-inception/orchestration/profile-input-binding.json",
+    "profile_k_base_commit": "1474882226fff6078afe467731db5adec9a09a50",
+    "profile_k_base_tree": "3aadb4377d9596823b070f996a5f94ccb8f05220",
+    "source_digest": "sha256:a6f1245ff865cae24838ed8ec4828330be684f3c03b29b9064ade8bfac94d8da",
+    "contract_bundle_digest": "sha256:f19249d8e40fbf0c6db6f71ed943192cfc4debe097cd7b517164a159c0c040bf"
+  },
+  "defaults": {
+    "non_goals": [
+      "duplicate a canonical owner implementation inside enterprise_agent_system",
+      "invent live provider effect user Human or release evidence",
+      "write outside the declared lease"
+    ],
+    "invariants": [
+      "one interface and canonical state have one owner repository",
+      "start readiness and completion readiness are separate",
+      "Worker output is candidate evidence until exact readback and owning Gates",
+      "failed blocked retried skipped and unexercised attempts remain in the denominator",
+      "merge release rollback egress and semantic conflicts remain Human owned"
+    ],
+    "unknowns": [
+      "owner repository exact implementation subject must be rebound before mutation",
+      "local provider and physical capabilities remain unverified",
+      "Human admission release and rollback remain unperformed"
+    ],
+    "read_only_paths": [
+      "contracts/control-plane/**",
+      "src/enterprise_agent_system/**",
+      "profiles/agent-thinking-inception/source/**",
+      "profiles/agent-thinking-inception/requirements/**",
+      "profiles/agent-thinking-inception/contracts/**",
+      "profiles/agent-thinking-inception/examples/inception-contract-bundle.example.json",
+      "profiles/agent-thinking-inception/orchestration/profile-input-binding.json",
+      "profiles/agent-thinking-inception/orchestration/profile-run.json"
+    ],
+    "acceptance_criteria": [
+      "the exact owner subject and required evidence lane are explicit",
+      "positive and planted disagreement controls execute on the exact candidate",
+      "cleanup residue rollback blockers claims-not-proven and next authority are preserved"
+    ],
+    "negative_controls": [
+      "mutable or stale subject",
+      "overlapping path or resource lease",
+      "one evidence lane substituted for another",
+      "Worker provider or model self-promotes canonical Human or release state",
+      "secret local-only source or session material enters a portable packet"
+    ],
+    "cleanup_requirements": [
+      "report dirty state before and after",
+      "report worktree process port container index and artifact residue",
+      "preserve rollback and compensation subject"
+    ],
+    "receipt_fields": [
+      "packet_digest",
+      "subject_before",
+      "subject_after",
+      "changed_paths",
+      "commands",
+      "gates",
+      "attempts",
+      "cleanup",
+      "rollback_subject",
+      "claims_not_proven",
+      "next_authority"
+    ],
+    "forbidden_actions": [
+      "data_egress",
+      "irreversible_effect",
+      "issue_close",
+      "merge",
+      "permission_change",
+      "promotion",
+      "release",
+      "rollback",
+      "semantic_conflict_resolution",
+      "visibility_change"
+    ]
+  },
+  "specs": [
+    {
+      "task_id": "TASK-INCEPTION-A1",
+      "role": "Durable Domain State Compaction and Recovery Owner Router",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/5",
+      "target_repository": "ed3c/bettor-arena",
+      "target_interface": "inception/domain-state-compaction",
+      "objective": "Bind and prepare the canonical owner implementation for durable Domain State complete tool-transaction compaction atomic checkpoint activation reconstruction recovery cleanup and rollback.",
+      "required_gates": [
+        "safe tool transaction cardinality and ordering",
+        "optimistic state version and single activation owner",
+        "crash before and after every persistence transition",
+        "reconstruction and rollback probe",
+        "secret and local-only receipt redaction"
+      ],
+      "positive_controls": [
+        "a complete ordered transaction compacts at a measured policy threshold",
+        "the prior checkpoint survives until recovery succeeds",
+        "reconstruction preserves unresolved work leases pending effects and artifacts"
+      ],
+      "runtime_requirements": [
+        "execute in an admitted local checkout and isolated worktree",
+        "use durable versioned storage rather than conversation history or an in-memory dictionary"
+      ],
+      "capability_requirements": [
+        "git and Python owner toolchain",
+        "durable SQLite or PostgreSQL fault-injection environment",
+        "filesystem residue and crash observation"
+      ],
+      "retry_budget": 2,
+      "timeout_seconds": 1800,
+      "next_authority": "PROFILE_SHADOW_ISSUE_19",
+      "evidence_ceiling": "LOCAL_OWNER_CANDIDATE_ONLY",
+      "packet_state": "PLANNED",
+      "claims_not_proven": [
+        "The routing packet does not implement or execute compaction.",
+        "No provider context or production recovery has been exercised."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A2",
+      "role": "Runtime Sandbox Capability and Steering Owner Router",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/7",
+      "target_repository": "ed3c/agent-shield-monorepo",
+      "target_interface": "inception/runtime-sandbox-steering",
+      "objective": "Bind runtime-env capability contracts and prepare hardened sandbox worker leases safe synchronization cancellation steering cleanup and provider observation receipts.",
+      "required_gates": [
+        "exact runtime image workload policy and provider identity",
+        "default-deny network mount privilege secret and shell surfaces",
+        "observed capability matrix for streaming sync cancellation resume and prefill",
+        "timeout descendant and residue cleanup",
+        "stale lease and provider limitation refusal"
+      ],
+      "positive_controls": [
+        "unsupported provider capabilities remain UNKNOWN or UNSUPPORTED",
+        "steering occurs only at a declared safe synchronization point",
+        "cancelled work leaves no process worktree port index or container residue"
+      ],
+      "runtime_requirements": [
+        "execute in an admitted local or provider test lane",
+        "secrets remain opaque host-owned handles"
+      ],
+      "capability_requirements": [
+        "runtime-env exact workload and policy binding",
+        "hardened container or microVM runtime",
+        "provider capability observation and cleanup receipt"
+      ],
+      "retry_budget": 2,
+      "timeout_seconds": 1800,
+      "next_authority": "PROFILE_SHADOW_ISSUE_19",
+      "evidence_ceiling": "LOCAL_PROVIDER_CANDIDATE_ONLY",
+      "packet_state": "PLANNED",
+      "claims_not_proven": [
+        "No provider enrollment capability or isolation canary has executed.",
+        "Hidden reasoning is out of scope and not an available control surface."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A3",
+      "role": "Exact Code Source and Citation Evidence Owner Router",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/15",
+      "target_repository": "ed3c/truth-verify-loop",
+      "target_interface": "inception/code-source-citation-evidence",
+      "objective": "Prepare layered lexical physical semantic disagreement and repair evidence contracts with exact repository source and parser identity.",
+      "required_gates": [
+        "repository commit tree and normalized path confinement",
+        "line snippet symbol signature parser and readback identity",
+        "exact quote locator and source digest",
+        "lexical gate separated from semantic review",
+        "stale conflicted abstained and unverified states preserved"
+      ],
+      "positive_controls": [
+        "exact source readback matches the claim subject",
+        "deterministic physical evidence and semantic review are independently attributable",
+        "unsupported claims route to repair or Human review without promotion"
+      ],
+      "runtime_requirements": [
+        "execute through a separate verification path from the proposer",
+        "private code and source bytes remain in the admitted evidence lane"
+      ],
+      "capability_requirements": [
+        "exact Git and file readback",
+        "language-aware parser with declared coverage",
+        "independent evidence and disagreement receipt"
+      ],
+      "retry_budget": 1,
+      "timeout_seconds": 1200,
+      "next_authority": "PROFILE_SHADOW_ISSUE_19",
+      "evidence_ceiling": "INDEPENDENT_EVIDENCE_CANDIDATE_ONLY",
+      "packet_state": "PLANNED",
+      "claims_not_proven": [
+        "No exact claim has been independently verified.",
+        "A model Judge cannot guarantee zero hallucination."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A4",
+      "role": "Code Model Data Trace Provenance and Telemetry Policy Router",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/16",
+      "target_repository": "ed3c/enterprise_agent_system",
+      "target_interface": "inception/four-tier-provenance",
+      "objective": "Prepare separate Code Model Data and Trace provenance decisions obligations expiry telemetry data-flow controls and Human legal-security review routes.",
+      "required_gates": [
+        "exact code dependency SBOM and notice lineage",
+        "exact model version license ToS data-use and distillation terms",
+        "dataset origin consent attribution privacy derivative and deletion lineage",
+        "sanitize-before-export telemetry route retention RBAC and negative leak controls",
+        "unknown custom and conflicting terms route to Human review"
+      ],
+      "positive_controls": [
+        "each provenance dimension has an exact subject blockers and review expiry",
+        "telemetry sanitization occurs before any exporter",
+        "automated checks emit policy candidate blocked unknown or Human review required"
+      ],
+      "runtime_requirements": [
+        "execute automated checks without externalizing confidential source or trace payloads",
+        "Human legal and security authority remains separate"
+      ],
+      "capability_requirements": [
+        "SBOM and terms capture",
+        "data-flow and telemetry policy analysis",
+        "authorized Human review channel"
+      ],
+      "retry_budget": 1,
+      "timeout_seconds": 1800,
+      "next_authority": "PROFILE_SHADOW_ISSUE_19",
+      "evidence_ceiling": "POLICY_CANDIDATE_ONLY",
+      "packet_state": "PLANNED",
+      "claims_not_proven": [
+        "The packet is not legal advice or commercial clearance.",
+        "No telemetry leakage or retention canary has executed."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A5",
+      "role": "Discovery Adaptation Benchmark and Admission Owner Router",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/17",
+      "target_repository": "ed3c/bettor-arena",
+      "target_interface": "inception/discovery-admission",
+      "objective": "Prepare a bounded discovery provenance interface-fit candidate isolation benchmark Shadow review and Human admission pipeline without automatic legal clearance or merge.",
+      "required_gates": [
+        "immutable upstream source and terms capture before use",
+        "one canonical owner Protocol or SPI",
+        "restricted bytes and dependencies excluded from candidate context",
+        "matched repeated benchmark subjects and failure denominator",
+        "Human admission before dependency activation merge or release"
+      ],
+      "positive_controls": [
+        "discovery signals remain proposals rather than authority",
+        "candidate implementation is isolated and reversible",
+        "rejected blocked unknown and deferred candidates remain visible"
+      ],
+      "runtime_requirements": [
+        "execute only public or admitted source-safe candidate analysis",
+        "use an isolated sandbox with bounded network secret and host access"
+      ],
+      "capability_requirements": [
+        "exact source and provenance capture",
+        "Protocol fit and sandbox test harness",
+        "matched benchmark and Human admission receipt"
+      ],
+      "retry_budget": 1,
+      "timeout_seconds": 2400,
+      "next_authority": "PROFILE_SHADOW_ISSUE_19",
+      "evidence_ceiling": "ADMISSION_CANDIDATE_ONLY",
+      "packet_state": "PLANNED",
+      "claims_not_proven": [
+        "No external project is commercially safe clean-room better or admitted.",
+        "No candidate PR merge or provider activation is authorized."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-A6",
+      "role": "Durable Ingress Effect Ledger and Idempotent Writeback Owner Router",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/18",
+      "target_repository": "ed3c/bettor-arena",
+      "target_interface": "inception/ingress-effect-writeback",
+      "objective": "Prepare provider-specific authenticity durable inbox task admission typed WriteIntent effect reservation external execution remote readback unknown-effect reconciliation compensation and Human escalation.",
+      "required_gates": [
+        "provider-specific signature replay and event schema",
+        "transactional inbox outbox dedupe backpressure retry and dead-letter state",
+        "least-privilege capability expected version and effect identity",
+        "remote readback before COMMITTED",
+        "unknown effect blocks blind retry and routes reconciliation or compensation"
+      ],
+      "positive_controls": [
+        "restart and replay preserve admitted tasks without duplicate observable effects",
+        "API and browser routes emit distinct receipts",
+        "failure cancellation retry dead-letter compensation and Human escalation remain visible"
+      ],
+      "runtime_requirements": [
+        "execute only against a reversible test double until Human effect admission",
+        "keep provider credentials as opaque host handles"
+      ],
+      "capability_requirements": [
+        "durable queue and effect ledger",
+        "provider API or bounded browser adapter",
+        "remote readback and compensation observation"
+      ],
+      "retry_budget": 2,
+      "timeout_seconds": 1800,
+      "next_authority": "PROFILE_SHADOW_ISSUE_19",
+      "evidence_ceiling": "WRITE_INTENT_CANDIDATE_ONLY",
+      "packet_state": "PLANNED",
+      "claims_not_proven": [
+        "No webhook task or external write has executed.",
+        "HTTP 202 and transport acknowledgement are not workflow or effect success."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-E",
+      "role": "Read-only Agent Thinking Inception Shadow Architect",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/19",
+      "target_repository": "ed3c/enterprise_agent_system",
+      "target_interface": "inception/profile-shadow",
+      "objective": "Independently read back exact A1-A6 candidates replay source contradictions reconcile literal evidence lanes preserve the failure denominator and block false closure.",
+      "required_gates": [
+        "same immutable public subject through a separate read-only path",
+        "all 15 requirements and 14 contradictions remain in the denominator",
+        "source proposal implementation and live states remain distinct",
+        "every critical finding has one owner issue and next transition",
+        "cleanup rollback compensation Human and release boundaries are explicit"
+      ],
+      "positive_controls": [
+        "Builder and Shadow artifacts remain independently attributable",
+        "NOT_EXERCISED earns no closure credit",
+        "Shadow may block or admit for review but cannot mutate canonical state"
+      ],
+      "runtime_requirements": [
+        "execute in a separate deterministic or independently admitted evaluation lane",
+        "receive no private chain of thought or secret payload"
+      ],
+      "capability_requirements": [
+        "exact candidate readback",
+        "source-specific mutation corpus",
+        "read-only verdict and owner routing"
+      ],
+      "retry_budget": 0,
+      "timeout_seconds": 1200,
+      "next_authority": "PROFILE_CONVERGENCE_ISSUE_22",
+      "evidence_ceiling": "READ_ONLY_EVALUATOR_ONLY",
+      "packet_state": "BLOCKED_BY_PREDECESSOR",
+      "claims_not_proven": [
+        "A planned packet is not an executed independent Shadow.",
+        "A green evaluator cannot prove provider user Human or release lanes."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-X",
+      "role": "Agent Thinking Inception Exact-subject Convergence Owner",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/22",
+      "target_repository": "ed3c/enterprise_agent_system",
+      "target_interface": "inception/profile-convergence",
+      "objective": "Reconcile all exact A1-A6 Shadow and independent receipts into one lane-literal closure candidate and select one bounded reversible public-safe vertical canary.",
+      "required_gates": [
+        "one canonical owner for every interface and transition",
+        "exact repository commit tree digest and receipt readback",
+        "no missing owner or failed attempt removed from the denominator",
+        "deterministic local provider effect user Human and release lanes remain literal",
+        "cleanup retention compensation and rollback denominator complete"
+      ],
+      "positive_controls": [
+        "all 15 requirements bind owner subject evidence blocker and next transition",
+        "all 14 contradictions replay independently",
+        "the canary is bounded reversible content-addressed and useful without private data"
+      ],
+      "runtime_requirements": [
+        "perform reconciliation without copying owner implementations",
+        "select but do not execute Human-owned provider or external-effect operations"
+      ],
+      "capability_requirements": [
+        "cross-repository exact subject readback",
+        "lane-literal closure reducer",
+        "reversible vertical canary planner"
+      ],
+      "retry_budget": 1,
+      "timeout_seconds": 1800,
+      "next_authority": "PROFILE_DOCS_ISSUE_23",
+      "evidence_ceiling": "CLOSURE_PROJECTION_CANDIDATE_ONLY",
+      "packet_state": "BLOCKED_BY_PREDECESSOR",
+      "claims_not_proven": [
+        "Convergence is not physical provider user Human or release evidence.",
+        "No vertical canary has executed."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-D",
+      "role": "Agent Thinking Inception Documentation and Molecular Stack Owner",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/23",
+      "target_repository": "ed3c/enterprise_agent_system",
+      "target_interface": "inception/profile-docs-stack",
+      "objective": "Render the profile-local prompt catalogue directory-State-Machine index guarded data flow and observed Molecular Stack without changing machine authority or claiming operational closure.",
+      "required_gates": [
+        "every governed directory has State Machine inputs outputs Gates next owner and ceiling",
+        "Stack atoms are derived from observed issues branches PRs heads paths and Gates",
+        "true Git ancestry is separated from process evidence and Human dependencies",
+        "planned branches and unexercised lanes remain explicit",
+        "Markdown and machine indexes agree on exact current subjects"
+      ],
+      "positive_controls": [
+        "all profile phases and A1-A6 prompts are zero-context",
+        "the C K A E X D H atom denominator is complete",
+        "root shared documentation paths remain owned by generic EAS-D"
+      ],
+      "runtime_requirements": [
+        "execute in the deterministic documentation lane",
+        "treat Google Docs and Sheets as advisory projections only"
+      ],
+      "capability_requirements": [
+        "exact GitHub metadata readback",
+        "route link Stack and data-flow consistency checks",
+        "content-addressed prompt catalogue"
+      ],
+      "retry_budget": 1,
+      "timeout_seconds": 1200,
+      "next_authority": "PROFILE_HANDOFF_REQUEST",
+      "evidence_ceiling": "DOCUMENTATION_CANDIDATE_ONLY",
+      "packet_state": "BLOCKED_BY_PREDECESSOR",
+      "claims_not_proven": [
+        "Documentation presence is not implementation or live closure.",
+        "Google projections cannot write workflow effect Human or release state."
+      ]
+    },
+    {
+      "task_id": "TASK-INCEPTION-H",
+      "role": "Agent Thinking Inception Local Handoff Request Compiler",
+      "owner_issue": "https://github.com/ed3c/enterprise_agent_system/issues/14",
+      "target_repository": "ed3c/enterprise_agent_system",
+      "target_interface": "inception/profile-local-handoff-request",
+      "objective": "Compile unresolved real local provider physical or Human boundaries into one profile request consumed by the single canonical EAS Local Handoff queue.",
+      "required_gates": [
+        "exact active subject runtime and capability prerequisites",
+        "structured argv cwd timeout environment-name allowlist and secret-free receipt",
+        "exactly one candidate active item after canonical queue admission",
+        "cleanup residue rollback compensation and failure denominator",
+        "Human-owned operations remain terminal blockers"
+      ],
+      "positive_controls": [
+        "the profile request contains no placeholder command or secret value",
+        "queue advancement requires exact receipt cleanup and subject readback",
+        "the profile request cannot mutate or advance the canonical queue"
+      ],
+      "runtime_requirements": [
+        "compile only after a genuine local provider physical or Human boundary exists",
+        "leave execution and queue advancement to the admitted local runtime and canonical reducer"
+      ],
+      "capability_requirements": [
+        "exact local runtime classification",
+        "concrete command and receipt materialization",
+        "canonical EAS queue compiler"
+      ],
+      "retry_budget": 0,
+      "timeout_seconds": 900,
+      "next_authority": "CANONICAL_EAS_LOCAL_HANDOFF_QUEUE",
+      "evidence_ceiling": "HANDOFF_REQUEST_CANDIDATE_ONLY",
+      "packet_state": "BLOCKED_BY_PREDECESSOR",
+      "claims_not_proven": [
+        "A profile request is not the canonical queue.",
+        "Queue validation is not command execution or Human admission."
+      ]
+    }
+  ],
+  "evidence_ceiling": "ZERO_CONTEXT_PACKET_SPEC_CANDIDATE_ONLY",
+  "claims_not_proven": [
+    "Packet specifications have not executed in any owner repository.",
+    "Generated packet digests prove byte integrity only."
+  ]
+}

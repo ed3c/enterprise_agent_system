@@ -1,0 +1,96 @@
+{
+  "schema_version": "enterprise-agent-system/p5-task-dag/v1",
+  "atom": "EAS-X",
+  "nodes": [
+    {
+      "id": "EAS-X-BIND",
+      "owner": "enterprise_agent_system",
+      "state": "IMPLEMENTED_CANDIDATE",
+      "output": "exact P4 owner subject denominator"
+    },
+    {
+      "id": "EAS-X-OWNER-READBACK",
+      "owner": "enterprise_agent_system",
+      "state": "IMPLEMENTED_CANDIDATE",
+      "output": "repository/commit/tree/run/typed-Shadow bindings"
+    },
+    {
+      "id": "EAS-X-LANE-RECONCILE",
+      "owner": "enterprise_agent_system",
+      "state": "IMPLEMENTED_CANDIDATE",
+      "output": "literal evidence states and stronger-lane blockers"
+    },
+    {
+      "id": "EAS-X-VERTICAL-CANARY-PLAN",
+      "owner": "enterprise_agent_system",
+      "state": "PLAN_ONLY",
+      "output": "public no-effect seven-interface canary plan"
+    },
+    {
+      "id": "EAS-X-SHADOW",
+      "owner": "Shadow Architect",
+      "state": "REQUIRES_EXTERNAL_EXACT_HEAD_RECEIPT",
+      "output": "PR/Issue external exact-subject P5 review receipt"
+    },
+    {
+      "id": "EAS-X-HANDOFF-PROFILE",
+      "owner": "enterprise_agent_system#22",
+      "state": "REQUIRES_ADMITTED_X_RECEIPT",
+      "output": "profile-specific exact-subject convergence"
+    },
+    {
+      "id": "EAS-X-HANDOFF-P6",
+      "owner": "enterprise_agent_system#13",
+      "state": "REQUIRES_ADMITTED_X_RECEIPT",
+      "output": "root docs/AGENTS/DAG/Stack convergence"
+    },
+    {
+      "id": "EAS-X-HANDOFF-P7",
+      "owner": "enterprise_agent_system#14",
+      "state": "BLOCKED_STRONGER_LANES",
+      "output": "local/provider/physical/Human execution epochs"
+    }
+  ],
+  "start_edges": [
+    ["EAS-X-BIND", "EAS-X-OWNER-READBACK"],
+    ["EAS-X-OWNER-READBACK", "EAS-X-LANE-RECONCILE"],
+    ["EAS-X-LANE-RECONCILE", "EAS-X-VERTICAL-CANARY-PLAN"],
+    ["EAS-X-VERTICAL-CANARY-PLAN", "EAS-X-SHADOW"]
+  ],
+  "completion_edges": [
+    ["EAS-X-BIND", "EAS-X-OWNER-READBACK"],
+    ["EAS-X-OWNER-READBACK", "EAS-X-LANE-RECONCILE"],
+    ["EAS-X-LANE-RECONCILE", "EAS-X-VERTICAL-CANARY-PLAN"],
+    ["EAS-X-VERTICAL-CANARY-PLAN", "EAS-X-SHADOW"],
+    ["EAS-X-SHADOW", "EAS-X-HANDOFF-PROFILE"],
+    ["EAS-X-SHADOW", "EAS-X-HANDOFF-P6"]
+  ],
+  "external_blocked_edges": [
+    {
+      "from": "EAS-X-SHADOW",
+      "to": "EAS-X-HANDOFF-P7",
+      "requires": [
+        "runtime/provider capability",
+        "private-data/egress authority where applicable",
+        "exact receipt schema",
+        "cleanup/residue proof",
+        "Human authority for irreversible transitions"
+      ]
+    }
+  ],
+  "git_ancestry": {
+    "true_parent": "EAS-E@177ba870c41cc5605532ea79770d54aea124fa0c",
+    "process_dependencies_not_git_parents": ["EAS-K", "EAS-A", "A1", "A2R", "A2", "A3", "A4", "A5", "A6"]
+  },
+  "external_receipt_law": {
+    "reason": "binding the final PR review id into branch bytes would mutate the reviewed subject",
+    "source_of_truth": "GitHub PR review / issue comment on the immutable PR head",
+    "branch_names_are_authority": false
+  },
+  "claims_not_proven": [
+    "DAG topology is not execution evidence.",
+    "A process dependency is not automatically Git ancestry.",
+    "The vertical canary remains PLAN_ONLY until an independent execution receipt exists.",
+    "The external Shadow receipt must be re-read against the final immutable PR head before downstream use."
+  ]
+}
