@@ -228,3 +228,17 @@ queue execution        NOT_PERFORMED
 ```
 
 Execution authority remains exact H4R #103, not an arbitrary future main HEAD. H4RR #107 may inspect the resulting external receipt but cannot self-grant real-local credit or mutate the queue. See `handoff/README.md` and issue #14.
+
+## Repository ownership
+
+| Plane | Canonical owner | Owns | Does not own |
+|---|---|---|---|
+| Control / closure | `enterprise_agent_system` | source/requirement graph, Tech Lead routing, convergence, docs projection, Local Handoff contract | runtime/effect execution, Human release |
+| Portable method | `skills-shared` | Tech Lead/Shadow/Stack/Handoff methodology | repo-specific canonical state |
+| Runtime contract | `runtime-env` | workload/capability/policy contracts | provider secrets/effect state |
+| Workflow/effect | `bettor-arena` | durable state, compaction/recovery, ingress/effects | provider adapter runtime |
+| Provider adapter | `agent-shield-monorepo` | sandbox, steering, provider/runtime/telemetry adapters | EAS closure/Human authority |
+| Independent verification | `truth-verify-loop` | exact source/code/effect/user-result verification | implementation mutation |
+| Source anchoring | `openwiki-source-anchoring` | lexical source/path/span anchors | semantic/release authority |
+
+One interface or canonical state has one owner. Process dependencies are not automatically Git ancestry.
