@@ -28,6 +28,24 @@ H4RR #107
 
 Main integration does not replace these execution identities. Until a new local-runtime admission explicitly says otherwise, execute the exact admitted H4R subject rather than an arbitrary future `main` HEAD.
 
+## Machine-observable queue projection
+
+The following stable literals are intentionally retained because `tests/verify_handoff.py` validates the Agent-readable projection as part of queue correctness:
+
+```text
+P7 queue v4
+exactly-one-ACTIVE
+Root-D #94 6981c700f9f2f9128ebeebdf80e627178b2be336
+Root-D verify 32342272177
+Root-D Shadow 4979950874
+EAS-A ADVISORY_ONLY
+vertical canary PLAN_ONLY
+queue / ACTIVE execution NOT_PERFORMED
+historical queue/runner/reducer authority NONE
+```
+
+These tokens are projections of machine state; they do not themselves grant authority.
+
 ## Queue truth
 
 ```text
