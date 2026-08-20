@@ -1,0 +1,90 @@
+{
+  "schema_version": "enterprise-agent-system/inception-profile-data-flow/v3",
+  "profile_id": "PROFILE-AGENT-THINKING-INCEPTION-001",
+  "state": "P6_PROFILE_DOCUMENTATION_CANDIDATE_AFTER_EAS_A",
+  "parent_profile_x": {
+    "pull_request": 80,
+    "commit": "df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0",
+    "tree": "9290a2822ba30309a9d44933ce0ea4d640501a39",
+    "external_verification_run": 32321499909,
+    "shadow_review": 4978282030,
+    "verdict": "ADMIT_FOR_PROFILE_D_REBIND_AFTER_EAS_A",
+    "profile_x_owned_hosted_workflow": "ABSENT"
+  },
+  "eas_a": {
+    "pull_request": 68,
+    "commit": "250717db1cad584d50890c0d851153fa2cd755e8",
+    "tree": "fbf6a75b6e89e906f227110dc5a61e4355b8a891",
+    "verification_run": 32295871632,
+    "shadow_review": 4976213414,
+    "authority": "ADVISORY_ONLY",
+    "relationship": "PROCESS_DEPENDENCY_NOT_GIT_PARENT",
+    "google_connectivity": "NOT_PERFORMED",
+    "google_write": "NOT_PERFORMED",
+    "source_correctness": "NOT_PROVEN"
+  },
+  "nodes": [
+    {"id":"SOURCE","owner":"INCEPTION-C0","authority":"SOURCE_PROPOSAL"},
+    {"id":"REQUIREMENTS","owner":"INCEPTION-C0","authority":"CANONICAL_REQUIREMENT_GRAPH"},
+    {"id":"CONTRACTS","owner":"INCEPTION-C1","authority":"PROFILE_CONTRACT_CANDIDATE"},
+    {"id":"PROFILE_K","owner":"INCEPTION-K","authority":"DAG_PACKET_LEASE_COMPILER"},
+    {"id":"OWNERS","owner":"A1/A2R/A2/A3/A4/A5/A6","authority":"CANONICAL_OWNER_IMPLEMENTATIONS"},
+    {"id":"PROFILE_E","owner":"enterprise_agent_system#19","authority":"READ_ONLY_PROFILE_SHADOW"},
+    {"id":"GENERIC_X","owner":"enterprise_agent_system#12","authority":"AGGREGATE_CONVERGENCE"},
+    {"id":"EAS_A","owner":"enterprise_agent_system#10","authority":"ADVISORY_ONLY"},
+    {"id":"PROFILE_X","owner":"enterprise_agent_system#22","authority":"PROFILE_EXACT_SUBJECT_RECONCILIATION"},
+    {"id":"PROFILE_D","owner":"enterprise_agent_system#23","authority":"DOCUMENTATION_PROJECTION"},
+    {"id":"PROFILE_DV","owner":"verification sibling","authority":"EXTERNAL_EXACT_TARGET_VERIFICATION"},
+    {"id":"ROOT_D","owner":"enterprise_agent_system#13","authority":"ROOT_DOCUMENTATION_PROJECTION"},
+    {"id":"P7","owner":"enterprise_agent_system#14","authority":"LOCAL_HANDOFF_CONTRACT"},
+    {"id":"HUMAN","owner":"Human authority","authority":"IRREVERSIBLE_TRANSITIONS"}
+  ],
+  "edges": [
+    {"from":"SOURCE","to":"REQUIREMENTS","type":"DATA","guard":"source bytes local-only; SOURCE_PROPOSAL remains non-runtime truth"},
+    {"from":"REQUIREMENTS","to":"CONTRACTS","type":"DATA","guard":"15 requirements and 14 contradictions cannot shrink"},
+    {"from":"CONTRACTS","to":"PROFILE_K","type":"DATA","guard":"strict contract identity and exact subject"},
+    {"from":"PROFILE_K","to":"OWNERS","type":"PROCESS_PACKETS","guard":"one canonical owner and disjoint writer/resource leases"},
+    {"from":"OWNERS","to":"PROFILE_E","type":"EVIDENCE","guard":"public receipts retain stronger-lane ceilings"},
+    {"from":"GENERIC_X","to":"PROFILE_X","type":"MULTI_PARENT_GIT_INPUT","guard":"current b295eabe... subject / verify 32296886625 / Shadow 4976304922"},
+    {"from":"PROFILE_E","to":"PROFILE_X","type":"MULTI_PARENT_GIT_INPUT","guard":"Profile-E 9f25b94... / read-only Shadow"},
+    {"from":"EAS_A","to":"PROFILE_X","type":"PROCESS_ADVISORY_DEPENDENCY","guard":"ADVISORY_ONLY; not Git parent; Google connectivity/write NOT_PERFORMED"},
+    {"from":"REQUIREMENTS","to":"PROFILE_X","type":"CANONICAL_CONTROL_INPUT","guard":"source-required evidence lanes cannot be rewritten by cheaper observed evidence"},
+    {"from":"PROFILE_X","to":"PROFILE_D","type":"GIT_PARENT","guard":"PR #80 df4cd19d... / external verify 32321499909 / Shadow 4978282030"},
+    {"from":"PROFILE_D","to":"PROFILE_DV","type":"EXTERNAL_VERIFICATION_REQUEST","guard":"workflow-only sibling; never Git ancestry"},
+    {"from":"PROFILE_D","to":"ROOT_D","type":"DOCUMENTATION_PROJECTION","guard":"only after exact hosted verification + fresh Shadow"},
+    {"from":"ROOT_D","to":"P7","type":"CURRENT_RECEIPT_REQUIRED","guard":"old P7 #59 remains authority NONE until Root-D is rebuilt"},
+    {"from":"P7","to":"HUMAN","type":"AUTHORITY_BOUNDARY","guard":"local/provider receipts cannot self-promote Human/release state"}
+  ],
+  "forbidden_edges": [
+    {"from":"EAS_A","to":"CANONICAL_STATE","reason":"advisory projection cannot mutate task/workflow/effect/Human/release state"},
+    {"from":"GOOGLE_DOC_OR_SHEET","to":"CLOSURE_CREDIT","reason":"Google projections are advisory only"},
+    {"from":"GOOGLE_READ_OR_REVISION","to":"SOURCE_CORRECTNESS","reason":"successful read/revision does not prove correctness"},
+    {"from":"OWNER_RECEIPTS","to":"INTEGRATED_EXECUTION","reason":"constituent receipts do not execute the vertical canary"},
+    {"from":"PLAN_ONLY_CANARY","to":"EXECUTED","reason":"execution_receipt is null"},
+    {"from":"CI_GREEN","to":"BUSINESS_USER_OUTCOME","reason":"deterministic verification is not user outcome"},
+    {"from":"MODEL_OR_JUDGE","to":"HUMAN_ADMITTED","reason":"model agreement is not Human authority"},
+    {"from":"STALE_P7_59","to":"LOCAL_EXECUTION","reason":"P7 lineage must be rebound after EAS-A"}
+  ],
+  "stale_descendants": [
+    {"atom":"PROFILE_D_V4","pull_request":44,"authority":"NONE"},
+    {"atom":"ROOT_D_V2","pull_request":57,"authority":"NONE"},
+    {"atom":"P7","pull_request":59,"authority":"NONE"},
+    {"atom":"H3R","pull_request":67,"authority":"NONE"},
+    {"atom":"H3RR","pull_request":71,"authority":"NONE"}
+  ],
+  "closure_projection": {
+    "requirements_total": 15,
+    "requirements_required_lane_satisfied": 1,
+    "requirements_closure_credit": 0,
+    "contradictions_total": 14,
+    "contradictions_preserved": 14,
+    "stronger_no_credit_lanes": 13,
+    "vertical_canary": "PLAN_ONLY",
+    "vertical_canary_digest": "sha256:869842575cae80c62227699f576728f3331fa25a573a3cc27c052f23f32944c2",
+    "vertical_execution_receipt": null,
+    "profile_x_external_verification": "32321499909_PASS",
+    "profile_x_owned_hosted_workflow": "ABSENT",
+    "full_architecture": "BLOCKED_FOR_CLOSURE",
+    "profile_release": "NOT_ADMITTED"
+  }
+}
