@@ -32,7 +32,7 @@
   "core_reuse": {
     "source_pull_request": 71,
     "source_commit": "82366dabf871f466c0c1353ef49198f82de90c16",
-    "source_tree": "1b82ec9203683372369906f068fbbab42f774e8f",
+    "source_tree": "6ca3e205afdc6b9347ccde06769344b8b37e1964",
     "source_blob": "4c5581eabb265346865963c74c573ffc057381b8",
     "path": "handoff/reduce_receipt_core.py",
     "reuse_authority": "CODE_REUSE_ONLY",
