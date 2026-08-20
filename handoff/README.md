@@ -1,20 +1,40 @@
 # Local Handoff
 
-Local Handoff is the boundary between cloud/deterministic coordination and execution requiring local filesystem, provider credentials, private evidence, physical isolation, external effects, or Human authority.
+Local Handoff is the boundary between public/cloud coordination and execution requiring local filesystem, provider credentials, private evidence, physical isolation, external effects, or Human authority.
 
-## Current status after EAS-A rebind
+## Current P7 candidate
 
 ```text
-Root-D v3          CANDIDATE / external verify + Shadow pending
-P7 current         REBIND_REQUIRED
-P7 #59             historical / authority NONE
-H3R #67            historical / authority NONE
-H3RR #71           historical / authority NONE
-queue execution    NOT_PERFORMED
-Human admission    NOT_PERFORMED
+Root-D #94
+  6981c700f9f2f9128ebeebdf80e627178b2be336
+  tree d044ae652b65af6a0aba49f0f79c7c04c630bebf
+  verify 32342272177 PASS
+  Shadow 4979950874 = ADMIT_FOR_P7_REBIND_AFTER_EAS_A
+
+P7 queue v4
+  queue LH-EAS-INCEPTION-P7-V4-2026-08-20
+  items 11
+  ACTIVE 1  LH-P7-01-ROOT-D-V3-LOCAL-READBACK
+  blocked successors 9
+  Human terminal 1
+  main commands 9
+  cleanup commands 3
+  queue execution NOT_PERFORMED
 ```
 
-Do not execute historical ACTIVE items. A new P7 queue may be compiled only after Root-D v3 immutable-target verification and fresh Shadow admit the exact subject.
+EAS-A remains `ADVISORY_ONLY`; Google connectivity/write is `NOT_PERFORMED`; source correctness is `NOT_PROVEN`.
+
+Historical/no-current-authority subjects:
+
+```text
+PR #27  authority NONE
+PR #50  authority NONE
+PR #59  authority NONE
+H3R #67 authority NONE
+H3RR #71 authority NONE
+```
+
+Do not execute historical ACTIVE items.
 
 ## Queue State Machine
 
@@ -30,16 +50,14 @@ QUEUE_SUBJECT_BOUND
 → NEXT_EPOCH | BLOCKED | HUMAN_ADMIT_REQUIRED | COMPLETE
 ```
 
-Queue-shape PASS does not mean execution occurred.
+Queue-shape PASS is not execution PASS. A local command exit alone cannot advance the queue.
 
-## Required unresolved lanes
+## First ACTIVE item
 
-Physical/multi-host durability; network/gVisor isolation; provider capability/enrollment; private/independent semantic evidence; exact external Model/Data/Trace terms; live telemetry; external benchmark; real effect/readback/compensation; business/user outcome; Human legal/security/admission.
+The only ACTIVE item may read back public Root-D v3 bytes in a detached worktree, replay current Generic-X/Profile-X/Profile-D controls, assert the exact Root-D subject, write a secret-free external receipt, then remove/prune the worktree and temporary ref. Actual execution is outside this public GitHub phase and remains `NOT_PERFORMED`.
 
-## Safety law
+## Safety and authority
 
-Use structured argv arrays, explicit cwd/timeout and environment-name allowlists. Never persist secret values/private source bytes. External mutation requires typed WriteIntent, idempotency/effect identity, expected remote version/capability, timeout/UNKNOWN_EFFECT plan, readback oracle and compensation/rollback. Human-owned irreversible transitions remain separate.
+Use structured argv arrays, explicit cwd/timeout, an environment-name allowlist, and no secret/credential values in Git. External mutation requires typed WriteIntent, idempotency/effect identity, expected remote version, UNKNOWN_EFFECT/readback/compensation handling, and Human authority where irreversible.
 
-## Authority boundary
-
-Only the canonical reducer/owner may advance an ACTIVE item after exact receipt and clean residue readback. Root docs, CI, Shadow, Google views or queue preparation cannot advance it.
+Only the canonical reducer/owner may advance ACTIVE after exact receipt and clean residue readback. Root docs, GitHub Actions, Shadow, EAS-A/Google projections, queue preparation, or model agreement cannot perform Human admission, merge, release or rollback.
