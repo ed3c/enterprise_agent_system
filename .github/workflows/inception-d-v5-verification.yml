@@ -17,7 +17,7 @@ jobs:
       - name: Checkout immutable Profile-D v5 target
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: daf9d94de29e753307ec802c3ce53a1df7fe1a91
+          ref: 0e76dfeabcb4bf49e2c34e67bc08288b2bfe244d
           persist-credentials: false
           fetch-depth: 0
 
@@ -33,8 +33,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          target="daf9d94de29e753307ec802c3ce53a1df7fe1a91"
-          tree="0d80e0eaa55d18f19b0cdb54dc9b19222d1c1ccc"
+          target="0e76dfeabcb4bf49e2c34e67bc08288b2bfe244d"
+          tree="5b1d0cf77112f57b4090d48daa369c2a89d0ce2b"
           parent="df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0"
           parent_tree="9290a2822ba30309a9d44933ce0ea4d640501a39"
           test "$(git rev-parse HEAD)" = "$target"
@@ -42,7 +42,7 @@ jobs:
           test "$(git rev-parse "$parent^{tree}")" = "$parent_tree"
           git merge-base --is-ancestor "$parent" HEAD
           test "$(git merge-base "$parent" HEAD)" = "$parent"
-          test "$(git rev-list --count "$parent"..HEAD)" = "7"
+          test "$(git rev-list --count "$parent"..HEAD)" = "8"
           python3 - <<'PY'
           import subprocess
           parent = "df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0"
@@ -121,7 +121,7 @@ jobs:
           assert atoms["EAS-A"]["relationship"] == "PROCESS_DEPENDENCY_NOT_GIT_PARENT"
 
           stale = stack["stale_or_superseded"]
-          expected_stale = {44, 57, 59, 67, 71}
+          expected_stale = {40, 44, 57, 59, 67, 71}
           observed = {
               item["pull_request"]
               for item in stale
@@ -219,11 +219,12 @@ jobs:
         run: |
           cat <<'EOF'
           PASS INCEPTION-D v5 exact-target verification
-          target=daf9d94de29e753307ec802c3ce53a1df7fe1a91
-          tree=0d80e0eaa55d18f19b0cdb54dc9b19222d1c1ccc
+          target=0e76dfeabcb4bf49e2c34e67bc08288b2bfe244d
+          tree=5b1d0cf77112f57b4090d48daa369c2a89d0ce2b
           parent=df4cd19d9acbedcbd0b00245b6339cc9ef7e99e0
           parent_verify=32321499909
           parent_Shadow=4978282030
+          Profile_D_commits=8
           Profile_D_paths=7
           Profile_X_mutations=34
           Profile_D_mutations=28
@@ -232,6 +233,7 @@ jobs:
           requirement_closure_credit=0
           contradictions=14
           stronger_no_credit_lanes=13
+          stale_descendants=6
           EAS_A_authority=ADVISORY_ONLY
           Google_connectivity_write=NOT_PERFORMED
           source_correctness=NOT_PROVEN
