@@ -20,6 +20,7 @@ P7 queue v4
   main commands 9
   cleanup commands 3
   queue execution NOT_PERFORMED
+  vertical canary PLAN_ONLY
 ```
 
 EAS-A remains `ADVISORY_ONLY`; Google connectivity/write is `NOT_PERFORMED`; source correctness is `NOT_PROVEN`.
